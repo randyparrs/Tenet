@@ -16,6 +16,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { DemoCore, REFUND_TEXT } from "../src/core.js";
 import { makeArc } from "../src/arc.js";
 import { importDkimKey, cj, orderRef } from "../src/util.js";
+import { makeCircle, circleApi } from "../src/circle.js";
 
 const ROOT = new URL("../../", import.meta.url);
 const P = (rel) => new URL(rel, ROOT);
@@ -29,6 +30,8 @@ const K = ["0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
   "0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a", "0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba",
   "0x92db14e403b83dfe3df233f83dfa3a0d7096f21ca9b0d6d6b8d88b2b4ec1564e"];
 const [OWNER, GUARDIAN, RELAYER, STORE, B1, B2, B3] = K.map((k) => privateKeyToAccount(k));
+// The wallet Circle "creates" for a visitor who signs in with Google (anvil's public test account 7)
+const CIRCLE_USER = privateKeyToAccount("0x4bbbf85ce3377467afe5d46f804f221813b2bb87f24d81f60f1fcdbf7cbf4356");
 
 const lines = [];
 const say = (t) => { console.log(t); lines.push(t); };
@@ -80,7 +83,7 @@ async function run(url, stubPort, data, pem) {
   const ow = wallet(OWNER);
   let r = await wait(await ow.deployContract({ abi: stable.abi, bytecode: stable.bytecode.object, args: ["USDC"] }));
   await rpc("anvil_setCode", [USDC, await pub.getCode({ address: r.contractAddress })]);
-  for (const b of [B1, B2, B3]) await wait(await ow.writeContract({ address: USDC, abi: stable.abi, functionName: "mint", args: [b.address, 20_000_000n] }));
+  for (const b of [B1, B2, B3, CIRCLE_USER]) await wait(await ow.writeContract({ address: USDC, abi: stable.abi, functionName: "mint", args: [b.address, 20_000_000n] }));
   r = await wait(await ow.deployContract({ abi: art.abi, bytecode: art.bytecode.object,
     args: [OWNER.address, RELAYER.address, GUARDIAN.address, [USDC], [1_000_000n], 120n] }));
   const escrow = r.contractAddress;
@@ -301,8 +304,58 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
     .map((s) => Object.assign(el("screen-" + s), { getAttribute: (k) => (k === "data-screen" ? s : null) }));
   const listeners = {};
   const ls = new Map();
+  // Circle, simulated: its REST API (behind the Worker's own routes, worker/src/circle.js) and its Web SDK.
+  // A contract execution approved in "Circle's window" is sent from CIRCLE_USER on anvil.
+  const sim = { pending: new Map(), done: new Map(), execs: [], init: null, walletMade: false, sdk: [] };
+  const circleRest = async (url, init) => {
+    const path = url.replace("https://api.circle.com", "");
+    const body = init.body ? JSON.parse(init.body) : null;
+    const ok = (d) => ({ ok: true, status: 200, json: async () => ({ data: d }) });
+    if (path === "/v1/w3s/users/social/token") return ok({ deviceToken: "dt-test", deviceEncryptionKey: "dk-test" });
+    if (path === "/v1/w3s/user/initialize") { sim.init = body; return ok({ challengeId: "c-init" }); }
+    if (path.startsWith("/v1/w3s/wallets")) return ok({ wallets: sim.walletMade ? [{ id: "w-c", address: CIRCLE_USER.address, blockchain: "ARC-TESTNET", accountType: "EOA", state: "LIVE" }] : [] });
+    if (path === "/v1/w3s/user/transactions/contractExecution") {
+      const id = "c-" + (sim.pending.size + 1);
+      sim.pending.set(id, body); sim.execs.push(body);
+      return ok({ challengeId: id });
+    }
+    if (path.startsWith("/v1/w3s/user/challenges/")) {
+      const id = decodeURIComponent(path.split("/").pop()), h = sim.done.get(id);
+      return ok({ challenge: { id, type: "CONTRACT_EXECUTION", status: h ? "COMPLETE" : "PENDING", correlationIds: h ? ["t-" + id] : [] } });
+    }
+    if (path.startsWith("/v1/w3s/transactions/")) return ok({ transaction: { state: "COMPLETE", txHash: sim.done.get(path.split("/").pop().slice(2)) } });
+    return { ok: false, status: 404, json: async () => ({ code: 0, message: "no route " + path }) };
+  };
+  const circleWorker = makeCircle({ apiKey: "TEST_API_KEY:x:y", escrow, usdc: data.addresses.usdc, abi: art.abi, fetchImpl: circleRest });
+  class W3SSdk {
+    constructor(configs, onLogin) {
+      this.configs = configs;
+      if (onLogin && /id_token=/.test(ctx.location.hash)) {
+        setTimeout(() => { ctx.location.hash = ""; onLogin(undefined, { userToken: "ut-test", encryptionKey: "ek-test", refreshToken: "rt-test" }); }, 10);
+      }
+    }
+    getDeviceId() { return Promise.resolve("device-test"); }
+    updateConfigs(c) { this.configs = c; }
+    performLogin(provider) { sim.sdk.push(["login", provider, this.configs]); ctx.location.hash = "#id_token=token-test&state=state-test"; return Promise.resolve(); }
+    setAuthentication(a) { this.auth = a; }
+    execute(id, cb) {
+      sim.sdk.push(["execute", id, this.auth]);
+      (async () => {
+        if (id === "c-init") { sim.walletMade = true; return cb(undefined, { type: "INITIALIZE", status: "COMPLETE" }); }
+        const b = sim.pending.get(id);
+        const h = await wallet(CIRCLE_USER).sendTransaction({ to: b.contractAddress, data: b.callData });
+        await pub.waitForTransactionReceipt({ hash: h });
+        sim.done.set(id, h);
+        cb(undefined, { type: "CONTRACT_EXECUTION", status: "COMPLETE" });
+      })().catch((e) => cb({ message: e.message }, undefined));
+    }
+  }
   const api = async (path, init = {}) => {
     const u = new URL(path, "http://demo");
+    if (u.pathname.startsWith("/api/circle/")) {
+      const r = await circleApi(circleWorker, u.pathname.slice("/api/circle/".length), JSON.parse(init.body || "{}"));
+      return { ok: r.status < 400, status: r.status, json: async () => structuredClone(r.body) };
+    }
     const t = await now();
     let body;
     if (u.pathname === "/api/config") {
@@ -315,7 +368,7 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
     return { ok: true, json: async () => structuredClone(body), text: async () => JSON.stringify(body) };
   };
   const READS = ["eth_getBalance", "eth_call", "eth_getTransactionReceipt"];
-  const net = { walletReadsDown: false, publicRpcDown: false, workerDown: false }; // a broken wallet RPC, Arc's public RPC down, the Worker's read down
+  const net = { walletReadsDown: false, publicRpcDown: false, workerDown: false, circleOn: false }; // a broken wallet RPC, Arc's public RPC down, the Worker's read down; Circle set up
   const ethereum = {
     on() {},
     request: async ({ method, params }) => {
@@ -330,13 +383,16 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   const document = {
     getElementById: el,
     querySelectorAll: (sel) => (sel === ".screen[data-screen]" ? screens : []),
-    querySelector: (sel) => (sel.includes("tenet-demo-api") ? { content: "http://demo" } : null),
+    querySelector: (sel) => (sel.includes("tenet-demo-api") ? { content: "http://demo" }
+      : sel.includes("tenet-circle") && net.circleOn ? { content: "app-test|client-test.apps.googleusercontent.com" } : null),
     addEventListener() {}, createElement: () => el("tmp"),
   };
-  const ctx = { window, document, location: { hash: "" }, navigator: {}, console, Date, JSON, Math, Number, String, Object, Array, RegExp, BigInt, Promise,
+  const ss = new Map();
+  const ctx = { window, document, location: { hash: "", origin: "http://127.0.0.1:8000" }, navigator: {}, console, Date, JSON, Math, Number, String, Object, Array, RegExp, BigInt, Promise,
     isFinite, encodeURIComponent, decodeURIComponent, TextEncoder, URL, performance: { now: () => 0 }, requestAnimationFrame: () => 0,
     cancelAnimationFrame() {}, setTimeout, clearTimeout, setInterval: () => 0, clearInterval() {},
     localStorage: { getItem: (k) => (ls.has(k) ? ls.get(k) : null), setItem: (k, v) => ls.set(k, String(v)), removeItem: (k) => ls.delete(k) },
+    sessionStorage: { getItem: (k) => (ss.has(k) ? ss.get(k) : null), setItem: (k, v) => ss.set(k, String(v)), removeItem: (k) => ss.delete(k) },
     fetch: async (u, init) => {
       if (String(u).startsWith("http://demo")) return api(String(u).slice("http://demo".length), init);
       if (String(u) === "https://rpc.testnet.arc.io") { // the page's reads of Arc, served by anvil
@@ -348,8 +404,9 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
       return { ok: true, text: async () => readFileSync(P("site/data/tenet.json"), "utf8") };
     } };
   ctx.window.document = document;
+  ctx.window.TenetCircleSdk = { W3SSdk, SocialLoginProvider: { GOOGLE: "Google" } };
   vm.createContext(ctx);
-  for (const f of ["site/demo-shop.js", "site/app.js"]) vm.runInContext(readFileSync(P(f), "utf8"), ctx, { filename: f });
+  for (const f of ["site/circle.js", "site/demo-shop.js", "site/app.js"]) vm.runInContext(readFileSync(P(f), "utf8"), ctx, { filename: f });
   const settle = () => new Promise((r) => setTimeout(r, 400));
   await settle();
   ctx.location.hash = "#demo-shop";
@@ -396,6 +453,7 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   const mo = () => el("screen-my-orders").innerHTML;
   const cnt = el("nav-orders-count");
   const cur = () => (mo().match(/<li class="cur" aria-current="step">.*?<span class="t">([^<]+)<\/span>/) || [])[1];
+  let wasClaimed = false;
   let claimed = false, sawCounter = false, sawNoConsensus = false, sawFinalizing = false, sawClaimNote = false, staleNote = false;
   await split(); // the order's first judge attempt gets no consensus, as DS-984327's did on Bradbury
   const phases = new Set();
@@ -439,6 +497,10 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   const both = l1Cards.find((h) => (h.match(/verified by Lacre \(record \d+\)/g) || []).length === 2);
   check(!!both && (both.match(/explorer-bradbury\.genlayer\.com\/tx\/0x[0-9a-f]+/g) || []).length >= 2,
     "PAGE L1: each store email shows signed by the store, verified by Lacre and a link to its attestation on Bradbury");
+  const verifying = l1Cards.find((h) => /verifying on Lacre/.test(h));
+  check(!!verifying && /Until the attestation is final/.test(verifying) && /about 30 min after it is sent/.test(verifying)
+    && !l1Cards.some((h) => /Until the attestation is final/.test(h) && !/verifying on Lacre/.test(h)),
+    "PAGE L1: an email still verifying on Lacre says what is happening, with a time bar until the attestation is final");
   check(l1Cur.includes("Claim") && l1Cur.includes("Judge") && !l1Cur.includes("Store answer")
     && (l1Cards[l1Cards.length - 1].match(/<li class="done">/g) || []).length === 5,
     `PAGE L1 moves through Claim and Judge to Settled, never through a store answer (${[...new Set(l1Cur)].join(", ")})`);
@@ -460,6 +522,52 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   const after = await usdcOf();
   check(after - before === creditedNow - 1_000_000n && (await credited()) === 0n && /is-done" disabled>.*Withdrawn/.test(html()),
     `PAGE Withdraw from the page: the wallet receives everything credited, nothing left in the escrow, the button says Withdrawn`);
+
+  // ---- Circle wallet: sign in with Google, then a D1 order of the Demo Shop end to end ------------------
+  net.circleOn = true;
+  const C = ctx.window.TenetCircle;
+  W.disconnect();
+  ctx.window.connectWallet();
+  check(el("connect-modal").hidden === false, "PAGE CIRCLE Connect opens the window with Continue with Google and Browser wallet");
+  ctx.location.hash = "#demo-shop";
+  W.connectCircle();
+  await settle();
+  const login = sim.sdk.find((x) => x[0] === "login"), lc = login && login[2].loginConfigs;
+  check(login && login[1] === "Google" && lc.google.clientId === "client-test.apps.googleusercontent.com" && lc.google.redirectUri === ctx.location.origin
+    && lc.deviceToken === "dt-test" && el("connect-modal").hidden === true,
+    "PAGE CIRCLE Google sign-in with the site's client id, a Circle device token, and the site's root as the way back");
+  W.restore(); // the page loads again with Google's answer in the address
+  for (let i = 0; i < 20 && W.status !== "connected"; i++) await settle();
+  check(W.kind === "circle" && W.address === CIRCLE_USER.address && sim.init && sim.init.accountType === "EOA"
+    && JSON.stringify(sim.init.blockchains) === '["ARC-TESTNET"]' && ctx.location.hash === "#demo-shop" && C.session()?.address === CIRCLE_USER.address,
+    "PAGE CIRCLE back from Google: Circle creates an EOA wallet on Arc testnet, the page connects it and returns to the Demo Shop");
+  listeners.hashchange(); await settle(); await act("refresh");
+  const usdcOfC = async () => pub.readContract({ address: "0x3600000000000000000000000000000000000000", abi: stable.abi, functionName: "balanceOf", args: [CIRCLE_USER.address] });
+  const c0 = await usdcOfC();
+  await act("start", "D1");
+  const orderC = JSON.parse(ctx.localStorage.getItem("tenet-demo-orders")).pop().order;
+  check(T._state.note?.tone === "ok" && sim.execs.length === 2 && sim.execs.every((x) => x.walletId === "w-c" && x.feeLevel === "MEDIUM"),
+    `PAGE CIRCLE Buy ${orderC}: approve and pay, each approved in the Circle window and sent by Circle (${sim.execs.length} transactions)`);
+  for (let i = 0; i < 45; i++) {
+    await tick();
+    await act("refresh");
+    const vc = T._state.views[orderC] || {};
+    if (vc.next?.action === "claim" && !wasClaimed) { await act("claim", orderC); wasClaimed = true; }
+    if (vc.settled) break;
+    await warp(60);
+  }
+  const vC = T._state.views[orderC];
+  check(wasClaimed && vC?.settled?.refund === 1_000_000 && sim.execs.length === 3,
+    "PAGE CIRCLE D1: the claim is signed through Circle and the order settles with REFUND 1.00 USDC");
+  await act("withdraw");
+  check((await usdcOfC()) === c0 && sim.execs.length === 4 && (await pub.readContract({ address: escrow, abi: art.abi, functionName: "claimable",
+    args: [CIRCLE_USER.address, "0x3600000000000000000000000000000000000000"] })) === 0n,
+    "PAGE CIRCLE Withdraw through Circle: the 1.00 USDC is back in the Circle wallet, nothing left in the escrow");
+  const refused = await C.send("0x" + "33".repeat(20), "0x12345678").then(() => false, (e) => /not a Demo Shop call/.test(e.message));
+  check(refused && sim.execs.length === 4, "PAGE CIRCLE a call outside the Demo Shop is refused by the Worker before it reaches Circle");
+  W.disconnect();
+  check(!C.session() && W.kind === "browser" && W.status === "idle", "PAGE CIRCLE disconnect ends the Circle session in this tab");
+  net.circleOn = false;
 }
 
 main().catch((e) => { console.error(e); say("REHEARSAL ERROR: " + (e.stack || e.message)); writeFileSync(P("results/demo-rehearsal.txt"), lines.join("\n") + "\n"); process.exit(2); });

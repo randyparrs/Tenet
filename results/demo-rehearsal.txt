@@ -49,8 +49,8 @@ ok   PAGE with the public RPC and the wallet both down, balance and credit come 
 ok   PAGE with every read down, the page says the reads failed instead of showing 0
 ok   PAGE the reads recover on the next refresh
 ok   PAGE the Demo Shop lists six products, each with its illustration and a Buy button
-ok   PAGE Buy creates order DS-982525 and pays it from the wallet in one click (Order DS-982525 paid on Arc. The demo store registers it within a minute.)
-ok   PAGE after Buy the page opens the order in My orders (#my-orders/DS-982525)
+ok   PAGE Buy creates order DS-909391 and pays it from the wallet in one click (Order DS-909391 paid on Arc. The demo store registers it within a minute.)
+ok   PAGE after Buy the page opens the order in My orders (#my-orders/DS-909391)
 ok   PAGE the order offers one button, Open a claim, with the exact text folded
 ok   PAGE N1 through the page: claim signed by the visitor, REFUND 1.00 USDC settled
 ok   PAGE while the order runs, the sidebar counter shows 1 with the order number on hover
@@ -60,6 +60,7 @@ ok   PAGE the note left by the claim shows next to the button and goes once the 
 ok   PAGE L1's track is Paid, Store emails, Claim, Judge, Settled; the other paths keep their five steps (Paid, Claim, Store answer, Judge, Settled)
 ok   PAGE L1 day 0: Store emails is the current step, the confirmation is signed by the store and the delivery notice comes the next day (Store emails)
 ok   PAGE L1: each store email shows signed by the store, verified by Lacre and a link to its attestation on Bradbury
+ok   PAGE L1: an email still verifying on Lacre says what is happening, with a time bar until the attestation is final
 ok   PAGE L1 moves through Claim and Judge to Settled, never through a store answer (Store emails, Claim, Judge, )
 ok   PAGE the order's track moved through its phases (Claim, Judge)
 ok   PAGE the settled order shows its number, five phases done, the refund and Go to withdraw; one timeline line per Arc transaction
@@ -67,7 +68,15 @@ ok   PAGE the sidebar counter is off once the order is settled
 ok   PAGE Go to withdraw leads to the Demo Shop
 ok   PAGE the refund is credited in the escrow (+1.00 USDC; 3 USDC in total from this rehearsal), the card is highlighted and Withdraw is lit
 ok   PAGE Withdraw from the page: the wallet receives everything credited, nothing left in the escrow, the button says Withdrawn
+ok   PAGE CIRCLE Connect opens the window with Continue with Google and Browser wallet
+ok   PAGE CIRCLE Google sign-in with the site's client id, a Circle device token, and the site's root as the way back
+ok   PAGE CIRCLE back from Google: Circle creates an EOA wallet on Arc testnet, the page connects it and returns to the Demo Shop
+ok   PAGE CIRCLE Buy DS-958459: approve and pay, each approved in the Circle window and sent by Circle (2 transactions)
+ok   PAGE CIRCLE D1: the claim is signed through Circle and the order settles with REFUND 1.00 USDC
+ok   PAGE CIRCLE Withdraw through Circle: the 1.00 USDC is back in the Circle wallet, nothing left in the escrow
+ok   PAGE CIRCLE a call outside the Demo Shop is refused by the Worker before it reaches Circle
+ok   PAGE CIRCLE disconnect ends the Circle session in this tab
 ok   no stop raised during the rehearsal
 ok   DEMO4 every verdict and Lacre record the Worker used was read with its transaction FINALIZED (early final reads: 0)
-judge sends 11, Lacre attestations 2
+judge sends 12, Lacre attestations 2
 REHEARSAL PASS

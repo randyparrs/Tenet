@@ -871,7 +871,8 @@
       { title: 'GenLayer Bradbury explorer', purpose: 'Look up judge transactions and Lacre attestations.', url: bradN.explorer, icon: 'scales' },
       { title: 'Lacre', purpose: 'On-chain DKIM attestations for store emails.', url: (lacre && lacre.project_url) || '', icon: 'lacre', mark: true,
         secondary: lacreRepo ? { label: 'Source code, MIT, Insidr Labs', url: 'https://' + lacreRepo } : null },
-      { title: 'Source code', purpose: 'The Tenet contracts, judges, relayer, Demo Shop Worker and this page. MIT.', url: 'https://github.com/randyparrs/Tenet', icon: 'code' }
+      { title: 'Source code', purpose: 'The Tenet contracts, judges, relayer, Demo Shop Worker and this page. MIT.', url: 'https://github.com/randyparrs/Tenet', icon: 'code' },
+      { title: 'Privacy', purpose: 'What this site and the Demo Shop keep about you, and what they do not.', url: 'privacy.html', icon: 'shieldCheck' }
     ];
     var stepBox = function (n, title, body, action) {
       return '<div class="start-step well"><span class="n">' + n + '</span><span style="font-size:15px">' + esc(title) + '</span><span class="muted pretty" style="font-size:13px">' + esc(body) + '</span><div class="actions">' + action + '</div></div>';
@@ -1012,7 +1013,8 @@
   /* Wallet: Arc testnet. This module connects and reads; the Demo Shop (demo-shop.js) sends the visitor's own transactions. */
   var ARC = { chainId: '0x4cef52', chainName: 'Arc Testnet', nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 }, rpcUrls: ['https://rpc.testnet.arc.io'], blockExplorerUrls: ['https://explorer.testnet.arc.io'] };
   var wallet = {
-    status: 'idle', address: '', balance: null, balanceErr: false, listening: false, msgTimer: 0,
+    /* kind: 'browser' (an injected wallet such as MetaMask or Rabby) or 'circle' (sign in with Google, circle.js) */
+    status: 'idle', kind: 'browser', address: '', balance: null, balanceErr: false, listening: false, msgTimer: 0,
     eth: function () { return window.ethereum || null; },
     arcN: function () { return (state.data && state.data.networks && state.data.networks.arc) || {}; },
     isCancel: function (e) {
@@ -1052,7 +1054,7 @@
       };
       var viaWallet = function (e) {
         console.warn('Tenet: ' + method + ' through Arc public RPC failed (' + ((e && e.message) || e) + '); trying the wallet');
-        var eth = wallet.eth(); if (!eth) throw e;
+        var eth = wallet.kind === 'browser' ? wallet.eth() : null; if (!eth) throw e;
         return timed(eth.request({ method: method, params: params }), 'wallet').catch(function (e2) {
           console.warn('Tenet: ' + method + ' through the wallet failed (' + ((e2 && e2.message) || e2) + ')');
           throw e2;
@@ -1074,6 +1076,7 @@
       }, function (e) { wallet.balanceErr = true; wallet.render(); throw e; });
     },
     sync: function () {
+      if (wallet.kind === 'circle') { wallet.readBalance().catch(function () {}); return; }
       var eth = wallet.eth(); if (!eth || !wallet.address) return;
       eth.request({ method: 'eth_chainId' }).then(function (cid) {
         if (String(cid).toLowerCase() !== ARC.chainId) { wallet.status = 'wrong'; wallet.balance = null; wallet.render(); return; }
@@ -1085,13 +1088,36 @@
       if (wallet.listening || !eth.on) return;
       wallet.listening = true;
       eth.on('accountsChanged', function (a) {
+        if (wallet.kind === 'circle') return;
         if (!a || !a.length) { wallet.status = 'idle'; wallet.address = ''; wallet.balance = null; wallet.render(); }
         else { wallet.address = a[0]; wallet.sync(); }
       });
-      eth.on('chainChanged', function () { wallet.sync(); });
+      eth.on('chainChanged', function () { if (wallet.kind === 'browser') wallet.sync(); });
     },
+    /* Connect: with Circle set up, a window with both choices; otherwise the browser wallet directly */
     connect: function () {
       wallet.clearMsg();
+      if (window.TenetCircle && window.TenetCircle.available()) { wallet.chooser(true); return; }
+      wallet.connectBrowser();
+    },
+    chooser: function (open) { var m = $('connect-modal'); if (m) m.hidden = !open; },
+    connectCircle: function () {
+      wallet.chooser(false);
+      wallet.status = 'connecting'; wallet.render();
+      window.TenetCircle.login().catch(function (e) {
+        wallet.status = 'idle'; wallet.render();
+        wallet.showMsg('wallet-msg', ((e && e.message) || 'Circle sign-in is not available right now.') + ' A browser wallet still works.');
+      });
+    },
+    useCircle: function (s) {
+      wallet.kind = 'circle'; wallet.address = s.address; wallet.status = 'connected'; wallet.balance = null; wallet.balanceErr = false;
+      wallet.render();
+      wallet.readBalance().catch(function () {});
+    },
+    connectBrowser: function () {
+      wallet.clearMsg(); wallet.chooser(false);
+      if (wallet.kind === 'circle' && window.TenetCircle) window.TenetCircle.signOut();
+      wallet.kind = 'browser';
       var eth = wallet.eth();
       if (!eth) { wallet.showMsg('wallet-msg', 'No wallet found in this browser.'); return; }
       wallet.status = 'connecting'; wallet.render();
@@ -1122,8 +1148,24 @@
         .then(function () { wallet.showMsg('add-network-msg', 'Arc testnet is ready in your wallet.', true); if (wallet.address) wallet.sync(); })
         .catch(function (e) { if (!wallet.isCancel(e)) wallet.showMsg('add-network-msg', 'Could not add Arc testnet.'); });
     },
-    disconnect: function () { wallet.clearMsg(); wallet.status = 'idle'; wallet.address = ''; wallet.balance = null; wallet.balanceErr = false; wallet.render(); },
+    disconnect: function () {
+      wallet.clearMsg();
+      if (wallet.kind === 'circle' && window.TenetCircle) window.TenetCircle.signOut();
+      wallet.kind = 'browser'; wallet.status = 'idle'; wallet.address = ''; wallet.balance = null; wallet.balanceErr = false; wallet.render();
+    },
     restore: function () {
+      var C = window.TenetCircle;
+      if (C && C.returning()) {
+        /* Back from Google: Circle's SDK finishes the sign-in (and creates the wallet the first time) */
+        wallet.status = 'connecting'; wallet.render();
+        C.resume().then(wallet.useCircle, function (e) {
+          wallet.status = 'idle'; wallet.render();
+          wallet.showMsg('wallet-msg', ((e && e.message) || 'Google sign-in did not finish.') + ' A browser wallet still works.');
+        });
+        return;
+      }
+      var cs = C && C.session();
+      if (cs) { wallet.useCircle(cs); return; }
       var eth = wallet.eth(); if (!eth) return;
       eth.request({ method: 'eth_accounts' }).then(function (a) {
         if (a && a[0]) { wallet.address = a[0]; wallet.listen(eth); wallet.sync(); }
@@ -1138,7 +1180,7 @@
       $('wallet-chip').hidden = s !== 'connected';
       var addr = $('wallet-addr');
       addr.textContent = a ? a.slice(0, 6) + '...' + a.slice(-4) : '';
-      addr.title = a;
+      addr.title = wallet.kind === 'circle' ? 'Circle wallet (signed in with Google): ' + a : a;
       addr.href = (arcN.address_url || 'https://explorer.testnet.arc.io/address/') + a;
       $('wallet-bal').textContent = wallet.balance != null ? wallet.balance.toFixed(2) + ' USDC' : wallet.balanceErr ? 'balance unavailable' : 'reading...';
       var faucet = $('wallet-faucet');
@@ -1199,10 +1241,15 @@
     if (e.target.closest('#add-network')) { wallet.addNetwork(); return; }
   });
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') wallet.chooser(false);
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('div[data-toggle]')) { e.preventDefault(); e.target.click(); }
   });
   $('wallet-connect').addEventListener('click', wallet.connect);
-  $('wallet-switch').addEventListener('click', wallet.connect);
+  $('wallet-switch').addEventListener('click', wallet.connectBrowser);
+  $('connect-circle').addEventListener('click', wallet.connectCircle);
+  $('connect-browser').addEventListener('click', wallet.connectBrowser);
+  $('connect-close').addEventListener('click', function () { wallet.chooser(false); });
+  $('connect-modal').addEventListener('click', function (e) { if (e.target === e.currentTarget) wallet.chooser(false); });
   $('wallet-disconnect').addEventListener('click', wallet.disconnect);
   $('retry').addEventListener('click', load);
   window.addEventListener('hashchange', function () { showRoute(true); });

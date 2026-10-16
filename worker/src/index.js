@@ -1,13 +1,16 @@
 // Cloudflare entry of the demo Worker. One Durable Object ("demo") holds all the state and runs the
 // core: the cron trigger calls its tick every minute, and the page's API goes through it too, so
 // there is a single writer. Secrets (wrangler secret put): DEMO_RELAYER_KEY, DEMO_STORE_KEY,
-// DKIM_DEMO_KEY (PKCS8 PEM). Nothing else is secret: addresses and texts are in demo-data.json.
+// DKIM_DEMO_KEY (PKCS8 PEM) and CIRCLE_API_KEY (Circle wallets for visitors who sign in with Google;
+// without it the page offers browser wallets only). Nothing else is secret: addresses and texts are
+// in demo-data.json.
 import { DurableObject } from "cloudflare:workers";
 import data from "./demo-data.json";
 import { DemoCore, REFUND_TEXT } from "./core.js";
 import { makeArc } from "./arc.js";
 import { makeGl } from "./genlayer.js";
 import { importDkimKey, lower } from "./util.js";
+import { makeCircle, circleApi } from "./circle.js";
 
 // A secret as stored, without the line break a shell may add when it is piped in.
 const secret = (v) => {
@@ -108,9 +111,21 @@ export default {
     }
     const url = new URL(req.url);
     if (!url.pathname.startsWith("/api/")) return json({ error: "not found" }, 404);
+    if (url.pathname.startsWith("/api/circle/")) return circleRoute(req, env, url.pathname.slice("/api/circle/".length));
     return env.DEMO.get(env.DEMO.idFromName("demo")).fetch(req);
   },
   async scheduled(_event, env, ctx) {
     ctx.waitUntil(env.DEMO.get(env.DEMO.idFromName("demo")).fetch("https://demo/tick", { method: "POST" }));
   },
 };
+
+/** Circle wallets: stateless, POST only (the user's session token never goes in a URL), nothing stored. */
+async function circleRoute(req, env, name) {
+  if (!env.CIRCLE_API_KEY) return json({ error: "Circle sign-in is not set up" }, 503);
+  if (req.method !== "POST") return json({ error: "POST only" }, 405);
+  const b = await req.json().catch(() => ({}));
+  const c = makeCircle({ apiKey: String(env.CIRCLE_API_KEY).trim(), escrow: data.addresses.escrow, usdc: data.addresses.usdc,
+    abi: data.escrow_abi });
+  const r = await circleApi(c, name, b);
+  return json(r.status >= 400 && r.body.error ? { ...r.body, error: redact(r.body.error) } : r.body, r.status);
+}

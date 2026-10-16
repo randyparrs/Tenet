@@ -46,6 +46,12 @@
   function me() { return ui().wallet.address; }
   function step(label) { t.busyLabel = label; render(); }
   function sendTx(to, data, label) {
+    if (ui().wallet.kind === 'circle') {
+      /* Circle wallet: approved in Circle's window, sent by Circle, then the same wait for the receipt */
+      return window.TenetCircle.send(to, data, function (where) {
+        step(where === 'approve' ? (label || 'Confirm in your wallet').replace(/in your wallet/, 'in the Circle window') : 'Circle is sending it to Arc...');
+      }).then(function (hash) { step('Confirming on Arc...'); return waitTx(hash); });
+    }
     return ui().wallet.ensureArc(eth()).then(function () {
       step(label || 'Confirm in your wallet');
       return eth().request({ method: 'eth_sendTransaction', params: [{ from: me(), to: to, data: data }] });
@@ -475,7 +481,7 @@
           '<span class="line"></span><span class="t">' + esc(ph[1]) + '</span></li>';
       }).join('') + '</ol>' +
       '<div class="ord-now"><span class="ord-line' + (p.tone ? ' ' + p.tone : '') + '">' + esc(p.line) + '</span>' + (p.bar ? timeBar(p.bar) : '') + '</div>' +
-      (sc.path === 'late' && v.paid ? storeEmails(v, url) : '') +
+      (sc.path === 'late' && v.paid ? storeEmails(v, url, now) : '') +
       '<div class="ord-actions">' + button(p.action, o.order) + note('order:' + o.order) + '</div>';
     var folds = (p.exact ? fold('exact:' + o.order, 'View exact text', p.exact.map(function (x) { return '<pre class="claim-pre well-dark">' + esc(x) + '</pre>'; }).join('')) : '') +
       (tl.length ? fold('tl:' + o.order, 'Timeline (' + tl.length + ')', '<div class="col" style="gap:0">' + tl.map(function (e) {
@@ -487,16 +493,20 @@
   }
 
   /* The late path's store emails: each one signed by the store, then verified by Lacre with a link to its attestation */
-  function storeEmails(v, url) {
+  function storeEmails(v, url, now) {
     var U = ui(), mails = v.mails || [];
     var row = function (kind, label) {
       var m = mails.filter(function (x) { return x.kind === kind; })[0];
       var st = !m ? (kind === 'delivered' ? 'sent the day after the payment (UTC)' : 'not signed yet')
         : m.record ? 'signed by the store, verified by Lacre (record ' + m.record + ')'
         : m.tx ? 'signed by the store, verifying on Lacre' : 'signed by the store';
-      return '<div class="row" style="gap:6px 12px;flex-wrap:wrap;align-items:center"><span style="font-size:13px;color:var(--color-neutral-100)">' + esc(label) + '</span>' +
+      /* While Lacre's attestation is not final: what is happening and how long it usually takes */
+      var sent = m && m.tx && !m.record ? lastEv(v, new RegExp('^Store email sent to Lacre \\(' + (m.label || '') + '\\)')) : null;
+      return '<div class="col" style="gap:8px"><div class="row" style="gap:6px 12px;flex-wrap:wrap;align-items:center"><span style="font-size:13px;color:var(--color-neutral-100)">' + esc(label) + '</span>' +
         '<span class="muted" style="font-size:12.5px">' + esc(st) + '</span>' +
-        (m && m.tx ? '<span class="ml-auto">' + U.hashChip(m.tx, url({ tx: m.tx, net: 'lacre' }), 'lacre') + '</span>' : '') + '</div>';
+        (m && m.tx ? '<span class="ml-auto">' + U.hashChip(m.tx, url({ tx: m.tx, net: 'lacre' }), 'lacre') + '</span>' : '') + '</div>' +
+        (sent ? '<span class="muted pretty" style="font-size:12.5px">Lacre checks the store\'s DKIM signature on GenLayer. The record counts once the attestation is final, about 30 min after it is sent.</span>' +
+          timeBar(bar('Until the attestation is final', sent.at, sent.at + FINAL_USUAL_S, now, 'Finalizing, almost there')) : '') + '</div>';
     };
     return '<div class="col well" style="gap:8px;padding:12px 14px"><div class="row" style="gap:8px;align-items:center"><span class="eyebrow">Store emails</span>' +
       U.netBadge('lacre', { short: true }) + '</div>' + row('confirmed', 'Order confirmed') + row('delivered', 'Delivered') + '</div>';

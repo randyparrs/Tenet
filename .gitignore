@@ -57,6 +57,8 @@
 !/tools/tx_votes.mjs
 !/tools/dkim_keygen.mjs
 !/tools/keycache.mjs
+!/tools/circle-sdk/
+/tools/circle-sdk/node_modules/
 
 !/tests/
 /tests/*

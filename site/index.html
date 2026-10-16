@@ -6,12 +6,13 @@
 <title>Tenet: Buyer protection for stablecoin payments</title>
 <meta name="description" content="Tenet: Buyer protection for stablecoin payments. The money is held in escrow on Arc; if something goes wrong, a GenLayer judge decides and the escrow carries out the verdict. Try a refund in the Demo Shop.">
 <meta name="theme-color" content="#141a17">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261016d">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261016h">
 <meta name="tenet-demo-api" content="https://tenet-demo.randyparra.workers.dev">
+<meta name="tenet-circle" content="15996194-69b0-5578-8b23-91c10816bdb8|1013058596748-c9vgrehq8ssntb562nfs12mdie6mhr4v.apps.googleusercontent.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261016d">
+<link rel="stylesheet" href="styles.css?v=20261016h">
 </head>
 <body>
 
@@ -35,6 +36,14 @@
     </div>
   </div>
 </header>
+
+<div class="connect-modal" id="connect-modal" hidden>
+  <div class="connect-box card" role="dialog" aria-modal="true" aria-labelledby="connect-title">
+    <div class="row"><h3 id="connect-title">Connect</h3><button class="wallet-out ml-auto" id="connect-close" type="button" aria-label="Close"><span data-icon="x"></span></button></div>
+    <button class="connect-opt" id="connect-circle" type="button"><span class="t">Continue with Google</span><span class="s">Circle wallet: a wallet on Arc testnet that Circle creates for your Google account. It pays its own gas in testnet USDC.</span></button>
+    <button class="connect-opt" id="connect-browser" type="button"><span class="t">Browser wallet</span><span class="s">MetaMask, Rabby or another wallet extension, on Arc testnet.</span></button>
+  </div>
+</div>
 
 <div class="layout">
   <nav class="sidenav" aria-label="Sections">
@@ -91,7 +100,8 @@
   </main>
 </div>
 
-<script src="demo-shop.js?v=20261016d"></script>
-<script src="app.js?v=20261016d"></script>
+<script src="circle.js?v=20261016h"></script>
+<script src="demo-shop.js?v=20261016h"></script>
+<script src="app.js?v=20261016h"></script>
 </body>
 </html>

@@ -646,3 +646,15 @@ button.tbl-row:hover, .tbl-row.clickable:hover { background: color-mix(in srgb, 
   .ord-track .t { font-size: 10.5px; }
 }
 @media (prefers-reduced-motion: reduce) { .ord-track li.cur .circle::after { animation: none; opacity: 0.6; } }
+
+/* Connect: Circle wallet (Google) or browser wallet */
+.connect-modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: color-mix(in srgb, var(--color-bg) 72%, transparent); }
+.connect-modal[hidden] { display: none; }
+.connect-box { width: 100%; max-width: 420px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.connect-box h3 { font-size: 18px; }
+.connect-opt { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; text-align: left; font: inherit; color: var(--color-text);
+  background: transparent; border: 1px solid var(--color-divider); border-radius: var(--radius-md); cursor: pointer; }
+.connect-opt:hover { border-color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+.connect-opt .t { font-size: 15px; }
+.connect-opt .s { font-size: 12.5px; color: var(--color-neutral-300); text-wrap: pretty; }

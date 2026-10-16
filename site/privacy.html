@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tenet: Privacy</title>
+<meta name="description" content="What the Tenet page and its Demo Shop keep about you, and what they do not.">
+<meta name="theme-color" content="#141a17">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261016h">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=20261016h">
+<style>
+  .privacy { max-width: 760px; margin: 0 auto; padding: 48px 16px 64px; display: flex; flex-direction: column; gap: 20px; }
+  .privacy section { display: flex; flex-direction: column; gap: 10px; }
+  .privacy p, .privacy li { color: var(--color-neutral-200); font-size: 15px; line-height: 1.6; text-wrap: pretty; }
+  .privacy ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+  .privacy h3 { font-size: 18px; }
+</style>
+</head>
+<body>
+<main class="privacy">
+  <header class="screen-head">
+    <span class="kicker">Tenet / Privacy</span>
+    <h2>Privacy</h2>
+    <p>Tenet is a demo of buyer protection for stablecoin payments on testnets: Arc testnet for the money and GenLayer Bradbury for the judges. Testnet USDC has no value. This page says what the site and its Demo Shop keep about you, and what they do not. Last updated 2026-10-16.</p>
+  </header>
+
+  <section class="card card-pad">
+    <h3>Your wallet</h3>
+    <p>When you connect a wallet, the page reads your wallet address and your balances on Arc testnet. Every transaction you sign (payment, claim, withdrawal) is public on the blockchain, like any other transaction there.</p>
+  </section>
+
+  <section class="card card-pad">
+    <h3>Sign in with Google (Circle wallet)</h3>
+    <p>If you choose to continue with Google, the sign-in is handled by Google and by Circle, which creates a wallet on Arc testnet that you control. Tenet never receives your Google password. Circle gives the page a session token so you can approve the Demo Shop transactions in Circle's window; the Demo Shop service passes that token to Circle for each transaction you approve and does not store it. Tenet does not store your name, email address or Google profile.</p>
+  </section>
+
+  <section class="card card-pad">
+    <h3>What the Demo Shop keeps</h3>
+    <ul>
+      <li>For each order: its number, the scenario, your wallet address, the order's transactions on Arc and GenLayer, and the emails the demo store signs for it. This is what runs the demo and shows your orders.</li>
+      <li>Your browser keeps the list of orders you started on this device, so My orders can show them. Clearing this site's data in your browser removes it.</li>
+      <li>No cookies are used for tracking, and there are no ads or analytics.</li>
+    </ul>
+  </section>
+
+  <section class="card card-pad">
+    <h3>Services the site uses</h3>
+    <p>The site and the Demo Shop service run on Cloudflare, which processes requests (including IP addresses) to serve them. Fonts load from Google Fonts. Reads of Arc testnet go to Arc's public RPC.</p>
+  </section>
+
+  <section class="card card-pad">
+    <h3>Contact</h3>
+    <p>Questions about this page: open an issue at <a href="https://github.com/randyparrs/Tenet/issues" target="_blank" rel="noopener noreferrer">github.com/randyparrs/Tenet</a>.</p>
+  </section>
+
+  <p><a href="./#overview">Back to Tenet</a></p>
+</main>
+</body>
+</html>

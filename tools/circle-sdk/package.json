@@ -1,0 +1,9 @@
+{
+  "name": "tenet-circle-sdk-bundle",
+  "private": true,
+  "description": "Builds site/circle-sdk.js: Circle's user-controlled wallets Web SDK for the page, loaded only when a visitor chooses Continue with Google.",
+  "devDependencies": {
+    "@circle-fin/w3s-pw-web-sdk": "1.1.11",
+    "esbuild": "0.24.2"
+  }
+}

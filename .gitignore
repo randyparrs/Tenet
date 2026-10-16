@@ -1,6 +1,7 @@
 # Allow list: everything is ignored except the paths below.
 /*
 !/.gitignore
+!/.github/
 !/.gitmodules
 !/README.md
 !/LICENSE

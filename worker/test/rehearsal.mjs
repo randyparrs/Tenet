@@ -8,7 +8,7 @@
 //   VENV_PY=<python with genlayer-py> node worker/test/rehearsal.mjs
 //   (from the repository root; needs Foundry's anvil, and local.env for LACRE_DIR; see README.md)
 import { spawn } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { generateKeyPairSync } from "node:crypto";
 import { createServer } from "node:net";
 import { createPublicClient, createWalletClient, http, defineChain, stringToHex, parseEventLogs } from "viem";
@@ -21,7 +21,9 @@ import { makeCircle, circleApi } from "../src/circle.js";
 const ROOT = new URL("../../", import.meta.url);
 const P = (rel) => new URL(rel, ROOT);
 const HOME = process.env.USERPROFILE || process.env.HOME;
-const ANVIL = `${HOME}/.foundry/bin/anvil${process.platform === "win32" ? ".exe" : ""}`;
+// Foundry's anvil: $ANVIL, else the default foundryup location, else the one on PATH (as in CI).
+const ANVIL_HOME = `${HOME}/.foundry/bin/anvil${process.platform === "win32" ? ".exe" : ""}`;
+const ANVIL = process.env.ANVIL || (existsSync(ANVIL_HOME) ? ANVIL_HOME : "anvil");
 const PY = process.env.VENV_PY || "python";
 const USDC = "0x3600000000000000000000000000000000000000";
 // anvil's public test accounts

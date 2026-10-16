@@ -29,7 +29,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ANVIL = Path.home() / ".foundry" / "bin" / "anvil.exe"
+# Foundry's anvil: $ANVIL, else the one on PATH (as in CI), else the default foundryup location.
+ANVIL = os.environ.get("ANVIL") or shutil.which("anvil") or str(Path.home() / ".foundry" / "bin" / ("anvil.exe" if os.name == "nt" else "anvil"))
 SIGNER_PK = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"  # anvil 0 (public test key)
 GUARDIAN_PK = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"  # anvil 1
 SIGNER_USDC = 19_940_512  # what the signer held on Arc when the live test started

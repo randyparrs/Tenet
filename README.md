@@ -1,9 +1,15 @@
 # Tenet
 
+[![Tests](https://github.com/randyparrs/Tenet/actions/workflows/test.yml/badge.svg)](https://github.com/randyparrs/Tenet/actions/workflows/test.yml)
+
 Buyer protection for stablecoin payments.
 
 The money is held in escrow on Arc. If something goes wrong, a GenLayer judge decides and the escrow
 carries out the verdict.
+
+**Live page: [tenet.rpmdev.app](https://tenet.rpmdev.app)**. Its Demo Shop takes 1.00 testnet USDC
+([Circle faucet](https://faucet.circle.com)) from a browser wallet or from a Circle wallet opened with
+Google, lets the order go wrong, and shows the GenLayer judge's verdict and the escrow's settlement.
 
 - Demo Shop API (the demo store and relayer, a Cloudflare Worker):
   [tenet-demo.randyparra.workers.dev](https://tenet-demo.randyparra.workers.dev/api/config)
@@ -20,6 +26,46 @@ There are three claim paths: `late` (the email judge reads the store's signed em
 `not_as_described` and `not_delivered` (the subjective judge reads the claim and the store's answer).
 The language models only answer closed questions about texts; the rules of procedure, deadlines and
 amounts are in code.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    B["Buyer<br/>browser wallet or Circle wallet"] -->|"pay, openClaim, submit, withdraw"| E["RefundEscrow<br/>Arc testnet"]
+    S["Store"] -->|"submit: answer, closing statement"| E
+    S -->|"emails signed with DKIM"| L["Lacre<br/>Bradbury"]
+    R["Relayer"] -->|"reads the registered chain"| E
+    R -->|"judge(claim, step)"| J["Judge contracts<br/>Bradbury"]
+    J -->|"reads attested records and key status"| L
+    J -->|"verdict, read once FINALIZED"| R
+    R -->|"proposeVerdict, requestProof, openClosingRound"| E
+    G["Guardian"] -.->|"vetoVerdict within verdictDelay"| E
+    E -->|"executeVerdict: refund to the buyer, release to the store"| B
+```
+
+| Part | Where | What it does |
+|---|---|---|
+| `RefundEscrow` | Arc testnet (`evm/src/RefundEscrow.sol`) | Holds each order's USDC; checks on chain that a claim names its own order and that each input comes from the right party; registers every input in a hash chain; pays out only a verdict for the chain the judge saw; pull payments |
+| Email judge | Bradbury (`contracts/judge_mail.py`) | `late` claims: reads the store's emails attested on Lacre through its router, checks the body against the signed body hash and the key status, and applies the store's terms in code |
+| Subjective judge | Bradbury (`contracts/judge_subjective.py`) | `not_as_described` and `not_delivered`: the validators answer closed questions about the claim and the store's answer; the outcome, the refund and the next step are computed in code |
+| Lacre | Bradbury (router `0xEf37...c8d9`) | Verifies the DKIM signature and domain alignment of an email's headers and keeps a record per attestation, with a key cache that checks the domain's published key |
+| Relayer | `relayer/e2e.py` (live test), `worker/` (Demo Shop) | Sends each judgment step, waits for its transaction to be FINALIZED, and carries the verdict to the escrow. It cannot alter what the buyer or the store registered: the escrow rejects a verdict for any other chain or claim |
+| Page | `site/` | The live test, the measurements and the Demo Shop (see Frontend) |
+
+The life of a claim:
+
+1. The buyer pays into the escrow with the store's terms hash. Without a claim, the store is paid when
+   the holding period ends (`releaseExpired`).
+2. The buyer opens a claim: the JSON the judge reads. The store answers within `RESPONSE_WINDOW`, or
+   anyone registers `no_response` after it.
+3. The relayer sends what was registered to the judge. The verdict is `REFUND`, `DENY`,
+   `INVALID_CLAIM` or `NOT_YET` with one next step: request proof from the buyer (`PROOF_WINDOW`) or
+   open a closing round where each side speaks once (`CLOSING_WINDOW`). What follows goes to the judge
+   as the next step of the same chain.
+4. A final verdict is proposed on the escrow, waits `verdictDelay` (the guardian can veto it) and is
+   then executed by anyone. The store can refund in full at any time (`merchantRefund`); if requested
+   proof never arrives, the store is paid (`releaseUnproven`); without a final verdict 60 days after
+   the claim, anyone releases the order to the store.
 
 ## Demo mode and real deadlines
 
@@ -125,6 +171,38 @@ Networks: Arc testnet (chain 5042002, RPC `https://rpc.testnet.arc.io`, explorer
 `https://rpc-bradbury.genlayer.com`, explorer
 [explorer-bradbury.genlayer.com](https://explorer-bradbury.genlayer.com)).
 
+## Frontend
+
+The page at [tenet.rpmdev.app](https://tenet.rpmdev.app) is static HTML, CSS and plain JavaScript
+(`site/`, no framework and no build step), served by Cloudflare Pages. Every number on it is read from
+`site/data/tenet.json`, which `tools/make_site_data.py` builds from the logs in `results/`.
+
+- **Overview, How it works, Order flow**: the problem, the three networks, and an order as the buyer
+  and the store see it.
+- **Live cases and Case detail**: cases A to E of the live test, each transaction with its explorer
+  link, the deadlines counting down and the verdicts as the judge returned them.
+- **Judges on GenLayer and Measurements**: the Bradbury run and the local committee measurements
+  behind every text the judges read.
+- **Contracts and policy, Resources**: addresses, code hashes, the store's terms and links.
+- **Demo Shop**: six products, one per scenario (late delivery; not as described with the store
+  admitting, disputing, or the claim lacking proof; not delivered with the store answering or silent).
+  Buy creates the order and pays it in one click; a panel shows the wallet, what the escrow holds and
+  what is credited, with Withdraw.
+- **My orders**: each order with its number, a five step track (Paid, Claim, Store answer, Judge,
+  Settled; late orders show the store's emails with their Lacre attestations), one status line with a
+  time bar, and the one next action ("Open a claim", "Send your answer", "Go to withdraw").
+
+Wallets: "Connect" offers a browser wallet on Arc testnet or "Continue with Google", which opens a
+Circle user-controlled wallet; each transaction is approved in Circle's window, and the Worker only
+builds challenges for the Demo Shop's own calls. Privacy:
+[tenet.rpmdev.app/privacy](https://tenet.rpmdev.app/privacy).
+
+Run it locally from the repository root, then open `http://127.0.0.1:8000`:
+
+```
+python -m http.server 8000 --bind 127.0.0.1 --directory site
+```
+
 ## Repository layout
 
 | Path | What it is |
@@ -139,6 +217,7 @@ Networks: Arc testnet (chain 5042002, RPC `https://rpc.testnet.arc.io`, explorer
 | `tests/` | Local runs: the judges in Lacre's simulated GenVM SDK, the end-to-end rehearsal and the committee measurements |
 | `cases/` | Measured claim texts, store emails and the Bradbury run cases |
 | `results/` | Logs and reports (see below) |
+| `.github/workflows/` | CI: `test.yml` runs the tests below on every push |
 
 ## Running it locally
 
@@ -171,6 +250,9 @@ VENV_PY=<that python> node worker/test/rehearsal.mjs
   scenarios, restarts, limits, the stall refund, isolation from the live test, and the page's
   Demo Shop driven end to end.
 
+CI (`.github/workflows/test.yml`) runs all of the above on every push, plus the Worker's Circle
+routes against a simulated Circle API (`worker/test/circle.test.mjs`).
+
 The committee measurements (`tests/run_local_*.py`) call 5 models through OpenRouter and need
 `OPENROUTER_API_KEY`; their outputs are already in `results/`.
 
@@ -186,6 +268,35 @@ The committee measurements (`tests/run_local_*.py`) call 5 models through OpenRo
 | `results/escrow-v3-forge.txt`, `results/escrow-v3-demo-forge.txt` | Foundry runs of both escrow builds |
 | `results/judge-v2-local.txt`, `results/e2e-rehearsal.txt`, `results/demo-rehearsal.txt` | Outputs of the local runs above |
 | `results/dkim-public-*.txt` | The public DKIM records of the test store domains |
+
+## Sources
+
+- Arc: [documentation](https://docs.arc.network),
+  [connect to Arc](https://docs.arc.network/arc/references/connect-to-arc),
+  [contract addresses](https://docs.arc.network/arc/references/contract-addresses),
+  [explorer](https://explorer.testnet.arc.io).
+- Circle: [USDC](https://developers.circle.com/stablecoins/what-is-usdc),
+  [faucet](https://faucet.circle.com),
+  [user-controlled wallets](https://developers.circle.com/wallets/user-controlled),
+  [social login](https://developers.circle.com/wallets/user-controlled/create-user-wallets-with-social-login),
+  [Web SDK](https://developers.circle.com/wallets/user-controlled/web-sdk).
+- GenLayer: [protocol](https://docs.genlayer.com/understand-genlayer-protocol),
+  [Intelligent Contracts](https://docs.genlayer.com/developers/intelligent-contracts/introduction),
+  [equivalence principle](https://docs.genlayer.com/developers/intelligent-contracts/equivalence-principle),
+  [Bradbury explorer](https://explorer-bradbury.genlayer.com),
+  [genlayer-js](https://github.com/genlayerlabs/genlayer-js),
+  [genlayer-py](https://github.com/genlayerlabs/genlayer-py).
+- Lacre: [lacre.in-sidr.xyz](https://lacre.in-sidr.xyz), [source](https://github.com/eudomar500/lacre).
+- Email authentication: [DKIM, RFC 6376](https://www.rfc-editor.org/rfc/rfc6376),
+  [DMARC identifier alignment, RFC 7489](https://www.rfc-editor.org/rfc/rfc7489).
+- Cloudflare: [Workers](https://developers.cloudflare.com/workers/),
+  [Durable Objects](https://developers.cloudflare.com/durable-objects/),
+  [Cron Triggers](https://developers.cloudflare.com/workers/configuration/cron-triggers/),
+  [Pages](https://developers.cloudflare.com/pages/).
+- Tooling: [Foundry](https://getfoundry.sh),
+  [OpenZeppelin Contracts 5.x](https://docs.openzeppelin.com/contracts/5.x/), [viem](https://viem.sh),
+  [Google OAuth 2.0](https://developers.google.com/identity/protocols/oauth2),
+  [OpenRouter](https://openrouter.ai) (local committee measurements).
 
 ## License
 

@@ -1,0 +1,34 @@
+v2 judge contracts, local run
+mail       contracts/judge_mail.py, 15420 bytes, sha256 a1c38184e7f4bc911e4321327c501daf997a3002114f90dff47390256c26d366
+subjective contracts/judge_subjective.py, 17668 bytes, sha256 6de718a730489ec528ea76fe7aede81dd7789e1dfb1705526b4641d7ad83b46f
+Demo Shop test terms: 0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93
+
+J1    C3 replayed: label, decision, amount and reason                          310 / 310  PASS
+J2    B3 replayed (no subject): type (of 180) and date (of 60)                 240 / 240  PASS  type 180/180, date 60/60 
+JN    not_delivered: contract = ND report with the same answers                320 / 320  PASS
+ND1   decision with a majority (contract; threshold 288)                       320 / 320  PASS
+ND2   Q2-ND first round correct (contract; threshold 304)                      320 / 320  PASS
+ND3   correct decision (contract; threshold 304)                               320 / 320  PASS
+ND4   wrong DENY (contract)                                                    1 / 1  PASS  0
+ND5   wrong REFUND (contract)                                                  1 / 1  PASS  0
+ND6   prompt injection that wins, of 40 (contract)                             1 / 1  PASS  0
+ND7   incomplete claim (ND V1-V2, C3 V1-V2): INVALID_CLAIM without the committee 4 / 4  PASS
+J0    prompts identical to the measured ones (C3, ND, B3)                      2 / 2  PASS  5760 C3 prompts, 4700 ND, 2400 B3 in the measured list
+J3    claim flow in code: test_claim_flow 9, test_resolve_date 9, B0 23        41 / 41  PASS
+J4    email without a valid attestation: does not count, does not block; unreadable Lacre: error 13 / 13  PASS
+J5    bound to the order, the claim and the chain; rejections                  6 / 6  PASS
+J5b   one byte changed in the claim or a submission gives another hash and chain 7 / 7  PASS
+J6    no majority: NO_CONSENSUS, sent again, never DENY                        5 / 5  PASS
+J7    once-only paths; submissions out of turn or from the wrong party do not count 18 / 18  PASS
+J8    determinism: leader and validator with the same answer give the same result 1 / 1  PASS  differences 0
+J9    REFUND out of range, without an attested email (late) or without a majority 1 / 1  PASS  verdicts checked 811, violations 0
+J11   an email presented by the store has no effect                            5 / 5  PASS
+JX1   unreadable claim: final INVALID_CLAIM; for the other contract: error     12 / 12  PASS
+JX2   invented submissions open another branch and do not block the real one   3 / 3  PASS
+JX3   emails: the verdict lists every ignored submission with its code (I1 to I9) 12 / 12  PASS
+JX4   subjective: a frontend deduces ignored submissions with get_claim(chain) 8 / 8  PASS
+compact copies = measured modules: resolve_date ok (4000); canonical type and date ok (12); body_hash_b64 ok (8000); email prompts ok (8); policy_v2.decide (v2 structures) ok (4000); label, closing, prompt q2, claim_complete, concrete_with_proof ok (16227); not_delivered prompt ok (4000)
+error codes: 11 in the contracts, 11 in contracts/ERRORS.md, undocumented none, unused none
+info  rule only against the store (no threshold): not_delivered does not go through the email judge: ok; a refund_issued email from the buyer closes nothing: ok
+
+criterion: PASS

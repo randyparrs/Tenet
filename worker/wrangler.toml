@@ -1,0 +1,21 @@
+# Demo mode of Tenet (README.md, "The Demo Shop runs on minutes"). Secrets, never in this file:
+#   wrangler secret put DEMO_RELAYER_KEY   (demo-relayer.env, written by tools/demo_keys.py in E2E_KEYS)
+#   wrangler secret put DEMO_STORE_KEY     (demo-store.env, written by tools/demo_keys.py in E2E_KEYS)
+#   wrangler secret put DKIM_DEMO_KEY      (the PEM written by tools/dkim_keygen.mjs demo.rpmdev.app demo1)
+name = "tenet-demo"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+ARC_RPC = "https://rpc.testnet.arc.io"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[durable_objects.bindings]]
+name = "DEMO"
+class_name = "DemoState"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["DemoState"]

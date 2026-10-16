@@ -1,0 +1,16 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1788256800; h=from:to:subject:date:message-id; bh=IKThIqVESkkNOynAC0BbIsYTGurmSGeen2kAhYAV/aQ=; b=jrVfZbo84U3amR78uYOcqBXbY45O1EykiKER4OvxBXYD1XTBlB8FkNmrBuYz5WPCnkQDftss6mrkQOuIo1MgAounw5mu1HAidMoKGKe+50c8v4pfSI7Gv65Lff6uGb1BsImvgEyOMuPjNk013TopwjK68D3aUCUILUrt8ubiZbmqGAeuOx/N25h5+5rUA0By7Kp1BJ/yhRuUO9O8yM8wg9fjTclSLZKznkvGYTiCkwfTpUACbaXv642goK0XwYy60Ca6VTOEM6QLhEQEMZiUdbRVrqGYeNqUHF2j9PbwojD9q805UHzapmgvhe3vR4YXz41pEuTtsB7OzSvNBxrxGg==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Order DS-100231 confirmed
+Date: Tue, 01 Sep 2026 10:00:00 +0000
+Message-ID: <e01.1@shop.rpmdev.app>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+Hi,
+
+Thanks for your order DS-100231.
+Total: USD 49.90
+Estimated delivery: 2026-09-08
+
+Demo Shop

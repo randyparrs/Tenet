@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tenet: Buyer protection for stablecoin payments</title>
+<meta name="description" content="Tenet: Buyer protection for stablecoin payments. The money is held in escrow on Arc; if something goes wrong, a GenLayer judge decides and the escrow carries out the verdict. Try a refund in the Demo Shop.">
+<meta name="theme-color" content="#141a17">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261015h">
+<meta name="tenet-demo-api" content="https://tenet-demo.randyparra.workers.dev">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css?v=20261015h">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#overview" aria-label="Tenet overview"><span data-icon="plus"></span><span>TENET</span></a>
+  <span class="topbar-sep" aria-hidden="true"></span>
+  <span class="motto">Rules determine outcomes.</span>
+  <div class="topbar-right">
+    <span class="demo-pill demo-pill-sm">Testnet</span>
+    <div class="wallet" id="wallet">
+      <button class="btn btn-primary" id="wallet-connect" type="button"><span data-icon="wallet"></span><span id="wallet-connect-label">Connect wallet</span></button>
+      <button class="btn btn-primary" id="wallet-switch" type="button" hidden><span data-icon="swap"></span>Switch to Arc testnet</button>
+      <span class="wallet-chip" id="wallet-chip" hidden>
+        <span class="wallet-dot" aria-hidden="true"></span>
+        <a class="wallet-addr" id="wallet-addr" href="#" target="_blank" rel="noopener noreferrer"></a>
+        <span class="wallet-bal" id="wallet-bal"></span>
+        <button class="wallet-out" id="wallet-disconnect" type="button" title="Disconnect" aria-label="Disconnect"><span data-icon="signOut"></span></button>
+      </span>
+      <a class="wallet-faucet" id="wallet-faucet" href="#" target="_blank" rel="noopener noreferrer" hidden>Get USDC from the faucet<span data-icon="arrowUpRight"></span></a>
+      <span class="wallet-msg" id="wallet-msg" role="status" aria-live="polite" hidden></span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidenav" aria-label="Sections">
+    <div class="nav-list">
+      <a class="nav-item" href="#overview" data-route="overview"><span data-icon="squaresFour"></span><span class="nav-text"><span>Overview</span></span><span class="nav-num">01</span></a>
+      <a class="nav-item" href="#how-it-works" data-route="how-it-works"><span data-icon="graph"></span><span class="nav-text"><span>How it works</span></span><span class="nav-num">02</span></a>
+      <a class="nav-item" href="#order-flow" data-route="order-flow"><span data-icon="path"></span><span class="nav-text"><span>Order flow</span><span class="nav-sub">buyer and store view</span></span><span class="nav-num">03</span></a>
+      <a class="nav-item" href="#live-cases" data-route="live-cases"><span data-icon="stack"></span><span class="nav-text"><span>Live cases</span></span><span class="nav-num">04</span></a>
+      <a class="nav-item" href="#case" data-route="case" id="nav-case"><span data-icon="fileText"></span><span class="nav-text"><span>Case detail</span></span><span class="nav-num">05</span></a>
+      <div class="case-pills" id="case-pills" hidden></div>
+      <a class="nav-item" href="#judges" data-route="judges"><span data-icon="scales"></span><span class="nav-text"><span>Judges on GenLayer</span><span class="nav-sub">Bradbury run</span></span><span class="nav-num">06</span></a>
+      <a class="nav-item" href="#measurements" data-route="measurements"><span data-icon="chartBar"></span><span class="nav-text"><span>Measurements</span></span><span class="nav-num">07</span></a>
+      <a class="nav-item" href="#contracts" data-route="contracts"><span data-icon="fileCode"></span><span class="nav-text"><span>Contracts and policy</span></span><span class="nav-num">08</span></a>
+      <a class="nav-item" href="#resources" data-route="resources"><span data-icon="linkSimple"></span><span class="nav-text"><span>Resources</span></span><span class="nav-num">09</span></a>
+      <a class="nav-item" href="#demo-shop" data-route="demo-shop"><span data-icon="pulse"></span><span class="nav-text"><span>Demo Shop</span><span class="nav-sub">try a refund on testnet</span></span><span class="nav-num">10</span></a>
+      <a class="nav-item" href="#my-orders" data-route="my-orders" id="nav-my-orders"><span data-icon="receipt"></span><span class="nav-text"><span>My orders</span><span class="nav-sub">your Demo Shop orders</span></span><span class="nav-count" id="nav-orders-count" hidden></span><span class="nav-num">11</span></a>
+    </div>
+    <div class="side-foot">
+      <div class="side-box">
+        <span class="eyebrow faint" style="font-size:10px">Networks</span>
+        <div id="side-networks"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main" id="main">
+    <div class="screen w-900" id="state-loading">
+      <div class="row mono muted" style="font-size:12px"><span data-icon="circleNotch" data-icon-class="spin" style="color:var(--color-accent)"></span>Loading data/tenet.json</div>
+      <div class="skeleton" style="height:220px"></div>
+      <div class="stat-row">
+        <div class="skeleton" style="flex:1 1 220px;height:120px;opacity:0.7"></div>
+        <div class="skeleton" style="flex:1 1 220px;height:120px;opacity:0.55"></div>
+        <div class="skeleton" style="flex:1 1 220px;height:120px;opacity:0.4"></div>
+      </div>
+    </div>
+
+    <div class="card state-card" id="state-error" hidden>
+      <div class="row"><span data-icon="warningCircle" style="font-size:22px;color:var(--error-fg)"></span><h3>The data could not be loaded</h3></div>
+      <p class="muted pretty" style="font-size:14px">data/tenet.json did not arrive or is not valid JSON. Nothing is shown until the file loads, so no partial or invented numbers appear on this page.</p>
+      <div><button class="btn btn-primary" id="retry" type="button"><span data-icon="arrowsClockwise"></span>Retry</button></div>
+    </div>
+
+    <section class="screen w-1180" id="screen-overview" data-screen="overview" aria-label="Overview" hidden></section>
+    <section class="screen w-1080" id="screen-how-it-works" data-screen="how-it-works" aria-label="How it works" hidden></section>
+    <section class="screen w-1000" id="screen-order-flow" data-screen="order-flow" aria-label="Order flow" hidden></section>
+    <section class="screen w-1100" id="screen-live-cases" data-screen="live-cases" aria-label="Live cases" hidden></section>
+    <section class="screen" id="screen-case" data-screen="case" aria-label="Case detail" hidden></section>
+    <section class="screen w-1200" id="screen-judges" data-screen="judges" aria-label="Judges on GenLayer" hidden></section>
+    <section class="screen w-1100" id="screen-measurements" data-screen="measurements" aria-label="Measurements" hidden></section>
+    <section class="screen w-1100" id="screen-contracts" data-screen="contracts" aria-label="Contracts and policy" hidden></section>
+    <section class="screen" id="screen-resources" data-screen="resources" aria-label="Resources" hidden></section>
+    <section class="screen w-1100" id="screen-demo-shop" data-screen="demo-shop" aria-label="Demo Shop" hidden></section>
+    <section class="screen w-1000" id="screen-my-orders" data-screen="my-orders" aria-label="My orders" hidden></section>
+  </main>
+</div>
+
+<script src="demo-shop.js?v=20261015h"></script>
+<script src="app.js?v=20261015h"></script>
+</body>
+</html>

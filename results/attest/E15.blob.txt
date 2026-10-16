@@ -1,0 +1,6 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1789203600; h=from:to:subject:date:message-id; bh=UPfIghwfo8SrA0Ecg1/H3tNcSNnJD63vhsa+EXvSy5k=; b=Vm77oBSGcwh9fKYXN0NHd3b7D2J/KDbT4NX5iwRZRmDUOSRi+7rf8eAeKLT7LtHTNepxyaIGEW+4MrqFCTUpR1e2FQhcevFqndmJ58Ik65Ys9CTcfjRP0JK2+5/lPc3lzE2RvPCoJm1TAartCRQ7EeIpAduKYTTvq/aqOXLXW4uCnJIhOaGHP3UYXXMG4VdwYILgrrbbbNhhvIPbHDGkarPbJpC/g1X0tZXUQ5w3/B9+p+McQ+wAbW3E57LBnZFOwh/+Sfly3rM2WnbzpxnoB5SMg/i1JcMDl7mQfzGoM7V47z9kdN8XXoHjmrgLwAApfFTiOsP1MQbxXI4dNUzxRQ==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Tu pedido DS-100235 va en camino
+Date: Sat, 12 Sep 2026 09:00:00 +0000
+Message-ID: <e15.12@shop.rpmdev.app>

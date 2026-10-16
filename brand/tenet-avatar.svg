@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 0) scale(560)">
+      <stop offset="0" stop-color="#5CC48A" stop-opacity="0.30"/>
+      <stop offset="0.45" stop-color="#2E6B4A" stop-opacity="0.18"/>
+      <stop offset="0.8" stop-color="#5CC48A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#143323"/><stop offset="0.5" stop-color="#151D19"/><stop offset="1" stop-color="#0E1411"/>
+    </linearGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#base)"/>
+  <rect width="512" height="512" rx="96" fill="url(#glow)"/>
+  <rect x="2" y="2" width="508" height="508" rx="94" fill="none" stroke="#5CC48A" stroke-opacity="0.38" stroke-width="3"/>
+  <g stroke="#5CC48A" stroke-width="12" stroke-linecap="round" opacity="0.55" filter="url(#soft)"><path d="M256 136v148M182 210h148"/></g>
+  <g stroke="#B4F0CB" stroke-width="9" stroke-linecap="round"><path d="M256 136v148M182 210h148"/></g>
+  <g stroke="#ECF3EE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><line x1="116.0" y1="340.0" x2="148.0" y2="340.0"/><line x1="132.0" y1="340.0" x2="132.0" y2="384.0"/><line x1="178.0" y1="340.0" x2="178.0" y2="384.0"/><line x1="178.0" y1="340.0" x2="208.1" y2="340.0"/><line x1="178.0" y1="362.0" x2="203.6" y2="362.0"/><line x1="178.0" y1="384.0" x2="208.1" y2="384.0"/><line x1="240.0" y1="384.0" x2="240.0" y2="340.0"/><line x1="240.0" y1="340.0" x2="272.0" y2="384.0"/><line x1="272.0" y1="384.0" x2="272.0" y2="340.0"/><line x1="302.0" y1="340.0" x2="302.0" y2="384.0"/><line x1="302.0" y1="340.0" x2="332.1" y2="340.0"/><line x1="302.0" y1="362.0" x2="327.6" y2="362.0"/><line x1="302.0" y1="384.0" x2="332.1" y2="384.0"/><line x1="364.0" y1="340.0" x2="396.0" y2="340.0"/><line x1="380.0" y1="340.0" x2="380.0" y2="384.0"/></g>
+</svg>

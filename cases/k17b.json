@@ -1,0 +1,59 @@
+{
+ "prompt_sha256": "7acf02b2c1ffb680aa955e0a21b5df7862e1a9a999125fce3f1cdf8cfe32a8b6",
+ "note": "K17 with the store's answer reworded without the September date, for an October order (case B of the live end-to-end test); everything else equal to K17.",
+ "cases": [
+  {
+   "id": "K17B",
+   "group": "closing",
+   "lang": "en",
+   "description": "iPhone 13, 128 GB, unlocked.",
+   "claim": {
+    "account": "The phone is locked to a carrier. It asks for an AT&T SIM.",
+    "promised": "unlocked",
+    "received": "locked to a carrier",
+    "proof_kind": "",
+    "proof": ""
+   },
+   "response": "The device we shipped, IMEI ending in 4471, showed as unlocked in the carrier check we ran before shipping.",
+   "round2": {
+    "proof": {
+     "proof_kind": "label",
+     "proof": "SIM not supported, locked to AT&T"
+    },
+    "response": "We checked again: the IMEI ending in 4471 still shows as unlocked in the carrier database today."
+   },
+   "expected": {
+    "q1": "differs",
+    "q2": [
+     "disputes_with_fact"
+    ],
+    "q2r2": [
+     "disputes_with_fact"
+    ]
+   },
+   "expected_label": "not_proven",
+   "injection_target": null,
+   "facts": {
+    "purchase_date": "2026-09-01",
+    "promised_date": "2026-09-08",
+    "delivered_date": "2026-09-07",
+    "claim_date": "2026-09-10",
+    "seller_type": "third_party",
+    "payment": "platform",
+    "category_excluded": false,
+    "contacted_seller": true,
+    "hours_since_contact": 72,
+    "seller_attempted": true,
+    "delay_cause": "unknown",
+    "refund_issued": false,
+    "amount_cents": 5000
+   },
+   "proof_well_formed": false,
+   "expected_decision": [
+    "DENY",
+    0,
+    "claim not proven"
+   ]
+  }
+ ]
+}

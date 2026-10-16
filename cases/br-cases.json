@@ -1,0 +1,384 @@
+{
+ "buyer": "0x0f0c950043c4d0b570fb6a7ede0874df96966808",
+ "merchant": "0x7e7e3706a11671ae8d2ce56555df32321aa6d73b",
+ "terms_hash": "0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93",
+ "structure": {
+  "clear": true,
+  "day_type": "calendar",
+  "preconditions": [],
+  "seller_wait_hours": 0,
+  "seller_types": "any",
+  "excluded_payments": [],
+  "category_exclusions": false,
+  "excluded_causes": [],
+  "rules": [
+   {
+    "event": "not_as_described",
+    "wait_from": "none",
+    "wait_days": 0,
+    "deadline_from": "delivery",
+    "deadline_days": 30,
+    "late_grace_days": 0,
+    "refund_percent": 100
+   },
+   {
+    "event": "late",
+    "wait_from": "none",
+    "wait_days": 0,
+    "deadline_from": "delivery",
+    "deadline_days": 30,
+    "late_grace_days": 2,
+    "refund_percent": 50
+   },
+   {
+    "event": "not_delivered",
+    "wait_from": "promised",
+    "wait_days": 10,
+    "deadline_from": "none",
+    "deadline_days": 0,
+    "late_grace_days": 0,
+    "refund_percent": 100
+   }
+  ]
+ },
+ "profile": {
+  "domain": "shop.rpmdev.app",
+  "selector": "shop1",
+  "order_pattern": "\\bDS-\\d{6}\\b",
+  "amount_pattern": "(?:Total: |[Rr]eembolsamos )USD ?(\\d{1,6}\\.\\d{2})\\b",
+  "date_pattern": "(?:Estimated delivery: |Expected delivery: |delivered on )(20\\d\\d-[01]\\d-[0-3]\\d)\\b"
+ },
+ "domain": "shop.rpmdev.app",
+ "router": "0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9",
+ "cases": [
+  {
+   "id": "M1",
+   "contract": "mail",
+   "claim": "{\"amount_cents\":12000,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1791806400,\"event\":\"late\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-100232\",\"order_ref\":\"0xa4c36ee0c04dacfc80e2e357dffb0fa7f63519ff433844eab264a0db78d8c068\",\"paid_at\":1788393600,\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0xc067e1d57554547967a430634c7d283044cf072dc6a4b0f3b5dcbbdc9a42686d",
+   "chain0": "0x23c002b74c5802a31cbdc475b798d857600bce88973858e57bd1da5fb707cb74",
+   "steps": [
+    [
+     "{\"content\":{\"body_b64\":\"WW91ciBvcmRlciBEUy0xMDAyMzIgaXMgb24gaXRzIHdheS4NCkV4cGVjdGVkIGRlbGl2ZXJ5OiBUdWVzZGF5LCBTZXB0ZW1iZXIgMTUsIDIwMjYuDQo=\",\"record_id\":\"14\"},\"kind\":\"evidence\",\"party\":\"buyer\"}"
+    ],
+    [
+     "{\"content\":{\"body_b64\":\"WW91ciBwYWNrYWdlIGZvciBvcmRlciBEUy0xMDAyMzIgd2FzIGRlbGl2ZXJlZCBvbiBUaHVyc2RheSwgU2VwdGVtYmVyIDI0LCAyMDI2Lg0K\",\"record_id\":\"16\"},\"kind\":\"evidence\",\"party\":\"buyer\"}"
+    ]
+   ],
+   "chains": [
+    "0x26e4760cf7fe85a84ba4dd3e8dbe6d874c8d58014766749f0c170457107bcf08",
+    "0xd2c6a3cea91ea3add9e21c514634aa0005a5db6565ffda9a476e5037d7f1a44d"
+   ],
+   "expected": {
+    "outcome": "REFUND",
+    "refund_cents": 6000,
+    "reason": "per policy"
+   },
+   "expected_steps": [
+    {
+     "action": "wait",
+     "outcome": "NOT_YET",
+     "refund_cents": 0,
+     "reason": "signed emails required",
+     "final": false,
+     "ignored": []
+    },
+    {
+     "action": "decide",
+     "outcome": "REFUND",
+     "refund_cents": 6000,
+     "reason": "per policy",
+     "final": true,
+     "ignored": []
+    }
+   ]
+  },
+  {
+   "id": "M2",
+   "contract": "mail",
+   "claim": "{\"amount_cents\":4990,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1790856000,\"event\":\"late\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-100231\",\"order_ref\":\"0x23aaefea46295d43a8e0afb45d504c4688aa7c49721fbae29efa80598c77355d\",\"paid_at\":1788220800,\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0x187cd5a959d11895012fad48dcc6781dc11436aac0103a72c248e57a8ab23e9f",
+   "chain0": "0xc01015493d459485decfcb709f16f6b04e1351bb1aa27d4254db44bd300f896c",
+   "steps": [
+    [
+     "{\"content\":{\"body_b64\":\"SGksDQoNClRoYW5rcyBmb3IgeW91ciBvcmRlciBEUy0xMDAyMzEuDQpUb3RhbDogVVNEIDQ5LjkwDQpFc3RpbWF0ZWQgZGVsaXZlcnk6IDIwMjYtMDktMDgNCg0KRGVtbyBTaG9wDQo=\",\"record_id\":\"10\"},\"kind\":\"evidence\",\"party\":\"buyer\"}",
+     "{\"content\":{\"body_b64\":\"WW91ciBvcmRlciBEUy0xMDAyMzEgd2FzIGRlbGl2ZXJlZCBvbiAyMDI2LTA5LTA3Lg0KV2UgaG9wZSB5b3UgZW5qb3kgaXQuDQo=\",\"record_id\":\"12\"},\"kind\":\"evidence\",\"party\":\"buyer\"}"
+    ]
+   ],
+   "chains": [
+    "0x3cf9a15a198a891fbc4f437d1d31cf74e83ee6b43db2800804301c68813e1f5a"
+   ],
+   "expected": {
+    "outcome": "DENY",
+    "refund_cents": 0,
+    "reason": "per policy"
+   },
+   "expected_steps": [
+    {
+     "action": "decide",
+     "outcome": "DENY",
+     "refund_cents": 0,
+     "reason": "per policy",
+     "final": true,
+     "ignored": []
+    }
+   ]
+  },
+  {
+   "id": "M3",
+   "contract": "mail",
+   "claim": "{\"amount_cents\":4990,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1790942400,\"event\":\"late\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-100231\",\"order_ref\":\"0x23aaefea46295d43a8e0afb45d504c4688aa7c49721fbae29efa80598c77355d\",\"paid_at\":1788220800,\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0x7a49c10d3b20ffd7ad05eccfe1469a0f8903552b8c06fa938910199a498d701a",
+   "chain0": "0xacb217a8ef8764dfe8cbaf4871174caf464d00ae1694f61573ac647d7d654b2f",
+   "steps": [
+    [
+     "{\"content\":{\"body_b64\":\"SGksDQoNClRoYW5rcyBmb3IgeW91ciBvcmRlciBEUy0xMDAyMzEuDQpUb3RhbDogVVNEIDQ5LjkwDQpFc3RpbWF0ZWQgZGVsaXZlcnk6IDIwMjYtMDktMDgNCg0KRGVtbyBTaG9wDQo=\",\"record_id\":\"10\"},\"kind\":\"evidence\",\"party\":\"buyer\"}",
+     "{\"content\":{\"body_b64\":\"VGhhbmtzIGZvciB5b3VyIG9yZGVyIERTLTEwMDIzMi4NClRvdGFsOiBVU0QgMTIwLjAwDQo=\",\"record_id\":\"13\"},\"kind\":\"evidence\",\"party\":\"buyer\"}"
+    ]
+   ],
+   "chains": [
+    "0xb286d4be19f79f97f582a6f97c60189317b44319a298832694c82bc260436686"
+   ],
+   "expected": {
+    "outcome": "NOT_YET",
+    "refund_cents": 0,
+    "reason": "signed emails required",
+    "ignored": [
+     [
+      "0x6b2d3c6dfd3dc71adb86d0d61b093ced0ec5ccda6ad7a0db87519c400b9f1d24",
+      "I8"
+     ]
+    ]
+   },
+   "expected_steps": [
+    {
+     "action": "wait",
+     "outcome": "NOT_YET",
+     "refund_cents": 0,
+     "reason": "signed emails required",
+     "final": false,
+     "ignored": [
+      [
+       "0x6b2d3c6dfd3dc71adb86d0d61b093ced0ec5ccda6ad7a0db87519c400b9f1d24",
+       "I8"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "M4",
+   "contract": "mail",
+   "claim": "{\"amount_cents\": 4990, \"buyer\": \"0x0f0c950043c4d0b570fb6a7ede0874df96966808\", \"claimed_at\": 1790856000, \"event\": \"late\", \"merchant\": \"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\", \"order_number\": \"DS-100231\", \"order_ref\": \"0x23aaefea46295d43a8e0afb45d504c4688aa7c49721fbae29efa80598c77355d\", \"paid_at\": 1788220800, \"terms_hash\": \"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\", \"v\": \"claim-v1\"}",
+   "claim_hash": "0x232d0aa9baa0f538ff019e2510fdb2b5c3f5d8fc696b56d51a4a49ca2068293b",
+   "chain0": "0x6206f71065de233e0036f9a77350a21acd81ff49c9c426765203dc6a47f6564b",
+   "steps": [
+    []
+   ],
+   "chains": [
+    "0x6206f71065de233e0036f9a77350a21acd81ff49c9c426765203dc6a47f6564b"
+   ],
+   "expected": {
+    "outcome": "INVALID_CLAIM",
+    "refund_cents": 0,
+    "reason": "invalid claim"
+   },
+   "expected_steps": [
+    {
+     "action": "decide",
+     "outcome": "INVALID_CLAIM",
+     "refund_cents": 0,
+     "reason": "invalid claim",
+     "final": true
+    }
+   ]
+  },
+  {
+   "id": "S1",
+   "contract": "subjective",
+   "claim": "{\"account\":\"Llegaron en talla 40.\",\"amount_cents\":5000,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1789041600,\"delivered_date\":\"2026-09-07\",\"description\":\"Zapatillas de running, talla 42, nuevas.\",\"event\":\"not_as_described\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-K07\",\"order_ref\":\"0x478f92e6b021b6636403e335aee971ce18ebbad1581fbf364ee61c6b39194c8d\",\"paid_at\":1788264000,\"promised\":\"talla 42\",\"proof\":\"\",\"proof_kind\":\"\",\"received\":\"talla 40\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0x04b758b54124359f8610842b5c40440538eea31558a807668885f8b41b99c90b",
+   "chain0": "0x9bfe520689a84c7d7f0249648563bb829c6f2e059a3d1aec907a1f693b3dc2d4",
+   "steps": [
+    [
+     "{\"content\":\"Disculpe, fue un error del deposito.\",\"kind\":\"response\",\"party\":\"merchant\"}"
+    ]
+   ],
+   "chains": [
+    "0xadc075ec65732699f76a304f329243fae04bbd2882b09aba941e1b04876cae16"
+   ],
+   "expected": {
+    "outcome": "REFUND",
+    "refund_cents": 5000,
+    "reason": "per policy"
+   },
+   "expected_steps": [
+    {
+     "action": "decide",
+     "outcome": "REFUND",
+     "refund_cents": 5000,
+     "reason": "per policy",
+     "final": true
+    }
+   ]
+  },
+  {
+   "id": "S2",
+   "contract": "subjective",
+   "claim": "{\"account\":\"I don't like how they sound. I want my money back.\",\"amount_cents\":5000,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1789041600,\"delivered_date\":\"2026-09-07\",\"description\":\"Wireless over-ear headphones. Color: black. Battery up to 30 hours.\",\"event\":\"not_as_described\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-K01\",\"order_ref\":\"0x2be06a0d5bb67ffb3649a3667039de29510edccbee118586bf1dce9dc9798407\",\"paid_at\":1788264000,\"promised\":\"Wireless over-ear headphones\",\"proof\":\"\",\"proof_kind\":\"\",\"received\":\"I don't like how they sound\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0x0da5490bfc15a1570a40e7c544c66b3037a5aad03ea064dfb08019d7bd4ca03c",
+   "chain0": "0xc7657cde4f473736e12635b744b218a0d2b2ccf84ba252aebd65ed0f9085128d",
+   "steps": [
+    [
+     "{\"content\":\"We are sorry you don't like them.\",\"kind\":\"response\",\"party\":\"merchant\"}"
+    ]
+   ],
+   "chains": [
+    "0xeea5ec27c5a71c0abe55b21c72ea8c575c3a2ea5c55ac9f8cbe0a5867b2fec70"
+   ],
+   "expected": {
+    "outcome": "DENY",
+    "refund_cents": 0,
+    "reason": "item as described"
+   },
+   "expected_steps": [
+    {
+     "action": "decide",
+     "outcome": "DENY",
+     "refund_cents": 0,
+     "reason": "item as described",
+     "final": true
+    }
+   ]
+  },
+  {
+   "id": "S3",
+   "contract": "subjective",
+   "claim": "{\"account\":\"The phone is locked to a carrier. It asks for an AT&T SIM.\",\"amount_cents\":5000,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1789041600,\"delivered_date\":\"2026-09-07\",\"description\":\"iPhone 13, 128 GB, unlocked.\",\"event\":\"not_as_described\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-K17\",\"order_ref\":\"0x82a5487d9fabab7f97f58a9fd95d3e37bf13f0fe58704a5f01d43ef5377a5e11\",\"paid_at\":1788264000,\"promised\":\"unlocked\",\"proof\":\"\",\"proof_kind\":\"\",\"received\":\"locked to a carrier\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0xde39d31ec2d9729338bab01e3e78fbf1f898b8ddd0e06b418115ac3a8e279518",
+   "chain0": "0xac9d54cc0586b5ec2d0fe582105c1e19d11b032588a5d72ea0c3790ffcf0e734",
+   "steps": [
+    [
+     "{\"content\":\"The device we shipped, IMEI ending in 4471, showed as unlocked in the carrier check we ran on September 5.\",\"kind\":\"response\",\"party\":\"merchant\"}"
+    ],
+    [
+     "{\"content\":null,\"kind\":\"closing_open\",\"party\":\"escrow\"}",
+     "{\"content\":{\"proof\":\"SIM not supported, locked to AT&T\",\"proof_kind\":\"label\"},\"kind\":\"closing_proof\",\"party\":\"buyer\"}",
+     "{\"content\":\"We checked again: the IMEI ending in 4471 still shows as unlocked in the carrier database today.\",\"kind\":\"closing_response\",\"party\":\"merchant\"}"
+    ]
+   ],
+   "chains": [
+    "0x7788fda90c34334b66a0bad45ad010530428d4b614f985db1620efaa76afaf99",
+    "0xeeb58e278c1d546a8dae884c73a1e9aced411eaf232158bd39c7e347e7f409f3"
+   ],
+   "expected": {
+    "outcome": "DENY",
+    "refund_cents": 0,
+    "reason": "claim not proven"
+   },
+   "expected_steps": [
+    {
+     "action": "open_closing_round",
+     "outcome": "NOT_YET",
+     "refund_cents": 0,
+     "reason": "closing round",
+     "final": false
+    },
+    {
+     "action": "decide",
+     "outcome": "DENY",
+     "refund_cents": 0,
+     "reason": "claim not proven",
+     "final": true
+    }
+   ]
+  },
+  {
+   "id": "S4",
+   "contract": "subjective",
+   "claim": "{\"account\":\"My order never arrived. The promised date was September 8 and nothing came.\",\"amount_cents\":5000,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1790337600,\"event\":\"not_delivered\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-ND-G1\",\"order_ref\":\"0xef5496590ab14e4a680588db438f74e12c72159f7ad35ab41e1978fc2a3682f7\",\"paid_at\":1788264000,\"promised_date\":\"2026-09-08\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0x034496d7ff37c92a256f8e35b15ada4056709fc6aa08ad6934ac1fb3aea96f17",
+   "chain0": "0x66ad3522ce58e7ea70f62c7c9c231583c177eccfc4912e15c8eaaf6e5899d707",
+   "steps": [
+    [
+     "{\"content\":\"We shipped your order on September 3.\",\"kind\":\"response\",\"party\":\"merchant\"}"
+    ]
+   ],
+   "chains": [
+    "0x6eaa1f8eb44573b06b457b66ee307d2212241eb9c7ad39acc43b181ae94395cd"
+   ],
+   "expected": {
+    "outcome": "REFUND",
+    "refund_cents": 5000,
+    "reason": "per policy"
+   },
+   "expected_steps": [
+    {
+     "action": "decide",
+     "outcome": "REFUND",
+     "refund_cents": 5000,
+     "reason": "per policy",
+     "final": true
+    }
+   ]
+  },
+  {
+   "id": "S5",
+   "contract": "subjective",
+   "claim": "{\"account\":\"My order never arrived. The promised date was September 8 and nothing came.\",\"amount_cents\":5000,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1790337600,\"event\":\"not_delivered\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-ND-NR\",\"order_ref\":\"0x1ca2e91faa3c855f4bdc49b1cb0328d2938b6fae274c526a8ee16fc8b59da7ae\",\"paid_at\":1788264000,\"promised_date\":\"2026-09-08\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0xeff7e513655f377f83b7adb8d7db74f84dca6bbe6dde8993d397e81337629566",
+   "chain0": "0x7e410822526ec66014cee6c859ba28c00cab9d2bafa774b9845a37c6a79669bf",
+   "steps": [
+    [
+     "{\"content\":null,\"kind\":\"no_response\",\"party\":\"escrow\"}"
+    ]
+   ],
+   "chains": [
+    "0x6141259a3eef1bdda882b508c342c83e2dfb2155a28fd9cf72b2c620ff55a884"
+   ],
+   "expected": {
+    "outcome": "REFUND",
+    "refund_cents": 5000,
+    "reason": "per policy"
+   },
+   "expected_steps": [
+    {
+     "action": "decide",
+     "outcome": "REFUND",
+     "refund_cents": 5000,
+     "reason": "per policy",
+     "final": true
+    }
+   ]
+  },
+  {
+   "id": "S6",
+   "contract": "subjective",
+   "claim": "{\"account\":\"Not what I expected.\",\"amount_cents\":5000,\"buyer\":\"0x0f0c950043c4d0b570fb6a7ede0874df96966808\",\"claimed_at\":1789041600,\"delivered_date\":\"2026-09-07\",\"description\":\"Kitchen knife set, 5 pieces, stainless steel.\",\"event\":\"not_as_described\",\"merchant\":\"0x7e7e3706a11671ae8d2ce56555df32321aa6d73b\",\"order_number\":\"DS-V1\",\"order_ref\":\"0x10be94a3c0567f82aa6bb6bef0f4b11baa0c738759b76aa9e019a04e5321bef0\",\"paid_at\":1788264000,\"promised\":\"\",\"proof\":\"\",\"proof_kind\":\"\",\"received\":\"not what I expected\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+   "claim_hash": "0xcff1cf664e69188b7ed381db26d83e01a04eff011f908c768ce50c8a35ed6367",
+   "chain0": "0x229b532431f1c1922fe7e9e314ec8dfe39c8fd04de90d8cc3a995986812fbb72",
+   "steps": [
+    [
+     "{\"content\":\"We only sell what we list.\",\"kind\":\"response\",\"party\":\"merchant\"}"
+    ]
+   ],
+   "chains": [
+    "0x213c506dd8fc7fbbe3018330ea546a818843258c8c7c885b683fa9b4f28aaf20"
+   ],
+   "expected": {
+    "outcome": "INVALID_CLAIM",
+    "refund_cents": 0,
+    "reason": "invalid claim"
+   },
+   "expected_steps": [
+    {
+     "action": "decide",
+     "outcome": "INVALID_CLAIM",
+     "refund_cents": 0,
+     "reason": "invalid claim",
+     "final": true
+    }
+   ]
+  }
+ ]
+}

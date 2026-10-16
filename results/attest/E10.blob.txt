@@ -1,0 +1,6 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1788858000; h=from:to:subject:date:message-id; bh=DAW3N60ZJEYOr1SveY2+jMrQTpoBS99YoumEfyGvqBA=; b=HTyY3AGa3GD0lDGnLscsmnmNKN4roaF/LqWw9ToXrAp3SPI5v8mmdRSZzTFyroukcX68CI7Qo+5encocrlylrqJHAcAdXcvfxEu/Yqp2wBPl8BN99tjCNkFHefc5HxjdMbSgsqLQXxlhwuk/eQVo+iliZQqU64piRySFjkEpyyifWTkJ4tCbj5vmlM/gq04jdDKp++g/IYZMvZx56jtwTsKbIA6qbbAXfI6EDzGdTCsznRUWSqgJarLWo8moejzVqlve6jqH23qE0CzHqFCtXJswV7VEKc6x2TEe5E5rl4DYUsGoNbtk1fM9ToWbJO8c1SCdxp0FdbTQVKSDzKEgSQ==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Reembolso del pedido DS-100233
+Date: Tue, 08 Sep 2026 09:00:00 +0000
+Message-ID: <e10.8@shop.rpmdev.app>

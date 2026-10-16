@@ -1,0 +1,1469 @@
+{
+ "generated_at": "2026-10-15T23:49:14+00:00",
+ "project": {
+  "name": "Tenet",
+  "tagline": "Buyer protection for stablecoin payments."
+ },
+ "networks": {
+  "arc": {
+   "name": "Arc testnet",
+   "chain_id": 5042002,
+   "explorer": "https://explorer.testnet.arc.io",
+   "tx_url": "https://explorer.testnet.arc.io/tx/",
+   "address_url": "https://explorer.testnet.arc.io/address/",
+   "usdc": "0x3600000000000000000000000000000000000000",
+   "faucet": "https://faucet.circle.com"
+  },
+  "bradbury": {
+   "name": "GenLayer Bradbury testnet",
+   "explorer": "https://explorer-bradbury.genlayer.com",
+   "tx_url": "https://explorer-bradbury.genlayer.com/tx/",
+   "address_url": "https://explorer-bradbury.genlayer.com/address/"
+  }
+ },
+ "roles": {
+  "buyer": "0x3c3f857c9d193cA1FED87d0f72Fc43ACA6028B25",
+  "store": "0x13E2ddb489EE77d87846e7ba36bf5F89e8ABff32",
+  "signer": "0x0F0c950043c4D0B570fb6A7eDE0874Df96966808"
+ },
+ "contracts": [
+  {
+   "name": "RefundEscrow v3",
+   "chain": "arc",
+   "address": "0x5Bf18C9B66dF20BF2D30e08b561f65de73fA1E2D",
+   "url": "https://explorer.testnet.arc.io/address/0x5Bf18C9B66dF20BF2D30e08b561f65de73fA1E2D",
+   "deploy_tx": "0xd62956fd574542c501dde45d1d1826a64b790a798a4a6944a44f1ce80c8cc389",
+   "deploy_url": "https://explorer.testnet.arc.io/tx/0xd62956fd574542c501dde45d1d1826a64b790a798a4a6944a44f1ce80c8cc389",
+   "gas_used": 3551560,
+   "deploy_cost_usdc": 0.088789,
+   "source": "evm/src/RefundEscrow.sol",
+   "params": {
+    "token": "USDC",
+    "cap_per_order_usdc": 5.0,
+    "verdict_delay_seconds": 600,
+    "store_hold_days": 30,
+    "response_window_seconds": 259200,
+    "closing_window_seconds": 259200,
+    "proof_window_seconds": 604800
+   }
+  },
+  {
+   "name": "Judge: store emails (late)",
+   "chain": "bradbury",
+   "address": "0x7e3251e7A9479280a6b8c93FD2E852291abd105c",
+   "url": "https://explorer-bradbury.genlayer.com/address/0x7e3251e7A9479280a6b8c93FD2E852291abd105c",
+   "deploy_tx": "0xaeb9d8001c6178e87b62031c76a06c13adc62799378d2b4af588450f7345fd58",
+   "deploy_url": "https://explorer-bradbury.genlayer.com/tx/0xaeb9d8001c6178e87b62031c76a06c13adc62799378d2b4af588450f7345fd58",
+   "gas_used": 12137835,
+   "deploy_cost_gen": 0.025426048,
+   "bytes": 15420,
+   "sha256": "a1c38184e7f4bc911e4321327c501daf997a3002114f90dff47390256c26d366",
+   "prompt_hash": "6a4d92469a871eb7cc8760d782d0aa147a42c3c0a18955406200c9989b3ca94b",
+   "methods": [
+    "get_claim",
+    "get_merchant",
+    "get_verdict",
+    "judge",
+    "owner",
+    "prompt_hash",
+    "router",
+    "set_merchant"
+   ],
+   "source": "contracts/judge_mail.py"
+  },
+  {
+   "name": "Judge: not as described, not delivered",
+   "chain": "bradbury",
+   "address": "0x2a0126530321FF7886A568b9439d3535A27EfA91",
+   "url": "https://explorer-bradbury.genlayer.com/address/0x2a0126530321FF7886A568b9439d3535A27EfA91",
+   "deploy_tx": "0x9e883dfe92f481c761a485313c1dae0d6486705f215f62d9a530bd192d40a448",
+   "deploy_url": "https://explorer-bradbury.genlayer.com/tx/0x9e883dfe92f481c761a485313c1dae0d6486705f215f62d9a530bd192d40a448",
+   "gas_used": 13717300,
+   "deploy_cost_gen": 0.028577709,
+   "bytes": 17668,
+   "sha256": "6de718a730489ec528ea76fe7aede81dd7789e1dfb1705526b4641d7ad83b46f",
+   "prompt_hash": "7acf02b2c1ffb680aa955e0a21b5df7862e1a9a999125fce3f1cdf8cfe32a8b6|853481b2c2268f9c5f48d739920d7c55a86fce730006bc4f453fd0771ff027f3",
+   "methods": [
+    "get_claim",
+    "get_merchant",
+    "get_verdict",
+    "judge",
+    "owner",
+    "prompt_hash",
+    "set_merchant"
+   ],
+   "source": "contracts/judge_subjective.py"
+  },
+  {
+   "name": "Lacre Router (email attestations)",
+   "chain": "bradbury",
+   "address": "0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9",
+   "url": "https://explorer-bradbury.genlayer.com/address/0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9",
+   "project_url": "https://lacre.in-sidr.xyz",
+   "source": "github.com/eudomar500/lacre (MIT, Insidr Labs)"
+  }
+ ],
+ "terms": {
+  "terms_hash": "0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93",
+  "store": "Demo Shop (shop.rpmdev.app)",
+  "rules": [
+   {
+    "event": "not_as_described",
+    "refund_percent": 100,
+    "wait_from": "none",
+    "wait_days": 0,
+    "deadline_from": "delivery",
+    "deadline_days": 30,
+    "late_grace_days": 0
+   },
+   {
+    "event": "late",
+    "refund_percent": 50,
+    "wait_from": "none",
+    "wait_days": 0,
+    "deadline_from": "delivery",
+    "deadline_days": 30,
+    "late_grace_days": 2
+   },
+   {
+    "event": "not_delivered",
+    "refund_percent": 100,
+    "wait_from": "promised",
+    "wait_days": 10,
+    "deadline_from": "none",
+    "deadline_days": 0,
+    "late_grace_days": 0
+   }
+  ]
+ },
+ "live_cases": [
+  {
+   "id": "A",
+   "title": "Late delivery, partial refund",
+   "path": "late",
+   "story": "The order arrives 3 days after the promised date. The buyer presents the store's own signed emails (order confirmation and delivery notice), attested on Lacre. Policy: 50% refund after 2 days of grace.",
+   "judge": "mail",
+   "order_number": "DS-310001",
+   "order_ref": "0xd3fa7100357441c5362b703f568aaed6dd3fc5345781b776cc60a798e6c1f592",
+   "amount_usdc": 4.0,
+   "status": "in_progress",
+   "stage": "Paid; order confirmation email attested; waiting for the delivery date",
+   "next_steps": [
+    {
+     "date": "2026-10-17",
+     "what": "Delivery email signed and attested, claim, judgment, settlement"
+    }
+   ],
+   "expected": {
+    "steps": [
+     {
+      "outcome": "REFUND",
+      "refund_cents": 200,
+      "reason": "per policy",
+      "action": "decide"
+     }
+    ],
+    "settlement_usdc": {
+     "buyer": 2.0,
+     "merchant": 2.0
+    }
+   },
+   "claim": null,
+   "verdicts": [],
+   "attempts": [],
+   "settlement": null,
+   "checks": [],
+   "timeline": [
+    {
+     "at": "2026-10-13T13:09:38+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Approve USDC for the escrow",
+     "tx": "0x606d5a9efd4d377d42b456606127e2cfa0e155308324d633e954fe03b614ac12",
+     "url": "https://explorer.testnet.arc.io/tx/0x606d5a9efd4d377d42b456606127e2cfa0e155308324d633e954fe03b614ac12",
+     "gas_used": 55426,
+     "gas_usdc": 0.001386
+    },
+    {
+     "at": "2026-10-13T13:09:40+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Pay into escrow",
+     "tx": "0x1db750230b14f0ddea63d9bb71534a96cf86bc751397d3e6a58b1df7c71c4414",
+     "url": "https://explorer.testnet.arc.io/tx/0x1db750230b14f0ddea63d9bb71534a96cf86bc751397d3e6a58b1df7c71c4414",
+     "gas_used": 201277,
+     "gas_usdc": 0.005032
+    },
+    {
+     "at": "2026-10-13T13:47:19+00:00",
+     "chain": null,
+     "actor": "store",
+     "action": "Store email X01 signed (DKIM, shop.rpmdev.app)"
+    },
+    {
+     "at": "2026-10-13T14:24:09+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Email X01 attested on Lacre: record 29, signature valid, domain aligned",
+     "tx": "0x7e9e4353e17e3784eeffb4505d62fc96129e5eefce1d1ab7d8198de40b3e556c",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x7e9e4353e17e3784eeffb4505d62fc96129e5eefce1d1ab7d8198de40b3e556c",
+     "gen": 0.002826809
+    }
+   ]
+  },
+  {
+   "id": "B",
+   "title": "Not as described, store disputes",
+   "path": "not_as_described",
+   "story": "An unlocked phone arrives locked to a carrier. The store disputes with a fact (IMEI check), the judge opens a closing round, both sides answer, and the claim is not proven.",
+   "judge": "subjective",
+   "order_number": "DS-310002",
+   "order_ref": "0xe8eea3326f0230588b7294a39731a38f4aa76b227f0ed6db4736a60859621c97",
+   "amount_usdc": 3.0,
+   "status": "settled",
+   "stage": "Settled on Arc",
+   "next_steps": [],
+   "expected": {
+    "steps": [
+     {
+      "outcome": "NOT_YET",
+      "refund_cents": 0,
+      "reason": "closing round",
+      "action": "open_closing_round"
+     },
+     {
+      "outcome": "DENY",
+      "refund_cents": 0,
+      "reason": "claim not proven",
+      "action": "decide"
+     }
+    ],
+    "settlement_usdc": {
+     "buyer": 0.0,
+     "merchant": 3.0
+    }
+   },
+   "claim": {
+    "text": "{\"account\":\"The phone is locked to a carrier. It asks for an AT&T SIM.\",\"amount_cents\":300,\"buyer\":\"0x3c3f857c9d193ca1fed87d0f72fc43aca6028b25\",\"claimed_at\":1791899397,\"delivered_date\":\"2026-10-13\",\"description\":\"iPhone 13, 128 GB, unlocked.\",\"event\":\"not_as_described\",\"merchant\":\"0x13e2ddb489ee77d87846e7ba36bf5f89e8abff32\",\"order_number\":\"DS-310002\",\"order_ref\":\"0xe8eea3326f0230588b7294a39731a38f4aa76b227f0ed6db4736a60859621c97\",\"paid_at\":1791897003,\"promised\":\"unlocked\",\"proof\":\"\",\"proof_kind\":\"\",\"received\":\"locked to a carrier\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+    "hash": "0x7b7bef112721b84a001566475d6132e839027eb6f41dc90c9589de824ea79351"
+   },
+   "verdicts": [
+    {
+     "step": 1,
+     "verdict": {
+      "outcome": "NOT_YET",
+      "refund_cents": 0,
+      "reason": "closing round",
+      "action": "open_closing_round",
+      "final": false,
+      "judged_at": "2026-10-13T13:50:47+00:00",
+      "chain": "0x463ff3b7f93efbd39c55ad673671e0b8b4a4c65e80f1dccf1835ca877bb17c55",
+      "claim_hash": "0x7b7bef112721b84a001566475d6132e839027eb6f41dc90c9589de824ea79351"
+     },
+     "expected": {
+      "outcome": "NOT_YET",
+      "refund_cents": 0,
+      "reason": "closing round",
+      "action": "open_closing_round"
+     },
+     "matches_expected": true,
+     "votes": {
+      "1:FINISHED_WITH_RETURN": 4,
+      "3:TIMEOUT": 1
+     },
+     "tx": "0xf6dbc253ac183dc1d7a08e80df36188fbc346aa005e06ad13356b64e43e6a7b9",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0xf6dbc253ac183dc1d7a08e80df36188fbc346aa005e06ad13356b64e43e6a7b9"
+    },
+    {
+     "step": 2,
+     "verdict": {
+      "outcome": "DENY",
+      "refund_cents": 0,
+      "reason": "claim not proven",
+      "action": "decide",
+      "final": true,
+      "judged_at": "2026-10-13T15:46:33+00:00",
+      "chain": "0x72643e888823d701932fb2f94df9d9f05210eb65cecf8b5930ab9aa809fa8f17",
+      "claim_hash": "0x7b7bef112721b84a001566475d6132e839027eb6f41dc90c9589de824ea79351"
+     },
+     "expected": {
+      "outcome": "DENY",
+      "refund_cents": 0,
+      "reason": "claim not proven",
+      "action": "decide"
+     },
+     "matches_expected": true,
+     "votes": {
+      "1:FINISHED_WITH_RETURN": 4,
+      "3:TIMEOUT": 1
+     },
+     "tx": "0x83b8b3cff278439f44ac25e21c41be941c07c8e1b3c028944fc1797646405e2f",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x83b8b3cff278439f44ac25e21c41be941c07c8e1b3c028944fc1797646405e2f"
+    }
+   ],
+   "attempts": [
+    {
+     "step": 1,
+     "attempts": [
+      {
+       "tx": "0xf6dbc253ac183dc1d7a08e80df36188fbc346aa005e06ad13356b64e43e6a7b9",
+       "url": "https://explorer-bradbury.genlayer.com/tx/0xf6dbc253ac183dc1d7a08e80df36188fbc346aa005e06ad13356b64e43e6a7b9",
+       "gen": 0.003059231,
+       "result": "accepted",
+       "votes": {
+        "1:FINISHED_WITH_RETURN": 4,
+        "3:TIMEOUT": 1
+       }
+      }
+     ]
+    },
+    {
+     "step": 2,
+     "attempts": [
+      {
+       "tx": "0x2213963a35305ee5bcaa9073c5ba7e06a54d462a420ba627ab83a7a1d30e00cf",
+       "url": "https://explorer-bradbury.genlayer.com/tx/0x2213963a35305ee5bcaa9073c5ba7e06a54d462a420ba627ab83a7a1d30e00cf",
+       "gen": 0.003338102,
+       "result": "no consensus, resent",
+       "votes": {
+        "0:NOT_VOTED": 5
+       }
+      },
+      {
+       "tx": "0x83b8b3cff278439f44ac25e21c41be941c07c8e1b3c028944fc1797646405e2f",
+       "url": "https://explorer-bradbury.genlayer.com/tx/0x83b8b3cff278439f44ac25e21c41be941c07c8e1b3c028944fc1797646405e2f",
+       "gen": 0.003350568,
+       "result": "accepted",
+       "votes": {
+        "1:FINISHED_WITH_RETURN": 4,
+        "3:TIMEOUT": 1
+       }
+      }
+     ]
+    }
+   ],
+   "settlement": {
+    "refund_usdc": 0.0,
+    "released_usdc": 3.0,
+    "tx": "0x85fbed6fca7bf64b4ac93aabf97d540669459cae6b9b9277114a9c6ffb6de5e7",
+    "url": "https://explorer.testnet.arc.io/tx/0x85fbed6fca7bf64b4ac93aabf97d540669459cae6b9b9277114a9c6ffb6de5e7",
+    "note": "Credited in the escrow; withdrawals at the end of the test."
+   },
+   "checks": [
+    {
+     "what": "openClaim sent by the relayer",
+     "want": "NotBuyer",
+     "got": "NotBuyer",
+     "at": "2026-10-13T13:50:29+00:00"
+    },
+    {
+     "what": "a buyer submission sent by the relayer",
+     "want": "NotParty",
+     "got": "NotParty",
+     "at": "2026-10-13T13:50:29+00:00"
+    },
+    {
+     "what": "proposeVerdict with another claim hash",
+     "want": "BadVerdict",
+     "got": "BadVerdict",
+     "at": "2026-10-13T13:50:29+00:00"
+    },
+    {
+     "what": "proposeVerdict with another chain",
+     "want": "BadVerdict",
+     "got": "BadVerdict",
+     "at": "2026-10-13T13:50:29+00:00"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-10-13T13:10:00+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Approve USDC for the escrow",
+     "tx": "0xa54bc62077c798d83a4ffd25dcfc7d365f787fd9baac16815b779f3acf746aa7",
+     "url": "https://explorer.testnet.arc.io/tx/0xa54bc62077c798d83a4ffd25dcfc7d365f787fd9baac16815b779f3acf746aa7",
+     "gas_used": 55438,
+     "gas_usdc": 0.00122
+    },
+    {
+     "at": "2026-10-13T13:10:03+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Pay into escrow",
+     "tx": "0xc159115662c3d62be8a486f7f86f06d2351a25259ae092fe93921451afad4cc5",
+     "url": "https://explorer.testnet.arc.io/tx/0xc159115662c3d62be8a486f7f86f06d2351a25259ae092fe93921451afad4cc5",
+     "gas_used": 201301,
+     "gas_usdc": 0.004429
+    },
+    {
+     "at": "2026-10-13T13:50:01+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Open claim",
+     "tx": "0x98f0d938f239f005e2b8853cc4b9d8d6a7fc3728c1f34907d41ee43becde7b09",
+     "url": "https://explorer.testnet.arc.io/tx/0x98f0d938f239f005e2b8853cc4b9d8d6a7fc3728c1f34907d41ee43becde7b09",
+     "gas_used": 978488,
+     "gas_usdc": 0.024462
+    },
+    {
+     "at": "2026-10-13T13:50:13+00:00",
+     "chain": "arc",
+     "actor": "store",
+     "action": "Submit: response",
+     "tx": "0xf938f286d5d9c982b6d52492fe05151d5244876e24bccc2cc76d912f8d06ac48",
+     "url": "https://explorer.testnet.arc.io/tx/0xf938f286d5d9c982b6d52492fe05151d5244876e24bccc2cc76d912f8d06ac48",
+     "gas_used": 61058,
+     "gas_usdc": 0.001526
+    },
+    {
+     "at": "2026-10-13T13:51:50+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 1 sent to the judge, attempt 1: NOT_YET 0.00 USDC (closing round)",
+     "tx": "0xf6dbc253ac183dc1d7a08e80df36188fbc346aa005e06ad13356b64e43e6a7b9",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0xf6dbc253ac183dc1d7a08e80df36188fbc346aa005e06ad13356b64e43e6a7b9",
+     "gen": 0.003059231
+    },
+    {
+     "at": "2026-10-13T14:22:24+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Open closing round on Arc",
+     "tx": "0x98f4cdc11ff725118c17c68e1b1ae8eb258d99180b06305a5d75e8def9516ec7",
+     "url": "https://explorer.testnet.arc.io/tx/0x98f4cdc11ff725118c17c68e1b1ae8eb258d99180b06305a5d75e8def9516ec7",
+     "gas_used": 45680,
+     "gas_usdc": 0.001142
+    },
+    {
+     "at": "2026-10-13T15:02:18+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Submit: closing_proof",
+     "tx": "0x43d8a49b1798478d818cd58a1dd61ce9ea441f106b560a9e362093c33e433505",
+     "url": "https://explorer.testnet.arc.io/tx/0x43d8a49b1798478d818cd58a1dd61ce9ea441f106b560a9e362093c33e433505",
+     "gas_used": 60738,
+     "gas_usdc": 0.001518
+    },
+    {
+     "at": "2026-10-13T15:02:36+00:00",
+     "chain": "arc",
+     "actor": "store",
+     "action": "Submit: closing_response",
+     "tx": "0xde728f3cf5878779c8debc51192a841099ca97b99cd7101eff24e45d94c605a9",
+     "url": "https://explorer.testnet.arc.io/tx/0xde728f3cf5878779c8debc51192a841099ca97b99cd7101eff24e45d94c605a9",
+     "gas_used": 64436,
+     "gas_usdc": 0.001611
+    },
+    {
+     "at": "2026-10-13T15:04:37+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 2 sent to the judge, attempt 1: no consensus (IDLE), resent",
+     "tx": "0x2213963a35305ee5bcaa9073c5ba7e06a54d462a420ba627ab83a7a1d30e00cf",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x2213963a35305ee5bcaa9073c5ba7e06a54d462a420ba627ab83a7a1d30e00cf",
+     "gen": 0.003338102
+    },
+    {
+     "at": "2026-10-13T15:47:08+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 2 sent to the judge, attempt 2: DENY 0.00 USDC (claim not proven)",
+     "tx": "0x83b8b3cff278439f44ac25e21c41be941c07c8e1b3c028944fc1797646405e2f",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x83b8b3cff278439f44ac25e21c41be941c07c8e1b3c028944fc1797646405e2f",
+     "gen": 0.003350568
+    },
+    {
+     "at": "2026-10-13T18:42:30+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Propose verdict on Arc",
+     "tx": "0x16e6cf1305e596ff506c044988ffaf6ad5d08b6ee1526a7ecc3a6447a51a0ec6",
+     "url": "https://explorer.testnet.arc.io/tx/0x16e6cf1305e596ff506c044988ffaf6ad5d08b6ee1526a7ecc3a6447a51a0ec6",
+     "gas_used": 85015,
+     "gas_usdc": 0.002125
+    },
+    {
+     "at": "2026-10-13T18:56:30+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Execute verdict",
+     "tx": "0x85fbed6fca7bf64b4ac93aabf97d540669459cae6b9b9277114a9c6ffb6de5e7",
+     "url": "https://explorer.testnet.arc.io/tx/0x85fbed6fca7bf64b4ac93aabf97d540669459cae6b9b9277114a9c6ffb6de5e7",
+     "gas_used": 61804,
+     "gas_usdc": 0.001545
+    }
+   ]
+  },
+  {
+   "id": "C",
+   "title": "Not delivered, store silent",
+   "path": "not_delivered",
+   "story": "The order never arrives and the store does not answer within 72 hours. Policy: full refund from 10 days after the promised date.",
+   "judge": "subjective",
+   "order_number": "DS-310003",
+   "order_ref": "0x653dbe7c9e5a0e7547a8d20c85454fbb63b25fedce634f021e610bbcf0504714",
+   "amount_usdc": 2.0,
+   "status": "in_progress",
+   "stage": "Paid; waiting until 10 days after the promised date to claim",
+   "next_steps": [
+    {
+     "date": "2026-10-24",
+     "what": "Claim (10 days after the promised date)"
+    },
+    {
+     "date": "2026-10-27",
+     "what": "No-response marker after 72 hours, judgment, settlement"
+    }
+   ],
+   "expected": {
+    "steps": [
+     {
+      "outcome": "REFUND",
+      "refund_cents": 200,
+      "reason": "per policy",
+      "action": "decide"
+     }
+    ],
+    "settlement_usdc": {
+     "buyer": 2.0,
+     "merchant": 0.0
+    }
+   },
+   "claim": null,
+   "verdicts": [],
+   "attempts": [],
+   "settlement": null,
+   "checks": [],
+   "timeline": [
+    {
+     "at": "2026-10-13T13:10:18+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Approve USDC for the escrow",
+     "tx": "0xb3c7fba7af031a208743b9bb7c5ad3a595be843f9c2f61b7cff90a3c41ae843e",
+     "url": "https://explorer.testnet.arc.io/tx/0xb3c7fba7af031a208743b9bb7c5ad3a595be843f9c2f61b7cff90a3c41ae843e",
+     "gas_used": 55438,
+     "gas_usdc": 0.00122
+    },
+    {
+     "at": "2026-10-13T13:10:20+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Pay into escrow",
+     "tx": "0x7808daf7f813751eec7a0e73ccecba05793877350cb7fbec9cd6ed984c8f6b2d",
+     "url": "https://explorer.testnet.arc.io/tx/0x7808daf7f813751eec7a0e73ccecba05793877350cb7fbec9cd6ed984c8f6b2d",
+     "gas_used": 201301,
+     "gas_usdc": 0.004429
+    }
+   ]
+  },
+  {
+   "id": "D",
+   "title": "Proof requested, never sent",
+   "path": "not_as_described",
+   "story": "A laptop arrives without its charger; the claim has no proof and the store gives a general denial. The judge asks for proof; if the buyer sends none in 7 days, anyone releases the payment to the store.",
+   "judge": "subjective",
+   "order_number": "DS-310004",
+   "order_ref": "0x97e28d4d0a6cdd19ebf1718e281ac10bdcb8a5435c7abd1891bf006f865da57c",
+   "amount_usdc": 1.0,
+   "status": "in_progress",
+   "stage": "Claim open; proof requested on 2026-10-13 15:02 UTC; the buyer has 7 days",
+   "next_steps": [
+    {
+     "date": "2026-10-20",
+     "time_utc": "15:02",
+     "what": "releaseUnproven: payment released to the store"
+    }
+   ],
+   "expected": {
+    "steps": [
+     {
+      "outcome": "NOT_YET",
+      "refund_cents": 0,
+      "reason": "proof required",
+      "action": "request_proof"
+     }
+    ],
+    "settlement_usdc": {
+     "buyer": 0.0,
+     "merchant": 1.0
+    }
+   },
+   "claim": {
+    "text": "{\"account\":\"There was no charger in the box.\",\"amount_cents\":100,\"buyer\":\"0x3c3f857c9d193ca1fed87d0f72fc43aca6028b25\",\"claimed_at\":1791899528,\"delivered_date\":\"2026-10-13\",\"description\":\"Laptop, new in sealed box, charger included.\",\"event\":\"not_as_described\",\"merchant\":\"0x13e2ddb489ee77d87846e7ba36bf5f89e8abff32\",\"order_number\":\"DS-310004\",\"order_ref\":\"0x97e28d4d0a6cdd19ebf1718e281ac10bdcb8a5435c7abd1891bf006f865da57c\",\"paid_at\":1791897030,\"promised\":\"charger included\",\"proof\":\"\",\"proof_kind\":\"\",\"received\":\"no charger in the box\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+    "hash": "0xeb99296b738b94a387b17a60adc6122adaf30ff7a308155636e926043970da58"
+   },
+   "verdicts": [
+    {
+     "step": 1,
+     "verdict": {
+      "outcome": "NOT_YET",
+      "refund_cents": 0,
+      "reason": "proof required",
+      "action": "request_proof",
+      "final": false,
+      "judged_at": "2026-10-13T14:22:45+00:00",
+      "chain": "0xa789941380e528bcb98de4edbca38686e2696da73cdb1518a9fa74e689ff4c38",
+      "claim_hash": "0xeb99296b738b94a387b17a60adc6122adaf30ff7a308155636e926043970da58"
+     },
+     "expected": {
+      "outcome": "NOT_YET",
+      "refund_cents": 0,
+      "reason": "proof required",
+      "action": "request_proof"
+     },
+     "matches_expected": true,
+     "votes": {
+      "1:FINISHED_WITH_RETURN": 5
+     },
+     "tx": "0x12d87bcd0f2f22423809d0706e8ba06ecf2b1ff28a544a2c5ac267470173e91b",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x12d87bcd0f2f22423809d0706e8ba06ecf2b1ff28a544a2c5ac267470173e91b"
+    }
+   ],
+   "attempts": [
+    {
+     "step": 1,
+     "attempts": [
+      {
+       "tx": "0x12d87bcd0f2f22423809d0706e8ba06ecf2b1ff28a544a2c5ac267470173e91b",
+       "url": "https://explorer-bradbury.genlayer.com/tx/0x12d87bcd0f2f22423809d0706e8ba06ecf2b1ff28a544a2c5ac267470173e91b",
+       "gen": 0.002967979,
+       "result": "accepted",
+       "votes": {
+        "1:FINISHED_WITH_RETURN": 5
+       }
+      }
+     ]
+    }
+   ],
+   "settlement": null,
+   "checks": [
+    {
+     "what": "openClaim sent by the relayer",
+     "want": "NotBuyer",
+     "got": "NotBuyer",
+     "at": "2026-10-13T15:02:11+00:00"
+    },
+    {
+     "what": "a buyer submission sent by the relayer",
+     "want": "NotParty",
+     "got": "NotParty",
+     "at": "2026-10-13T15:02:11+00:00"
+    },
+    {
+     "what": "proposeVerdict with another claim hash",
+     "want": "BadVerdict",
+     "got": "BadVerdict",
+     "at": "2026-10-13T15:02:11+00:00"
+    },
+    {
+     "what": "proposeVerdict with another chain",
+     "want": "BadVerdict",
+     "got": "BadVerdict",
+     "at": "2026-10-13T15:02:11+00:00"
+    },
+    {
+     "what": "releaseUnproven before the 7 day proof window ends",
+     "want": "TooEarly",
+     "got": "TooEarly",
+     "at": "2026-10-13T15:02:11+00:00"
+    }
+   ],
+   "timeline": [
+    {
+     "at": "2026-10-13T13:10:28+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Approve USDC for the escrow",
+     "tx": "0x3c92f1f3646a4ae59b099ebcd89f62f74d0b635d115b1cee8bb631ac445d32ea",
+     "url": "https://explorer.testnet.arc.io/tx/0x3c92f1f3646a4ae59b099ebcd89f62f74d0b635d115b1cee8bb631ac445d32ea",
+     "gas_used": 55438,
+     "gas_usdc": 0.00122
+    },
+    {
+     "at": "2026-10-13T13:10:30+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Pay into escrow",
+     "tx": "0xf05bca43afafeaa3338e831bc0351752e09c11c57e64a05bb43682a179281364",
+     "url": "https://explorer.testnet.arc.io/tx/0xf05bca43afafeaa3338e831bc0351752e09c11c57e64a05bb43682a179281364",
+     "gas_used": 201289,
+     "gas_usdc": 0.004428
+    },
+    {
+     "at": "2026-10-13T13:52:12+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Open claim",
+     "tx": "0x414dd456d3b3cddd36e784ed4b1cc77a83e1ad67ff682d669d0c22a4fba5ac82",
+     "url": "https://explorer.testnet.arc.io/tx/0x414dd456d3b3cddd36e784ed4b1cc77a83e1ad67ff682d669d0c22a4fba5ac82",
+     "gas_used": 942728,
+     "gas_usdc": 0.023568
+    },
+    {
+     "at": "2026-10-13T13:52:57+00:00",
+     "chain": "arc",
+     "actor": "store",
+     "action": "Submit: response",
+     "tx": "0xdc1b95ef958ac9a9680895ef4ed3708d945a68d309a5f8dc556c01f9f6fd5a44",
+     "url": "https://explorer.testnet.arc.io/tx/0xdc1b95ef958ac9a9680895ef4ed3708d945a68d309a5f8dc556c01f9f6fd5a44",
+     "gas_used": 59443,
+     "gas_usdc": 0.001486
+    },
+    {
+     "at": "2026-10-13T14:23:39+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 1 sent to the judge, attempt 1: NOT_YET 0.00 USDC (proof required)",
+     "tx": "0x12d87bcd0f2f22423809d0706e8ba06ecf2b1ff28a544a2c5ac267470173e91b",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x12d87bcd0f2f22423809d0706e8ba06ecf2b1ff28a544a2c5ac267470173e91b",
+     "gen": 0.002967979
+    },
+    {
+     "at": "2026-10-13T15:02:01+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Request proof on Arc",
+     "tx": "0x012d137d6eddd882a6b0ded1f77fb1705f997a3f1507cc2970c1998afecbcb10",
+     "url": "https://explorer.testnet.arc.io/tx/0x012d137d6eddd882a6b0ded1f77fb1705f997a3f1507cc2970c1998afecbcb10",
+     "gas_used": 37688,
+     "gas_usdc": 0.000942
+    }
+   ]
+  },
+  {
+   "id": "E",
+   "title": "Not as described, store admits",
+   "path": "not_as_described",
+   "story": "Running shoes arrive in the wrong size and the store admits the mistake. Full refund the same day.",
+   "judge": "subjective",
+   "order_number": "DS-310005",
+   "order_ref": "0x5a19cf062c1a4711b814a4b1978154efde8afca395d3387d7af57917f6604e2c",
+   "amount_usdc": 1.0,
+   "status": "settled",
+   "stage": "Settled on Arc",
+   "next_steps": [],
+   "expected": {
+    "steps": [
+     {
+      "outcome": "REFUND",
+      "refund_cents": 100,
+      "reason": "per policy",
+      "action": "decide"
+     }
+    ],
+    "settlement_usdc": {
+     "buyer": 1.0,
+     "merchant": 0.0
+    }
+   },
+   "claim": {
+    "text": "{\"account\":\"Llegaron en talla 40.\",\"amount_cents\":100,\"buyer\":\"0x3c3f857c9d193ca1fed87d0f72fc43aca6028b25\",\"claimed_at\":1791920731,\"delivered_date\":\"2026-10-13\",\"description\":\"Zapatillas de running, talla 42, nuevas.\",\"event\":\"not_as_described\",\"merchant\":\"0x13e2ddb489ee77d87846e7ba36bf5f89e8abff32\",\"order_number\":\"DS-310005\",\"order_ref\":\"0x5a19cf062c1a4711b814a4b1978154efde8afca395d3387d7af57917f6604e2c\",\"paid_at\":1791920721,\"promised\":\"talla 42\",\"proof\":\"\",\"proof_kind\":\"\",\"received\":\"talla 40\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+    "hash": "0xf643e4b1500f6802b99b2dded1ab5f421d5f6eb678f2a37695219d895f8b932a"
+   },
+   "verdicts": [
+    {
+     "step": 1,
+     "verdict": {
+      "outcome": "REFUND",
+      "refund_cents": 100,
+      "reason": "per policy",
+      "action": "decide",
+      "final": true,
+      "judged_at": "2026-10-13T19:46:23+00:00",
+      "chain": "0xe6404534a108d6fb0d56ba8059f8ab13b40b58037be82be491215faa81bcedaa",
+      "claim_hash": "0xf643e4b1500f6802b99b2dded1ab5f421d5f6eb678f2a37695219d895f8b932a"
+     },
+     "expected": {
+      "outcome": "REFUND",
+      "refund_cents": 100,
+      "reason": "per policy",
+      "action": "decide"
+     },
+     "matches_expected": true,
+     "votes": {
+      "1:FINISHED_WITH_RETURN": 4,
+      "3:TIMEOUT": 1
+     },
+     "tx": "0x87f4559fb02114abb656c7f0c283bd9dd093d5e40635d22a6cbc69909c45969c",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x87f4559fb02114abb656c7f0c283bd9dd093d5e40635d22a6cbc69909c45969c"
+    }
+   ],
+   "attempts": [
+    {
+     "step": 1,
+     "attempts": [
+      {
+       "tx": "0x87f4559fb02114abb656c7f0c283bd9dd093d5e40635d22a6cbc69909c45969c",
+       "url": "https://explorer-bradbury.genlayer.com/tx/0x87f4559fb02114abb656c7f0c283bd9dd093d5e40635d22a6cbc69909c45969c",
+       "gen": 0.002888627,
+       "result": "accepted",
+       "votes": {
+        "1:FINISHED_WITH_RETURN": 4,
+        "3:TIMEOUT": 1
+       }
+      }
+     ]
+    }
+   ],
+   "settlement": {
+    "refund_usdc": 1.0,
+    "released_usdc": 0.0,
+    "tx": "0x879943968057c338871b8b6441015b3ca67ab194a6035fd952f302d9baaf6ec2",
+    "url": "https://explorer.testnet.arc.io/tx/0x879943968057c338871b8b6441015b3ca67ab194a6035fd952f302d9baaf6ec2",
+    "note": "Credited in the escrow; withdrawals at the end of the test."
+   },
+   "checks": [],
+   "timeline": [
+    {
+     "at": "2026-10-13T19:45:20+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Approve USDC for the escrow",
+     "tx": "0x90d667f3f7e4f030c1bf3a180c2e002128d50796869538121b885e4ead983f4d",
+     "url": "https://explorer.testnet.arc.io/tx/0x90d667f3f7e4f030c1bf3a180c2e002128d50796869538121b885e4ead983f4d",
+     "gas_used": 55438,
+     "gas_usdc": 0.001386
+    },
+    {
+     "at": "2026-10-13T19:45:22+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Pay into escrow",
+     "tx": "0x2180d8205ea202b76cbc66cfb504966cd26b99c6c9c0f32b97351ea6985185ac",
+     "url": "https://explorer.testnet.arc.io/tx/0x2180d8205ea202b76cbc66cfb504966cd26b99c6c9c0f32b97351ea6985185ac",
+     "gas_used": 201301,
+     "gas_usdc": 0.005033
+    },
+    {
+     "at": "2026-10-13T19:45:34+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Open claim",
+     "tx": "0x44a566bcee934dcfbd8b50ae704381c6c3cbf2fe5feb1431a489e23e2731fad8",
+     "url": "https://explorer.testnet.arc.io/tx/0x44a566bcee934dcfbd8b50ae704381c6c3cbf2fe5feb1431a489e23e2731fad8",
+     "gas_used": 904855,
+     "gas_usdc": 0.022621
+    },
+    {
+     "at": "2026-10-13T19:45:47+00:00",
+     "chain": "arc",
+     "actor": "store",
+     "action": "Submit: response",
+     "tx": "0x603fc35548f210a9b18cb82795ebce1b4e8ee92d7c6ea6efa28e67278cca655e",
+     "url": "https://explorer.testnet.arc.io/tx/0x603fc35548f210a9b18cb82795ebce1b4e8ee92d7c6ea6efa28e67278cca655e",
+     "gas_used": 59380,
+     "gas_usdc": 0.001484
+    },
+    {
+     "at": "2026-10-13T19:47:26+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 1 sent to the judge, attempt 1: REFUND 1.00 USDC (per policy)",
+     "tx": "0x87f4559fb02114abb656c7f0c283bd9dd093d5e40635d22a6cbc69909c45969c",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x87f4559fb02114abb656c7f0c283bd9dd093d5e40635d22a6cbc69909c45969c",
+     "gen": 0.002888627
+    },
+    {
+     "at": "2026-10-13T20:17:35+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Propose verdict on Arc",
+     "tx": "0x61fd9b629f80c21fed19c1c9ccbd3a2736e6c038a403e5c9bb578db06daec396",
+     "url": "https://explorer.testnet.arc.io/tx/0x61fd9b629f80c21fed19c1c9ccbd3a2736e6c038a403e5c9bb578db06daec396",
+     "gas_used": 87231,
+     "gas_usdc": 0.002181
+    },
+    {
+     "at": "2026-10-13T20:29:07+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Execute verdict",
+     "tx": "0x879943968057c338871b8b6441015b3ca67ab194a6035fd952f302d9baaf6ec2",
+     "url": "https://explorer.testnet.arc.io/tx/0x879943968057c338871b8b6441015b3ca67ab194a6035fd952f302d9baaf6ec2",
+     "gas_used": 61798,
+     "gas_usdc": 0.001545
+    }
+   ]
+  }
+ ],
+ "bradbury_run": {
+  "summary": "10 of 10 verdicts as expected, read in final state; 2 resends after transactions that ended without votes",
+  "cases": [
+   {
+    "id": "M1",
+    "contract": "mail",
+    "path": "late",
+    "title": "Late delivery: shipped email first, delivered email in a second step",
+    "claim_hash": "0xc067e1d57554547967a430634c7d283044cf072dc6a4b0f3b5dcbbdc9a42686d",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "wait",
+       "outcome": "NOT_YET",
+       "refund_cents": 0,
+       "reason": "signed emails required",
+       "final": false,
+       "ignored": []
+      },
+      "verdict": {
+       "outcome": "NOT_YET",
+       "refund_cents": 0,
+       "reason": "signed emails required",
+       "action": "wait",
+       "final": false,
+       "judged_at": "2026-10-13T00:58:23+00:00",
+       "chain": "0x26e4760cf7fe85a84ba4dd3e8dbe6d874c8d58014766749f0c170457107bcf08",
+       "claim_hash": "0xc067e1d57554547967a430634c7d283044cf072dc6a4b0f3b5dcbbdc9a42686d",
+       "ignored": []
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0x82177932409b634bbb7c8f61d0a429baf50fd1aa67e9f5c45d063a6dee9f5bbe",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x82177932409b634bbb7c8f61d0a429baf50fd1aa67e9f5c45d063a6dee9f5bbe",
+        "gen": 0.002753515,
+        "result": "accepted"
+       }
+      ]
+     },
+     {
+      "step": 2,
+      "expected": {
+       "action": "decide",
+       "outcome": "REFUND",
+       "refund_cents": 6000,
+       "reason": "per policy",
+       "final": true,
+       "ignored": []
+      },
+      "verdict": {
+       "outcome": "REFUND",
+       "refund_cents": 6000,
+       "reason": "per policy",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-13T01:37:24+00:00",
+       "chain": "0xd2c6a3cea91ea3add9e21c514634aa0005a5db6565ffda9a476e5037d7f1a44d",
+       "claim_hash": "0xc067e1d57554547967a430634c7d283044cf072dc6a4b0f3b5dcbbdc9a42686d",
+       "ignored": []
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 4,
+       "3:TIMEOUT": 1
+      },
+      "attempts": [
+       {
+        "tx": "0x99aab1a199c7af4e2a77e1cbad118b35eeb16110c9aca8ef12aa79cbe542aa2f",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x99aab1a199c7af4e2a77e1cbad118b35eeb16110c9aca8ef12aa79cbe542aa2f",
+        "gen": 0.00273494,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "M2",
+    "contract": "mail",
+    "path": "late",
+    "title": "On time: confirmation and delivery emails in one step",
+    "claim_hash": "0x187cd5a959d11895012fad48dcc6781dc11436aac0103a72c248e57a8ab23e9f",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "decide",
+       "outcome": "DENY",
+       "refund_cents": 0,
+       "reason": "per policy",
+       "final": true,
+       "ignored": []
+      },
+      "verdict": {
+       "outcome": "DENY",
+       "refund_cents": 0,
+       "reason": "per policy",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-13T00:20:38+00:00",
+       "chain": "0x3cf9a15a198a891fbc4f437d1d31cf74e83ee6b43db2800804301c68813e1f5a",
+       "claim_hash": "0x187cd5a959d11895012fad48dcc6781dc11436aac0103a72c248e57a8ab23e9f",
+       "ignored": []
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0xc276f2f0363e01bd7cc5f7d13af2907f96e6c50deeaada4f4aec788a4e0badf5",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0xc276f2f0363e01bd7cc5f7d13af2907f96e6c50deeaada4f4aec788a4e0badf5",
+        "gen": 0.003110626,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "M3",
+    "contract": "mail",
+    "path": "late",
+    "title": "An email about another order is ignored (code I8)",
+    "claim_hash": "0x7a49c10d3b20ffd7ad05eccfe1469a0f8903552b8c06fa938910199a498d701a",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "wait",
+       "outcome": "NOT_YET",
+       "refund_cents": 0,
+       "reason": "signed emails required",
+       "final": false,
+       "ignored": [
+        [
+         "0x6b2d3c6dfd3dc71adb86d0d61b093ced0ec5ccda6ad7a0db87519c400b9f1d24",
+         "I8"
+        ]
+       ]
+      },
+      "verdict": {
+       "outcome": "NOT_YET",
+       "refund_cents": 0,
+       "reason": "signed emails required",
+       "action": "wait",
+       "final": false,
+       "judged_at": "2026-10-13T03:01:38+00:00",
+       "chain": "0xb286d4be19f79f97f582a6f97c60189317b44319a298832694c82bc260436686",
+       "claim_hash": "0x7a49c10d3b20ffd7ad05eccfe1469a0f8903552b8c06fa938910199a498d701a",
+       "ignored": [
+        [
+         "0x6b2d3c6dfd3dc71adb86d0d61b093ced0ec5ccda6ad7a0db87519c400b9f1d24",
+         "I8"
+        ]
+       ]
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0x09a977527ef1b3e22e10ebc2e0b15c16f18e599b09d17a7d0be28c372465da9c",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x09a977527ef1b3e22e10ebc2e0b15c16f18e599b09d17a7d0be28c372465da9c",
+        "gen": 0.003081955,
+        "result": "no consensus, resent"
+       },
+       {
+        "tx": "0xb1f58f8c8a8604ae5b3ab527c77024747a82afd8432aadd74ae1c21064d0cb0c",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0xb1f58f8c8a8604ae5b3ab527c77024747a82afd8432aadd74ae1c21064d0cb0c",
+        "gen": 0.003075738,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "M4",
+    "contract": "mail",
+    "path": "late",
+    "title": "Claim that is not canonical JSON",
+    "claim_hash": "0x232d0aa9baa0f538ff019e2510fdb2b5c3f5d8fc696b56d51a4a49ca2068293b",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "decide",
+       "outcome": "INVALID_CLAIM",
+       "refund_cents": 0,
+       "reason": "invalid claim",
+       "final": true
+      },
+      "verdict": {
+       "outcome": "INVALID_CLAIM",
+       "refund_cents": 0,
+       "reason": "invalid claim",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-12T23:44:40+00:00",
+       "chain": "0x6206f71065de233e0036f9a77350a21acd81ff49c9c426765203dc6a47f6564b",
+       "claim_hash": "0x232d0aa9baa0f538ff019e2510fdb2b5c3f5d8fc696b56d51a4a49ca2068293b"
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0x071c109fad8b8df2398dcc0033a05ab6ce394f208a47051b12b086ad97b7206e",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x071c109fad8b8df2398dcc0033a05ab6ce394f208a47051b12b086ad97b7206e",
+        "gen": 0.002486869,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "S1",
+    "contract": "subjective",
+    "path": "not_as_described",
+    "title": "Store admits",
+    "claim_hash": "0x04b758b54124359f8610842b5c40440538eea31558a807668885f8b41b99c90b",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "decide",
+       "outcome": "REFUND",
+       "refund_cents": 5000,
+       "reason": "per policy",
+       "final": true
+      },
+      "verdict": {
+       "outcome": "REFUND",
+       "refund_cents": 5000,
+       "reason": "per policy",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-13T00:22:24+00:00",
+       "chain": "0xadc075ec65732699f76a304f329243fae04bbd2882b09aba941e1b04876cae16",
+       "claim_hash": "0x04b758b54124359f8610842b5c40440538eea31558a807668885f8b41b99c90b"
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 4,
+       "3:TIMEOUT": 1
+      },
+      "attempts": [
+       {
+        "tx": "0xeae75957e36d913d3b958ae645b75934f8994de297aabb239699c33f6a8c2ca7",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0xeae75957e36d913d3b958ae645b75934f8994de297aabb239699c33f6a8c2ca7",
+        "gen": 0.002910062,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "S2",
+    "contract": "subjective",
+    "path": "not_as_described",
+    "title": "Item arrived as described",
+    "claim_hash": "0x0da5490bfc15a1570a40e7c544c66b3037a5aad03ea064dfb08019d7bd4ca03c",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "decide",
+       "outcome": "DENY",
+       "refund_cents": 0,
+       "reason": "item as described",
+       "final": true
+      },
+      "verdict": {
+       "outcome": "DENY",
+       "refund_cents": 0,
+       "reason": "item as described",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-13T01:38:44+00:00",
+       "chain": "0xeea5ec27c5a71c0abe55b21c72ea8c575c3a2ea5c55ac9f8cbe0a5867b2fec70",
+       "claim_hash": "0x0da5490bfc15a1570a40e7c544c66b3037a5aad03ea064dfb08019d7bd4ca03c"
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 4,
+       "3:TIMEOUT": 1
+      },
+      "attempts": [
+       {
+        "tx": "0x6f9b176057bdb9bc1ec63d38c4889b9a789ee9effe702250f7270ded1acf5fc9",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x6f9b176057bdb9bc1ec63d38c4889b9a789ee9effe702250f7270ded1acf5fc9",
+        "gen": 0.003032728,
+        "result": "no consensus, resent"
+       },
+       {
+        "tx": "0x32739b403d5786a3bceba77f2bd4b86e4d492d22f7581de980572cb84eac693b",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x32739b403d5786a3bceba77f2bd4b86e4d492d22f7581de980572cb84eac693b",
+        "gen": 0.003023303,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "S3",
+    "contract": "subjective",
+    "path": "not_as_described",
+    "title": "Store disputes with a fact twice (closing round)",
+    "claim_hash": "0xde39d31ec2d9729338bab01e3e78fbf1f898b8ddd0e06b418115ac3a8e279518",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "open_closing_round",
+       "outcome": "NOT_YET",
+       "refund_cents": 0,
+       "reason": "closing round",
+       "final": false
+      },
+      "verdict": {
+       "outcome": "NOT_YET",
+       "refund_cents": 0,
+       "reason": "closing round",
+       "action": "open_closing_round",
+       "final": false,
+       "judged_at": "2026-10-13T02:27:45+00:00",
+       "chain": "0x7788fda90c34334b66a0bad45ad010530428d4b614f985db1620efaa76afaf99",
+       "claim_hash": "0xde39d31ec2d9729338bab01e3e78fbf1f898b8ddd0e06b418115ac3a8e279518"
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0x87c8fb17ed898b7479093780e1a489e654a204db8343cc3f1df2f644bb044f81",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x87c8fb17ed898b7479093780e1a489e654a204db8343cc3f1df2f644bb044f81",
+        "gen": 0.003082423,
+        "result": "accepted"
+       }
+      ]
+     },
+     {
+      "step": 2,
+      "expected": {
+       "action": "decide",
+       "outcome": "DENY",
+       "refund_cents": 0,
+       "reason": "claim not proven",
+       "final": true
+      },
+      "verdict": {
+       "outcome": "DENY",
+       "refund_cents": 0,
+       "reason": "claim not proven",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-13T03:02:43+00:00",
+       "chain": "0xeeb58e278c1d546a8dae884c73a1e9aced411eaf232158bd39c7e347e7f409f3",
+       "claim_hash": "0xde39d31ec2d9729338bab01e3e78fbf1f898b8ddd0e06b418115ac3a8e279518"
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0xcb5317e7059083e19b6f09bc9a743b5a9d69cb897d7e1e8633e50eb6410246af",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0xcb5317e7059083e19b6f09bc9a743b5a9d69cb897d7e1e8633e50eb6410246af",
+        "gen": 0.003364964,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "S4",
+    "contract": "subjective",
+    "path": "not_delivered",
+    "title": "Store only says it shipped",
+    "claim_hash": "0x034496d7ff37c92a256f8e35b15ada4056709fc6aa08ad6934ac1fb3aea96f17",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "decide",
+       "outcome": "REFUND",
+       "refund_cents": 5000,
+       "reason": "per policy",
+       "final": true
+      },
+      "verdict": {
+       "outcome": "REFUND",
+       "refund_cents": 5000,
+       "reason": "per policy",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-13T11:10:40+00:00",
+       "chain": "0x6eaa1f8eb44573b06b457b66ee307d2212241eb9c7ad39acc43b181ae94395cd",
+       "claim_hash": "0x034496d7ff37c92a256f8e35b15ada4056709fc6aa08ad6934ac1fb3aea96f17"
+      },
+      "votes": {
+       "3:TIMEOUT": 1,
+       "1:FINISHED_WITH_RETURN": 4
+      },
+      "attempts": [
+       {
+        "tx": "0x3217929ca6622de96e0f0e2924a5d5fcf3cc8cc9e23a21c87ec1262f35904d03",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x3217929ca6622de96e0f0e2924a5d5fcf3cc8cc9e23a21c87ec1262f35904d03",
+        "gen": 0.002760682,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "S5",
+    "contract": "subjective",
+    "path": "not_delivered",
+    "title": "Store did not answer (no-response marker)",
+    "claim_hash": "0xeff7e513655f377f83b7adb8d7db74f84dca6bbe6dde8993d397e81337629566",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "decide",
+       "outcome": "REFUND",
+       "refund_cents": 5000,
+       "reason": "per policy",
+       "final": true
+      },
+      "verdict": {
+       "outcome": "REFUND",
+       "refund_cents": 5000,
+       "reason": "per policy",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-12T23:45:37+00:00",
+       "chain": "0x6141259a3eef1bdda882b508c342c83e2dfb2155a28fd9cf72b2c620ff55a884",
+       "claim_hash": "0xeff7e513655f377f83b7adb8d7db74f84dca6bbe6dde8993d397e81337629566"
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0xcf82cbf2dca1bf4b7fbc3c28c641c7cf97d521d0d1de079c4d45445a81405f67",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0xcf82cbf2dca1bf4b7fbc3c28c641c7cf97d521d0d1de079c4d45445a81405f67",
+        "gen": 0.002763029,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   },
+   {
+    "id": "S6",
+    "contract": "subjective",
+    "path": "not_as_described",
+    "title": "Incomplete claim",
+    "claim_hash": "0xcff1cf664e69188b7ed381db26d83e01a04eff011f908c768ce50c8a35ed6367",
+    "steps": [
+     {
+      "step": 1,
+      "expected": {
+       "action": "decide",
+       "outcome": "INVALID_CLAIM",
+       "refund_cents": 0,
+       "reason": "invalid claim",
+       "final": true
+      },
+      "verdict": {
+       "outcome": "INVALID_CLAIM",
+       "refund_cents": 0,
+       "reason": "invalid claim",
+       "action": "decide",
+       "final": true,
+       "judged_at": "2026-10-13T11:48:06+00:00",
+       "chain": "0x213c506dd8fc7fbbe3018330ea546a818843258c8c7c885b683fa9b4f28aaf20",
+       "claim_hash": "0xcff1cf664e69188b7ed381db26d83e01a04eff011f908c768ce50c8a35ed6367"
+      },
+      "votes": {
+       "1:FINISHED_WITH_RETURN": 5
+      },
+      "attempts": [
+       {
+        "tx": "0x1de2e436be1c13520b396bff836660ce8e4184cf8d2cad4fb6d70e7ba4e7a2bc",
+        "url": "https://explorer-bradbury.genlayer.com/tx/0x1de2e436be1c13520b396bff836660ce8e4184cf8d2cad4fb6d70e7ba4e7a2bc",
+        "gen": 0.002853729,
+        "result": "accepted"
+       }
+      ]
+     }
+    ],
+    "passed": true
+   }
+  ]
+ },
+ "measurements": {
+  "committee": "5 models through OpenRouter (Llama 3.3 70B, Qwen3 235B, Gemma 3 27B, Mistral Small 3.2, DeepSeek V3), majority of 3 out of 5, same prompts as the deployed judges",
+  "runs": [
+   {
+    "id": "C3",
+    "what": "Not as described: two closed questions and the closing round",
+    "runs": 310,
+    "readings": 3350,
+    "cost_usd": 0.4789,
+    "results": {
+     "correct decision": "310 / 310",
+     "wrong refund": "0 / 310",
+     "prompt injection that wins": "0 / 40"
+    }
+   },
+   {
+    "id": "ND",
+    "what": "Not delivered: the store's answer",
+    "runs": 320,
+    "readings": 2350,
+    "cost_usd": 0.3822,
+    "results": {
+     "correct decision": "320 / 320",
+     "wrong refund": "0 / 320",
+     "wrong denial": "0 / 320",
+     "prompt injection that wins": "0 / 40"
+    }
+   },
+   {
+    "id": "B3",
+    "what": "Store emails: event type and date",
+    "readings": 1200,
+    "cost_usd": 0.1369,
+    "results": {
+     "correct type": "180 / 180",
+     "correct date": "60 / 60",
+     "prompt injection that wins": "0 / 10"
+    }
+   },
+   {
+    "id": "K17B",
+    "what": "Case B store answer reworded for an October order",
+    "runs": 10,
+    "readings": 150,
+    "cost_usd": 0.0161,
+    "results": {
+     "q1": "50 / 50",
+     "q2": "50 / 50",
+     "q2r2": "50 / 50"
+    }
+   }
+  ],
+  "local_checks": [
+   {
+    "what": "Judges v2 in Lacre's simulated GenVM SDK (all paths, error codes, equivalence with the measured modules)",
+    "result": "pass"
+   },
+   {
+    "what": "Escrow v3 Foundry tests",
+    "result": "39 unit tests and 3 invariants (256 runs, depth 60) pass"
+   },
+   {
+    "what": "End-to-end rehearsal on a local chain with the same tools (cases A to E)",
+    "result": "pass: 6 of 6 steps, settlements exact to the cent, relayer cannot alter the buyer's claim"
+   }
+  ]
+ }
+}

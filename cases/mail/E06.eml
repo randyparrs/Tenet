@@ -1,0 +1,11 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1789495200; h=from:to:subject:date:message-id; bh=9ARPLjHZsm5gWZswkgp+s2IX0zHyhzapp5qlYZOMaL0=; b=Z+dzy/vDmsjXJYQL1+pNKy2QmCqjHnYmcOTh21COiFjS9elxnrhJ0AnnpCAhklb6BZ/1xkDXiasP+HJh/hWDT5+7hBsNtAZp7Pa5SJsSmZ7XOdV1CEN6RhqHHaKO8ZBdkopXcAh48V7+pYk7M7DOwB/NBrG5xZhUG13PgwVtc8CUSMVysNUzH26Ylf3mHn1EUsQf+Ao2xfap7/NZZaVGWPxAYNZ6kAdx+b0pZAx0yxBuMIrKoPdMfmcvO+cA1zRC2aREnBk2MKgLm969XDjPnCgevXbfI6C9h5s1v/EdApi6PN5Li+k6GMqs12w5won+69RaqKEPNP7rBOb4FuRNEw==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Update on order DS-100232
+Date: Tue, 15 Sep 2026 18:00:00 +0000
+Message-ID: <e06.15@shop.rpmdev.app>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+We are sorry: your order DS-100232 is delayed.
+New estimated delivery: September 24, 2026.

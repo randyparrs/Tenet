@@ -1,0 +1,24 @@
+{
+ "positives": [
+  {
+   "id": "X01",
+   "lang": "en",
+   "claim_order": "DS-310001",
+   "order_date": "2026-10-13",
+   "headers": {
+    "From": "Demo Shop Orders <orders@shop.rpmdev.app>",
+    "To": "buyer@example.com",
+    "Subject": "Order DS-310001 confirmed",
+    "Date": "Tue, 13 Oct 2026 13:47:19 +0000",
+    "Message-ID": "<x01.1791899239@shop.rpmdev.app>"
+   },
+   "body": "Hi,\r\n\r\nThanks for your order DS-310001.\r\nTotal: USD 4.00\r\nEstimated delivery: 2026-10-14\r\n\r\nDemo Shop\r\n",
+   "sign": {
+    "domain": "shop.rpmdev.app",
+    "selector": "shop1",
+    "tamper": null
+   },
+   "expected_type": "order_confirmed"
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1790265600; h=from:to:subject:date:message-id; bh=0OBsSdUFytcK6iW90S/erLp4feHcIN01IF+ej7nPdik=; b=EXWYR4f+anoyj41isItXAnl3AJwGhbAwGPcq6Mt01ieAPk4jknXIbHbgS0mmO3gyzjIEFQPBZxxGWLOyD5/c4RUhsJGEZ+ftWv8WSNj/IFUFJsSI8GwNU5vuoAUUlQgsxLK1x+OMkL9C7GR1XGsIawt/y37UC8qrdczHE7H1rTfNQpGGd2eliH2r2A9uh3p6ZVNNhb1Q5nSIIS8oVIjtb1L13uRQgnTPePm2xqdYb12VFYrlmmXPFE3Z+ZkvpBXws9N+FO6Rd7YQJwRsEwEEgE9eAI9foMzQYgg+lGBVA+vUeM/ebRqKZbml1IYNIi6ZlEMpDUSlToXf0iuYZqJsKQ==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Order DS-100232 delivered
+Date: Thu, 24 Sep 2026 16:00:00 +0000
+Message-ID: <e07.24@shop.rpmdev.app>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+Your package for order DS-100232 was delivered on Thursday, September 24, 2026.

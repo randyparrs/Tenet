@@ -1,0 +1,62 @@
+ok   DEMO0 demo escrow on anvil: response, closing and proof windows of 5 minutes
+-- five scenarios on day 0 (N1 N2 N3 D1 D2); N1's first judge step splits (resend)
+   (Worker restarted from storage during N2)
+   (crash simulated: the Worker restarts)
+ok   DEMO2 the Worker was restarted mid-scenario and crashed once before a broadcast
+ok   DEMO2 N1 settled
+ok   DEMO2 N1 verdicts as expected: REFUND 100 per policy decide
+ok   DEMO6 N1 settlement: buyer 1 store 0 USDC
+ok   DEMO2 N2 settled
+ok   DEMO2 N2 verdicts as expected: NOT_YET 0 closing round open_closing_round / DENY 0 claim not proven decide
+ok   DEMO6 N2 settlement: buyer 0 store 1 USDC
+ok   DEMO2 N3 settled
+ok   DEMO2 N3 verdicts as expected: NOT_YET 0 proof required request_proof
+ok   DEMO6 N3 settlement: buyer 0 store 1 USDC
+ok   DEMO2 D1 settled
+ok   DEMO2 D1 verdicts as expected: REFUND 100 per policy decide
+ok   DEMO6 D1 settlement: buyer 1 store 0 USDC
+ok   DEMO2 D2 settled
+ok   DEMO2 D2 verdicts as expected: REFUND 100 per policy decide
+ok   DEMO6 D2 settlement: buyer 1 store 0 USDC
+ok   DEMO9 N1 step 1: no consensus, resent once, then accepted
+ok   DEMO9 the attempt without consensus was marked before Bradbury closed it; the accepted one was not
+ok   DEMO2 the page saw "decided, finalizing" before the final verdict
+ok   DEMO2 no Arc transaction sent twice by the Worker (restart and crash included)
+-- L1: confirmation on day 0, delivery notice on day 1, claim on day 1
+ok   DEMO2 L1 day 0: the page says the delivery notice comes tomorrow
+ok   DEMO11 L1 waited past 6 hours from payment for the next-day email and was not refunded
+ok   DEMO2 L1 verdict: REFUND 50 per policy decide
+ok   DEMO6 L1 settlement: buyer 0.5 store 0.5 USDC
+ok   DEMO2 L1 confirmation promises the payment day
+-- limits, a claim outside the scenarios, a payment outside the page
+ok   DEMO7 the fourth order of the day is refunded in full by the store (daily limit)
+ok   DM-D4 a claim outside the scenarios is not judged and is refunded in full
+ok   DM-D4 a payment made outside the page is refunded in full
+ok   DEMO7 refunds by the store use no GEN (judge sends while they ran: 0; the 3 orders within the limit have no claim yet)
+ok   DEMO12 the page shows "Refunded by the demo store: daily limit reached" and no verdict
+ok   DEMO12 the page shows "Refunded by the demo store: the claim is not one of the demo scenarios" and no verdict
+-- stall: the judge never finishes
+ok   DEMO11 at 5 h 59 min after the last step of the claim: not refunded
+ok   DEMO11 at 6 hours without a new step: refunded in full by the store
+ok   DEMO12 the page names it a refund by the store
+-- isolation
+ok   DEMO8 a demo-key email as evidence for the live store is ignored (["I5"], NOT_YET)
+ok   DEMO8 the Worker refuses to sign anything outside its list (relayer withdraw, store proposeVerdict)
+-- the page's Demo Shop, end to end (N1)
+ok   PAGE the Demo Shop lists six products, each with its illustration and a Buy button
+ok   PAGE Buy creates order DS-955501 and pays it from the wallet in one click (Order DS-955501 paid on Arc. The demo store registers it within a minute.)
+ok   PAGE after Buy the page opens the order in My orders (#my-orders/DS-955501)
+ok   PAGE the order offers one button, Open a claim, with the exact text folded
+ok   PAGE N1 through the page: claim signed by the visitor, REFUND 1.00 USDC settled
+ok   PAGE while the order runs, the sidebar counter shows 1 with the order number on hover
+ok   PAGE a first attempt without consensus shows its line and time bar until Bradbury closes it; then the step is sent again
+ok   PAGE a decided verdict shows that the payment waits for the final verdict (about 30 min), with its time bar
+ok   PAGE the order's track moved through its phases (Claim, Judge)
+ok   PAGE the settled order shows its number, five phases done, the refund and Go to withdraw; one timeline line per Arc transaction
+ok   PAGE the sidebar counter is off once the order is settled
+ok   PAGE Go to withdraw leads to the Demo Shop
+ok   PAGE the refund is credited in the escrow (+1.00 USDC; 3 USDC in total from this rehearsal), the card is highlighted and Withdraw is lit
+ok   PAGE Withdraw from the page: the wallet receives everything credited, nothing left in the escrow, the button says Withdrawn
+ok   no stop raised during the rehearsal
+judge sends 11, Lacre attestations 2
+REHEARSAL PASS

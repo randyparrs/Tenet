@@ -1,0 +1,6 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1789030800; h=from:to:subject:date:message-id; bh=E/r+ObMaNRZRhuSMX6nB8PSNZgD4cM+g8WMZ1f95xsg=; b=eTjJAy7Nd0S6oXS4CXSba4w09EXYAr4/trAW4FYxLnsK1DzAk+5y9d0FPVOotPBsIJVxhFRLUvQ02IOXXmWTYSKOTA5zxgt3qmh2BNLeZcuGJYJe3/nw77z0Sf3DSFr6izjJxGLi7fMzpCBaidTtwOLhtu+UlJH62/XioD4xXEvfv2wPuSkdApT/TxLHzcNwp6m1TtbSaqmocgM9WktUOzV1YvJ5ziBdNOtlJPYmx73WceOXtovZSiTfcE/B8oUSneQB9n7ZmjXKzeEpag6MZ2X7me56oM45Tw0XTdtiL9TpYyIEGzd9piA1RjL4RdrrOAhsgfpQym63thR+q3d0XA==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Your order DS-100234 has shipped
+Date: Thu, 10 Sep 2026 09:00:00 +0000
+Message-ID: <e12.10@shop.rpmdev.app>

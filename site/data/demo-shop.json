@@ -1,0 +1,178 @@
+{
+ "chain_id": 5042002,
+ "amount_cents": 100,
+ "windows_seconds": {
+  "response": 300,
+  "closing": 300,
+  "proof": 300
+ },
+ "limits": {
+  "per_address_per_day": 3,
+  "per_day": 30,
+  "stall_seconds": 21600
+ },
+ "scenarios": [
+  {
+   "id": "L1",
+   "title": "Late delivery",
+   "path": "late",
+   "summary": "The order arrives one day after the promised date. The store's own signed emails prove it.",
+   "store": "confirms the order today and sends the delivery notice tomorrow",
+   "product": {
+    "name": "Parcel, express delivery",
+    "art": "parcel",
+    "goes_wrong": "It arrives one day after the promised date.",
+    "wait": "verdict tomorrow"
+   },
+   "next_day": true,
+   "steps": [
+    {
+     "outcome": "REFUND",
+     "refund_cents": 50,
+     "reason": "per policy",
+     "action": "decide"
+    }
+   ],
+   "settle": {
+    "buyer": 50,
+    "store": 50
+   }
+  },
+  {
+   "id": "N1",
+   "title": "Not as described, the store admits",
+   "path": "not_as_described",
+   "summary": "A red sweater arrives green and the store admits the mistake.",
+   "store": "admits the mistake",
+   "product": {
+    "name": "Wool sweater, size M, red",
+    "art": "sweater",
+    "goes_wrong": "It arrives green.",
+    "wait": "about 35 min"
+   },
+   "next_day": null,
+   "steps": [
+    {
+     "outcome": "REFUND",
+     "refund_cents": 100,
+     "reason": "per policy",
+     "action": "decide"
+    }
+   ],
+   "settle": {
+    "buyer": 100,
+    "store": 0
+   }
+  },
+  {
+   "id": "N2",
+   "title": "Not as described, the store disputes",
+   "path": "not_as_described",
+   "summary": "An unlocked phone arrives locked. The store disputes with a fact twice, so the claim is not proven.",
+   "store": "disputes with a fact, then again in the closing round",
+   "product": {
+    "name": "iPhone 13, 128 GB, unlocked",
+    "art": "phone",
+    "goes_wrong": "It arrives locked to a carrier.",
+    "wait": "about 75 min"
+   },
+   "next_day": null,
+   "steps": [
+    {
+     "outcome": "NOT_YET",
+     "refund_cents": 0,
+     "reason": "closing round",
+     "action": "open_closing_round"
+    },
+    {
+     "outcome": "DENY",
+     "refund_cents": 0,
+     "reason": "claim not proven",
+     "action": "decide"
+    }
+   ],
+   "settle": {
+    "buyer": 0,
+    "store": 100
+   }
+  },
+  {
+   "id": "N3",
+   "title": "Not as described, no proof",
+   "path": "not_as_described",
+   "summary": "A laptop arrives without its charger. The claim has no proof, the judge asks for it and none is sent.",
+   "store": "denies in general",
+   "product": {
+    "name": "Laptop, charger included",
+    "art": "laptop",
+    "goes_wrong": "There is no charger in the box, and no proof of it.",
+    "wait": "about 40 min"
+   },
+   "next_day": null,
+   "steps": [
+    {
+     "outcome": "NOT_YET",
+     "refund_cents": 0,
+     "reason": "proof required",
+     "action": "request_proof"
+    }
+   ],
+   "settle": {
+    "buyer": 0,
+    "store": 100
+   }
+  },
+  {
+   "id": "D1",
+   "title": "Not delivered, the store says it shipped",
+   "path": "not_delivered",
+   "summary": "The order never arrives. The store only says it shipped it.",
+   "store": "says it shipped the order",
+   "product": {
+    "name": "Parcel, standard delivery",
+    "art": "parcel",
+    "goes_wrong": "It never arrives.",
+    "wait": "about 35 min"
+   },
+   "next_day": null,
+   "steps": [
+    {
+     "outcome": "REFUND",
+     "refund_cents": 100,
+     "reason": "per policy",
+     "action": "decide"
+    }
+   ],
+   "settle": {
+    "buyer": 100,
+    "store": 0
+   }
+  },
+  {
+   "id": "D2",
+   "title": "Not delivered, the store does not answer",
+   "path": "not_delivered",
+   "summary": "The order never arrives and the store does not answer within the window.",
+   "store": "does not answer",
+   "product": {
+    "name": "Parcel, economy delivery",
+    "art": "parcel",
+    "goes_wrong": "It never arrives.",
+    "wait": "about 40 min"
+   },
+   "next_day": null,
+   "steps": [
+    {
+     "outcome": "REFUND",
+     "refund_cents": 100,
+     "reason": "per policy",
+     "action": "decide"
+    }
+   ],
+   "settle": {
+    "buyer": 100,
+    "store": 0
+   }
+  }
+ ]
+}

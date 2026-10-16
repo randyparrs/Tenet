@@ -1,0 +1,10 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1790334000; h=from:to:subject:date:message-id; bh=C/gMWowwvMt/Czv5o+2hqAx00JzejNnYQLj7myYsddE=; b=CKitFgk5kJpphjDdLGsOLXGmtIrlSXSTP6e+6YWoZdCGr08bs1RiwOZLHYtx659OG3mgzQYLcz1TSkzwhtej8+13vC1ALnVYK2PDYBi/Fm8mJ4xmZM293uAB0WrqyWhwjiwLPWnwQtk7MoelGF1Fzzaa6jDpz7QyKxaALXwL6TgGwO3GiY1jqCRp72rOkL4XKxuD+/iTJC5XqnrDxxPiI2ZbeL6f892+yt8n8tPXJEaDijSiF7g3U4aa1CeGNj60vAtXrX6g6+UkmeTQtWn4x4K8Z/o9dDH0wtq7iDpgXLAKiLdJ17+CGmxXKy8ZXfzRvznzU0tp96CHIEZ9DI/6wA==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Reembolso parcial del pedido DS-100235
+Date: Fri, 25 Sep 2026 11:00:00 +0000
+Message-ID: <e16.25@shop.rpmdev.app>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+Reembolsamos USD 30.00 (50 %) del pedido DS-100235 por el retraso de la entrega.

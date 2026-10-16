@@ -1,0 +1,10 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1788696000; h=from:to:subject:date:message-id; bh=bYDWXjuXZzWbOJatw6VHvqLZStD5WhoTc3eSWK9/xTU=; b=CcZxjudGYy6KW3ppwOonZMD1NGoj5KYsrPmhWWI8ixh3lJb9ECnhccVMP7gA/m3FEFbiBa+JOdcGjnJilN8kRByO+FwWV/4ND7y8+rtPsILwEHc6lDNR5Be6uoRH2Tq/nNGGI006t+sjcG4U/c9g4rEs1Qz5Sr5UmhEyl6bV2fazp5WwOvsR+KQfvGsWtl8JesJAITktIRr+fMewRhYxqab1dF8AGp0Xolg4pq5KnntPAHjiDKMHpWUo+7PkbG/6QOHl1S9Dz4MZx3fjpPtHZrNEvQeJ61wzwT5bL/MHAj+tfl7NJn/Vxt6hjwM+yYXu/b4OU2PST9IKWtfOkRdZbA==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Pedido DS-100233 cancelado
+Date: Sun, 06 Sep 2026 12:00:00 +0000
+Message-ID: <e09.6@shop.rpmdev.app>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+Tu pedido DS-100233 fue cancelado porque el producto no tenia stock.

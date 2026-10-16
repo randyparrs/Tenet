@@ -1,0 +1,2 @@
+Copied unchanged from github.com/eudomar500/lacre (MIT, Copyright (c) 2026 Insidr Labs): lacre/dkimcore.py and lacre/dkimbody.py.
+Commit: d2cb1fc1b19b9b31af7ef1b561221f447ec21838 2026-10-03

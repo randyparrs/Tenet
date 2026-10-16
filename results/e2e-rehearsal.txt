@@ -1,0 +1,34 @@
+== day 0
+ok   buyer holds 11.00 USDC from the signer
+ok   E2E1 the new store's terms in both judges
+ok   E2E0 X01: valid and aligned signature (test key)
+X02 goes from 2026-10-17
+-- B: not_as_described with a closing round
+the last verdict of B has not been taken to Arc yet (act B)
+ok   E2E4 B: closing round open on Arc
+NOT SENT execute: the simulation reverts (TooEarly)
+ok   E2E5 B: settled; credited {'buyer': 0, 'merchant': 3000000} = expected {'buyer': 0, 'merchant': 3000000}
+-- E: not_as_described, the store admits
+ok   E2E5 E: settled; credited {'buyer': 1000000, 'merchant': 0} = expected {'buyer': 1000000, 'merchant': 0}
+-- D: proof expired
+ok   E2E4 D: proof requested on Arc
+C: the claim goes 10 days after the promised date (payment + 1): from 2026-10-24
+== day 4
+ok   E2E0 X02: valid and aligned signature (test key)
+-- A: late with a refund
+ok   E2E5 A: settled; credited {'buyer': 2000000, 'merchant': 2000000} = expected {'buyer': 2000000, 'merchant': 2000000}
+== day 7
+ok   E2E5 D: settled; credited {'buyer': 0, 'merchant': 1000000} = expected {'buyer': 0, 'merchant': 1000000}
+== day 11
+-- C: not_delivered with no_response
+NOT SENT mark: the simulation reverts (TooEarly)
+== day 14
+ok   E2E5 C: settled; credited {'buyer': 2000000, 'merchant': 0} = expected {'buyer': 2000000, 'merchant': 0}
+ok   E2E5 final balances (signer, buyer, store) {'signer': 7940512, 'buyer': 6000000, 'merchant': 6000000} and escrow at 0
+ok   E2E-R (a) the buyer's payments, claims and submissions signed by the buyer's wallet (18 tx)
+ok   E2E2 6 of 6 steps with the expected verdict
+ok   E2E3 and E2E-R (b) chain and claim hash of every verdict = the escrow's
+ok   E2E7 one resend (A, no majority) and it reached the verdict
+ok   E2E-R (c) and E2E6: calls revert as expected (['openClaim from the relayer', 'proposeVerdict with another chain', 'proposeVerdict with another claim hash', 'releaseUnproven before 7 days', 'submit of a buyer submission from the relayer'])
+total gas on anvil: 10543601 (on Arc at 25 gwei: 0.264 USDC)
+REHEARSAL PASS

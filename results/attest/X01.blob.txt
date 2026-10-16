@@ -1,0 +1,6 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1791899239; h=from:to:subject:date:message-id; bh=+l7/3+Ipgtos2ClyRNMtoqYpRW/Hrry5Wa3ZoWW6ekw=; b=ft13t1sIvLSOd6djxkLVg1aKWxb2Dd+1FN7IRbQrmDmkkbaaPotYQwrPWAE/1n2ZtVvXhhIS5gEpGCWc/RtazGYMhVxj0GmKzaNeUpSyN1gKCMKZj57baihlha6wOnN+HoXGYsPaX0enGTZ73DcVggJX0LuqWNBa5TFBwhIppYuyvjbcmPa/AWJejTDi3PYgBcrGllRg0M5qfoVInr3qwHOuUH5tzxlYiMj1Y4GEGM8h9IH9p16W+k1z/Ob6NgCBXzM3OE10rY93JzTeRDAss3//3yDzqjDWI67a3br54gxmM1vz2R7/qPfdC3n6Q2VkQmehErd0KWAUK3TC/qlOWQ==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Order DS-310001 confirmed
+Date: Tue, 13 Oct 2026 13:47:19 +0000
+Message-ID: <x01.1791899239@shop.rpmdev.app>

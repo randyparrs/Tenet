@@ -1,0 +1,144 @@
+No files changed, compilation skipped
+
+Ran 3 tests for test/RefundEscrow.t.sol:RefundEscrowInvariant
+[PASS] invariant_E8_balance_equals_credited_plus_open() (runs: 256, calls: 15360, reverts: 0)
+
+╭----------+-----------------+-------+---------+----------╮
+| Contract | Selector        | Calls | Reverts | Discards |
++=========================================================+
+| Handler  | claim           | 1206  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | evidence        | 1177  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | execute         | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | expire          | 1183  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | merchantRefunds | 1212  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | noResponse      | 1175  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | pay             | 1171  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | propose         | 1134  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | respond         | 1218  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | stall           | 1201  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | veto            | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | warp            | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | withdraw        | 1164  | 0       | 0        |
+╰----------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_E8_each_settlement_splits_exactly_its_own_total() (runs: 256, calls: 15360, reverts: 0)
+
+╭----------+-----------------+-------+---------+----------╮
+| Contract | Selector        | Calls | Reverts | Discards |
++=========================================================+
+| Handler  | claim           | 1206  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | evidence        | 1177  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | execute         | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | expire          | 1183  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | merchantRefunds | 1212  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | noResponse      | 1175  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | pay             | 1171  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | propose         | 1134  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | respond         | 1218  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | stall           | 1201  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | veto            | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | warp            | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | withdraw        | 1164  | 0       | 0        |
+╰----------+-----------------+-------+---------+----------╯
+
+[PASS] invariant_E8_money_is_conserved() (runs: 256, calls: 15360, reverts: 0)
+
+╭----------+-----------------+-------+---------+----------╮
+| Contract | Selector        | Calls | Reverts | Discards |
++=========================================================+
+| Handler  | claim           | 1206  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | evidence        | 1177  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | execute         | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | expire          | 1183  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | merchantRefunds | 1212  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | noResponse      | 1175  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | pay             | 1171  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | propose         | 1134  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | respond         | 1218  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | stall           | 1201  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | veto            | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | warp            | 1173  | 0       | 0        |
+|----------+-----------------+-------+---------+----------|
+| Handler  | withdraw        | 1164  | 0       | 0        |
+╰----------+-----------------+-------+---------+----------╯
+
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 8.80s (19.31s CPU time)
+
+Ran 39 tests for test/RefundEscrow.t.sol:RefundEscrowTest
+[PASS] test_E1_blocked_buyer_cannot_block_settlement() (gas: 984944)
+[PASS] test_E1_claim_freezes_order_past_expiry_until_verdict() (gas: 934692)
+[PASS] test_E1_expiry_without_claim_pays_merchant_and_merchant_refunds_any_time() (gas: 1092755)
+[PASS] test_E1_guardian_and_relayer_keys_must_differ_and_changes_wait() (gas: 161771)
+[PASS] test_E1_only_guardian_vetoes_without_moving_funds() (gas: 971470)
+[PASS] test_E1_only_relayer_proposes_bounded_by_amount_and_executes_after_delay() (gas: 992071)
+[PASS] test_E1_only_relayer_requests_proof_once_and_not_with_a_pending_verdict() (gas: 1775120)
+[PASS] test_E1_only_relayer_sets_terms_within_bounds_for_new_orders_only() (gas: 252309)
+[PASS] test_E1_pause_stops_orders_and_relayer_steps_but_not_claims_submissions_or_settlement() (gas: 967862)
+[PASS] test_E1_pay_holds_funds_per_order() (gas: 216638)
+[PASS] test_E1_pay_rejects_unknown_token_cap_merchant_hold_terms_and_duplicates() (gas: 816383)
+[PASS] test_E1_unproven_claim_releases_to_merchant_after_window_and_waits_for_pending_verdict() (gas: 957002)
+[PASS] test_E1_verdict_delay_bounds() (gas: 192129)
+[PASS] test_E2_valid_claim_only_by_buyer_once() (gas: 893597)
+[PASS] test_E2a_claim_time_in_the_future_is_rejected() (gas: 806235)
+[PASS] test_E2b_claim_time_more_than_15_minutes_back_is_rejected_15_exactly_accepted() (gas: 1474756)
+[PASS] test_E2c_expired_order_rejects_claim_whatever_claimed_at_says() (gas: 342776)
+[PASS] test_E2d_amount_other_than_the_total_is_rejected() (gas: 1939295)
+[PASS] test_E2e_buyer_other_than_the_caller_is_rejected() (gas: 428591)
+[PASS] test_E2f_reference_payment_time_merchant_or_terms_mismatch_is_rejected() (gas: 1777925)
+[PASS] test_E2g_total_without_whole_cents_is_rejected_at_payment() (gas: 227849)
+[PASS] test_E3_vector_late_two_buyer_emails() (gas: 877552)
+[PASS] test_E3_vector_not_as_described_spanish_closing_round() (gas: 1286469)
+[PASS] test_E3_vector_not_delivered_no_response_marker() (gas: 984366)
+[PASS] test_E4_allowed_pairs_from_the_right_address() (gas: 1009374)
+[PASS] test_E4_closing_items_only_in_an_open_round_once_within_72_hours() (gas: 973047)
+[PASS] test_E4_closing_timeout_not_early_not_when_both_answered() (gas: 940449)
+[PASS] test_E4_no_response_marker_not_early_not_after_a_response() (gas: 1743440)
+[PASS] test_E4_no_submission_while_a_verdict_is_pending() (gas: 942184)
+[PASS] test_E4_proof_only_after_request_once_within_7_days() (gas: 951049)
+[PASS] test_E4_store_response_only_within_72_hours_and_once() (gas: 930339)
+[PASS] test_E4_wrong_pair_wrong_address_or_changed_tail_is_rejected() (gas: 952847)
+[PASS] test_E5_other_claim_hash_or_chain_is_rejected() (gas: 993506)
+[PASS] test_E6_invalid_claim_after_expiry_cannot_reopen_and_order_expires_normally() (gas: 943011)
+[PASS] test_E6_invalid_claim_clears_without_moving_funds_and_buyer_reopens_in_time() (gas: 1573088)
+[PASS] test_E7_stalled_release_blocked_while_a_verdict_is_pending() (gas: 934680)
+[PASS] test_E7_stalled_release_not_before_60_days_then_anyone_including_buyer() (gas: 912597)
+[PASS] test_E7_verdict_after_the_release_has_no_effect() (gas: 932999)
+[PASS] test_E9_every_open_order_can_close_even_while_paused() (gas: 3692259)
+Suite result: ok. 39 passed; 0 failed; 0 skipped; finished in 8.80s (158.92ms CPU time)
+
+Ran 2 test suites in 8.81s (17.59s CPU time): 42 tests passed, 0 failed, 0 skipped (42 total tests)

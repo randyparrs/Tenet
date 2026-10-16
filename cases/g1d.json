@@ -1,0 +1,25 @@
+{
+ "prompt_sha256": "853481b2c2268f9c5f48d739920d7c55a86fce730006bc4f453fd0771ff027f3",
+ "note": "G1 reworded without dates, for a demo order paid and claimed the same day (scenarios D1 and D2 of the demo mode); everything else equal to G1.",
+ "cases": [
+  {
+   "id": "G1D",
+   "group": "general_denial",
+   "lang": "en",
+   "account": "My order never arrived. The promised date was today and nothing came.",
+   "response": "We shipped your order.",
+   "closing": null,
+   "expected": {
+    "q2": "general_denial",
+    "q2r2": null
+   },
+   "expected_label": "not_shown",
+   "injection_target": null,
+   "expected_decision": [
+    "REFUND",
+    5000,
+    "per policy"
+   ]
+  }
+ ]
+}

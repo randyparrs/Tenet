@@ -871,7 +871,7 @@
       { title: 'GenLayer Bradbury explorer', purpose: 'Look up judge transactions and Lacre attestations.', url: bradN.explorer, icon: 'scales' },
       { title: 'Lacre', purpose: 'On-chain DKIM attestations for store emails.', url: (lacre && lacre.project_url) || '', icon: 'lacre', mark: true,
         secondary: lacreRepo ? { label: 'Source code, MIT, Insidr Labs', url: 'https://' + lacreRepo } : null },
-      { title: 'Source code', purpose: 'The Tenet contracts, judges and relayer.', url: '', icon: 'code', display: 'Added when the repository is published' }
+      { title: 'Source code', purpose: 'The Tenet contracts, judges, relayer, Demo Shop Worker and this page. MIT.', url: 'https://github.com/randyparrs/Tenet', icon: 'code' }
     ];
     var stepBox = function (n, title, body, action) {
       return '<div class="start-step well"><span class="n">' + n + '</span><span style="font-size:15px">' + esc(title) + '</span><span class="muted pretty" style="font-size:13px">' + esc(body) + '</span><div class="actions">' + action + '</div></div>';

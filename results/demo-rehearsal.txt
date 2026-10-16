@@ -44,8 +44,8 @@ ok   DEMO8 a demo-key email as evidence for the live store is ignored (["I5"], N
 ok   DEMO8 the Worker refuses to sign anything outside its list (relayer withdraw, store proposeVerdict)
 -- the page's Demo Shop, end to end (N1)
 ok   PAGE the Demo Shop lists six products, each with its illustration and a Buy button
-ok   PAGE Buy creates order DS-955501 and pays it from the wallet in one click (Order DS-955501 paid on Arc. The demo store registers it within a minute.)
-ok   PAGE after Buy the page opens the order in My orders (#my-orders/DS-955501)
+ok   PAGE Buy creates order DS-979085 and pays it from the wallet in one click (Order DS-979085 paid on Arc. The demo store registers it within a minute.)
+ok   PAGE after Buy the page opens the order in My orders (#my-orders/DS-979085)
 ok   PAGE the order offers one button, Open a claim, with the exact text folded
 ok   PAGE N1 through the page: claim signed by the visitor, REFUND 1.00 USDC settled
 ok   PAGE while the order runs, the sidebar counter shows 1 with the order number on hover

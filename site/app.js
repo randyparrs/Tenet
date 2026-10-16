@@ -1012,7 +1012,7 @@
   /* Wallet: Arc testnet. This module connects and reads; the Demo Shop (demo-shop.js) sends the visitor's own transactions. */
   var ARC = { chainId: '0x4cef52', chainName: 'Arc Testnet', nativeCurrency: { name: 'USDC', symbol: 'USDC', decimals: 18 }, rpcUrls: ['https://rpc.testnet.arc.io'], blockExplorerUrls: ['https://explorer.testnet.arc.io'] };
   var wallet = {
-    status: 'idle', address: '', balance: null, listening: false, msgTimer: 0,
+    status: 'idle', address: '', balance: null, balanceErr: false, listening: false, msgTimer: 0,
     eth: function () { return window.ethereum || null; },
     arcN: function () { return (state.data && state.data.networks && state.data.networks.arc) || {}; },
     isCancel: function (e) {
@@ -1040,19 +1040,45 @@
         });
       });
     },
-    readBalance: function (eth) {
-      return eth.request({ method: 'eth_getBalance', params: [wallet.address, 'latest'] }).then(function (hex) {
+    /* Reads go to Arc's public RPC, so they work whatever RPC the wallet has set for Arc; the wallet is the
+       fallback. Only signatures and transactions go through the wallet. */
+    read: function (method, params) {
+      /* A read that hangs counts as failed after 8 seconds, so the page never waits forever */
+      var timed = function (pr, what) {
+        return new Promise(function (res, rej) {
+          var tm = setTimeout(function () { rej(new Error(what + ': no answer in 8 s')); }, 8000);
+          pr.then(function (v) { clearTimeout(tm); res(v); }, function (e) { clearTimeout(tm); rej(e); });
+        });
+      };
+      var viaWallet = function (e) {
+        console.warn('Tenet: ' + method + ' through Arc public RPC failed (' + ((e && e.message) || e) + '); trying the wallet');
+        var eth = wallet.eth(); if (!eth) throw e;
+        return timed(eth.request({ method: method, params: params }), 'wallet').catch(function (e2) {
+          console.warn('Tenet: ' + method + ' through the wallet failed (' + ((e2 && e2.message) || e2) + ')');
+          throw e2;
+        });
+      };
+      return timed(fetch(ARC.rpcUrls[0], { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: method, params: params }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { if (!j || j.error || j.result === undefined) throw new Error((j && j.error && j.error.message) || 'no result'); return j.result; }), 'Arc public RPC')
+        .catch(viaWallet);
+    },
+    readBalance: function () {
+      if (!wallet.address) return Promise.resolve();
+      return wallet.read('eth_getBalance', [wallet.address, 'latest']).then(function (hex) {
         var cents = Number(BigInt(hex) / BigInt('10000000000000000'));
         wallet.balance = cents / 100;
+        wallet.balanceErr = false;
         wallet.render();
-      });
+      }, function (e) { wallet.balanceErr = true; wallet.render(); throw e; });
     },
     sync: function () {
       var eth = wallet.eth(); if (!eth || !wallet.address) return;
       eth.request({ method: 'eth_chainId' }).then(function (cid) {
         if (String(cid).toLowerCase() !== ARC.chainId) { wallet.status = 'wrong'; wallet.balance = null; wallet.render(); return; }
         wallet.status = 'connected'; wallet.render();
-        wallet.readBalance(eth).catch(function () {});
+        wallet.readBalance().catch(function () {});
       }).catch(function () {});
     },
     listen: function (eth) {
@@ -1078,7 +1104,7 @@
         .then(function () {
           wallet.listen(eth);
           wallet.status = 'connected'; wallet.render();
-          return wallet.readBalance(eth);
+          wallet.readBalance().catch(function () { /* shown as unavailable; a failed read is not a failed connection */ });
         })
         .catch(function (e) {
           wallet.status = wallet.address ? 'wrong' : 'idle';
@@ -1096,7 +1122,7 @@
         .then(function () { wallet.showMsg('add-network-msg', 'Arc testnet is ready in your wallet.', true); if (wallet.address) wallet.sync(); })
         .catch(function (e) { if (!wallet.isCancel(e)) wallet.showMsg('add-network-msg', 'Could not add Arc testnet.'); });
     },
-    disconnect: function () { wallet.clearMsg(); wallet.status = 'idle'; wallet.address = ''; wallet.balance = null; wallet.render(); },
+    disconnect: function () { wallet.clearMsg(); wallet.status = 'idle'; wallet.address = ''; wallet.balance = null; wallet.balanceErr = false; wallet.render(); },
     restore: function () {
       var eth = wallet.eth(); if (!eth) return;
       eth.request({ method: 'eth_accounts' }).then(function (a) {
@@ -1114,7 +1140,7 @@
       addr.textContent = a ? a.slice(0, 6) + '...' + a.slice(-4) : '';
       addr.title = a;
       addr.href = (arcN.address_url || 'https://explorer.testnet.arc.io/address/') + a;
-      $('wallet-bal').textContent = wallet.balance == null ? 'reading...' : wallet.balance.toFixed(2) + ' USDC';
+      $('wallet-bal').textContent = wallet.balance != null ? wallet.balance.toFixed(2) + ' USDC' : wallet.balanceErr ? 'balance unavailable' : 'reading...';
       var faucet = $('wallet-faucet');
       faucet.href = arcN.faucet || 'https://faucet.circle.com';
       faucet.hidden = !(s === 'connected' && wallet.balance === 0);

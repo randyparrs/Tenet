@@ -13,6 +13,8 @@
   var JUDGE_USUAL_S = 120; // send to ACCEPTED on Bradbury: under 1 minute (measured), plus the Worker's 1 minute tick
   var FINAL_USUAL_S = 1800; // decided to final on Bradbury: about 30 minutes (measured 26 to 30 min from the send)
   var PHASES = [['coins', 'Paid'], ['fileText', 'Claim'], ['envelope', 'Store answer'], ['scales', 'Judge'], ['checkCircle', 'Settled']];
+  /* The late path has no store answer: the store's own signed emails, attested on Lacre, are the evidence */
+  var PHASES_LATE = [['coins', 'Paid'], ['lacre', 'Store emails'], ['fileText', 'Claim'], ['scales', 'Judge'], ['checkCircle', 'Settled']];
   var t = { config: null, error: '', quota: null, views: {}, busy: '', busyArg: '', busyLabel: '', note: null, folds: {},
     timer: 0, clock: 0, claimable: null, screen: '', focus: null, focusAt: 0, flash: 0, flashNext: false, purchased: null, withdrawnAt: 0 };
 
@@ -53,7 +55,7 @@
     var tries = 0;
     return new Promise(function (res, rej) {
       (function poll() {
-        eth().request({ method: 'eth_getTransactionReceipt', params: [hash] }).then(function (r) {
+        ui().wallet.read('eth_getTransactionReceipt', [hash]).then(function (r) {
           if (r && r.status === '0x1') return res(hash);
           if (r && r.status !== '0x1') return rej(new Error('The transaction reverted on Arc.'));
           if (++tries > 90) return rej(new Error('No receipt yet; check the explorer.'));
@@ -62,8 +64,9 @@
       })();
     });
   }
-  function call(to, data) { return eth().request({ method: 'eth_call', params: [{ to: to, data: data }, 'latest'] }); }
-  function readBalance() { try { ui().wallet.readBalance(eth()).catch(function () {}); } catch (e) { /* no wallet */ } }
+  /* Reads use Arc's public RPC first (app.js wallet.read), so a wallet with a stale Arc RPC still sees its balance and credit */
+  function call(to, data) { return ui().wallet.read('eth_call', [{ to: to, data: data }, 'latest']); }
+  function readBalance() { try { ui().wallet.readBalance().catch(function () {}); } catch (e) { /* no wallet */ } }
 
   /* Orders this browser started: a convenience only, the Worker holds the real state */
   function saved() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); } catch (e) { return []; } }
@@ -112,7 +115,18 @@
     });
     if (me() && t.config) jobs.push(call(t.config.addresses.escrow, '0x' + SEL.claimable + word(me()) + word(t.config.addresses.usdc))
       .then(function (h) { t.claimable = Number(BigInt(h)) / 1e6; }, function () { t.claimable = null; }));
-    return Promise.all(jobs).then(render, render);
+    if (me()) jobs.push(ui().wallet.readBalance().catch(function () { /* shown as unavailable */ }));
+    return Promise.all(jobs).then(fromWorker, fromWorker).then(render, render);
+  }
+  /* Last resort when this browser cannot read Arc at all (an ad blocker, a dead wallet RPC): the Worker reads it */
+  function account() { return get('/api/account?address=' + me()).then(function (a) { if (!a || a.error) throw new Error('no account read'); return a; }); }
+  function fromWorker() {
+    var W = ui().wallet;
+    if (!me() || !t.config || (t.claimable != null && W.balance != null)) return;
+    return account().then(function (a) {
+      if (t.claimable == null) t.claimable = Number(BigInt(a.claimable)) / 1e6;
+      if (W.balance == null) { W.balance = Number(BigInt(a.balance_wei) / BigInt('10000000000000000')) / 100; W.balanceErr = false; W.render(); }
+    }, function () { /* the page says the reads failed */ });
   }
   function isDone(v) { return !!(v && (v.settled || v.refund)); }
   function inProgress() {
@@ -128,7 +142,9 @@
     var p = payOf(order), A = t.config.addresses;
     if (!p) return Promise.reject(new Error('The payment details of this order are in another browser.'));
     step('Preparing the payment...');
-    return call(A.usdc, '0x' + SEL.allowance + word(me()) + word(A.escrow)).then(function (h) {
+    return call(A.usdc, '0x' + SEL.allowance + word(me()) + word(A.escrow)).catch(function (e) {
+      return account().then(function (a) { return '0x' + BigInt(a.allowance).toString(16); }, function () { throw e; });
+    }).then(function (h) {
       var need = BigInt(h) < BigInt(p.amount);
       return (need ? sendTx(A.usdc, '0x' + SEL.approve + word(A.escrow) + uint(p.amount), 'Approve in your wallet (1 of 2)') : Promise.resolve())
         .then(function () {
@@ -300,24 +316,25 @@
         action: payOf(o.order) ? { kind: 'pay', label: 'Approve and pay ' + amt } : wait('Paid from another browser') };
     }
     var claimE = lastEv(v, /^Claim opened/);
+    var late = sc.path === 'late', CL = late ? 2 : 1; // the Claim phase's place on the track
     if (!claimE) {
       if (v.next && v.next.action === 'claim') {
-        if (wasSent(o.order, 'claim')) return { i: 1, line: 'Claim sent on Arc. The demo store registers it within a minute.', action: wait('Waiting for the store') };
+        if (wasSent(o.order, 'claim')) return { i: CL, line: 'Claim sent on Arc. The demo store registers it within a minute.', action: wait('Waiting for the store') };
         var then = v.next.then || [];
-        return { i: 1, line: (sc.product ? sc.product.goes_wrong + ' ' : '') + 'Open a claim: the judge reads it with the store\'s answer.' +
+        return { i: CL, line: (sc.product ? sc.product.goes_wrong + ' ' : '') + 'Open a claim: the judge reads it with the store\'s answer.' +
           (then.length ? ' The store\'s ' + then.length + ' signed emails go with it as evidence, one transaction each.' : ''),
           action: { kind: 'claim', label: 'Open a claim' }, exact: [v.next.claim].concat(then) };
       }
       return { i: 1, line: (v.next && v.next.text) || 'Paid. The demo store is preparing the order.', action: wait('Open a claim') };
     }
     var unsent = v.next && v.next.action === 'submit' ? (v.next.submissions || []).filter(function (s) { return !wasSent(o.order, s); }) : [];
-    if (sc.path === 'late' && v.next && v.next.action === 'submit') {
+    if (late && v.next && v.next.action === 'submit') {
       return unsent.length
-        ? { i: 1, line: 'The claim is open. Send the store\'s signed emails as evidence, one transaction each.', action: { kind: 'submit', label: 'Send the evidence' }, exact: unsent }
-        : { i: 1, line: 'Evidence sent on Arc. The demo store registers it within a minute.', action: wait('Waiting for the store') };
+        ? { i: CL, line: 'The claim is open. Send the store\'s signed emails as evidence, one transaction each.', action: { kind: 'submit', label: 'Send the evidence' }, exact: unsent }
+        : { i: CL, line: 'Evidence sent on Arc. The demo store registers it within a minute.', action: wait('Waiting for the store') };
     }
     var answered = lastEv(v, /^(Store answered|Registered: (response|no response))/);
-    if (!answered) {
+    if (!late && !answered) {
       return { i: 2, line: 'Claim registered on Arc. The demo store has ' + mins(W.response) + ' to answer.',
         bar: bar('Store answer window', claimE.at, claimE.at + (W.response || 300), now), action: wait('Waiting for the store') };
     }
@@ -368,7 +385,7 @@
         bar: sent ? judgeBar(sent.at, now) : null, action: wait('Waiting for the judge') };
     }
     if (lastFinal) return { i: 3, line: 'Final verdict: ' + outcomeText(lastFinal) + '. Proposing it on Arc.', action: wait('Waiting for the escrow') };
-    return { i: 3, line: 'The store answered. Sending the case to the judge.', action: wait('Waiting for the judge') };
+    return { i: 3, line: late ? 'The evidence is registered. Sending the case to the judge.' : 'The store answered. Sending the case to the judge.', action: wait('Waiting for the judge') };
   }
 
   /* Buttons: a signing button shows a spinner and where it is; a wait is a disabled button in the same place */
@@ -443,17 +460,22 @@
       : p.i === 0 ? '<span class="pill pill-muted">Not paid</span>' : '<span class="pill pill-progress">In progress</span>';
     var focus = t.focus === o.order && Date.now() - t.focusAt < 12000;
     var tl = timeline(v);
+    var phases = sc.path === 'late' ? PHASES_LATE : PHASES;
+    /* A note next to the button belongs to the step it was written in: it goes once the order moves on */
+    var nk = 'order:' + o.order, here = p.i + '|' + p.line;
+    if (t.note && t.note.key === nk) { if (t.note.at == null) t.note.at = here; else if (t.note.at !== here) t.note = null; }
     var html = '<article class="card ord' + (focus ? ' ord-focus' : '') + '" id="ord-' + esc(o.order) + '">' +
       '<div class="ord-head"><div class="col" style="gap:5px;min-width:0">' +
       '<span class="ord-no">Order <b>' + esc(o.order) + '</b><button type="button" class="ord-copy" data-copy="' + esc(o.order) + '" title="Copy ' + esc(o.order) + '" aria-label="Copy order number ' + esc(o.order) + '">' + icon('copy') + '</button></span>' +
       '<span class="ord-product">' + esc((sc.product || {}).name || o.scenario) + '<span class="mono dim">1.00 USDC</span></span></div>' +
       '<span class="ml-auto">' + pill + '</span></div>' +
-      '<ol class="ord-track" aria-label="Progress of order ' + esc(o.order) + '">' + PHASES.map(function (ph, i) {
+      '<ol class="ord-track" aria-label="Progress of order ' + esc(o.order) + '">' + phases.map(function (ph, i) {
         var cls = i < p.i || (i === p.i && p.done) ? 'done' : i === p.i ? 'cur' : '';
         return '<li class="' + cls + '"' + (cls === 'cur' ? ' aria-current="step"' : '') + '><span class="circle">' + icon(cls === 'done' ? 'check' : ph[0]) + '</span>' +
           '<span class="line"></span><span class="t">' + esc(ph[1]) + '</span></li>';
       }).join('') + '</ol>' +
       '<div class="ord-now"><span class="ord-line' + (p.tone ? ' ' + p.tone : '') + '">' + esc(p.line) + '</span>' + (p.bar ? timeBar(p.bar) : '') + '</div>' +
+      (sc.path === 'late' && v.paid ? storeEmails(v, url) : '') +
       '<div class="ord-actions">' + button(p.action, o.order) + note('order:' + o.order) + '</div>';
     var folds = (p.exact ? fold('exact:' + o.order, 'View exact text', p.exact.map(function (x) { return '<pre class="claim-pre well-dark">' + esc(x) + '</pre>'; }).join('')) : '') +
       (tl.length ? fold('tl:' + o.order, 'Timeline (' + tl.length + ')', '<div class="col" style="gap:0">' + tl.map(function (e) {
@@ -462,6 +484,22 @@
           (e.tx ? '<div class="row" style="gap:6px">' + U.hashChip(e.tx, url(e), e.net === 'arc' ? 'arc' : e.net === 'lacre' ? 'lacre' : 'bradbury') + '</div>' : '') + '</div>';
       }).join('') + '</div>') : '');
     return html + (folds ? '<div class="ord-folds">' + folds + '</div>' : '') + '</article>';
+  }
+
+  /* The late path's store emails: each one signed by the store, then verified by Lacre with a link to its attestation */
+  function storeEmails(v, url) {
+    var U = ui(), mails = v.mails || [];
+    var row = function (kind, label) {
+      var m = mails.filter(function (x) { return x.kind === kind; })[0];
+      var st = !m ? (kind === 'delivered' ? 'sent the day after the payment (UTC)' : 'not signed yet')
+        : m.record ? 'signed by the store, verified by Lacre (record ' + m.record + ')'
+        : m.tx ? 'signed by the store, verifying on Lacre' : 'signed by the store';
+      return '<div class="row" style="gap:6px 12px;flex-wrap:wrap;align-items:center"><span style="font-size:13px;color:var(--color-neutral-100)">' + esc(label) + '</span>' +
+        '<span class="muted" style="font-size:12.5px">' + esc(st) + '</span>' +
+        (m && m.tx ? '<span class="ml-auto">' + U.hashChip(m.tx, url({ tx: m.tx, net: 'lacre' }), 'lacre') + '</span>' : '') + '</div>';
+    };
+    return '<div class="col well" style="gap:8px;padding:12px 14px"><div class="row" style="gap:8px;align-items:center"><span class="eyebrow">Store emails</span>' +
+      U.netBadge('lacre', { short: true }) + '</div>' + row('confirmed', 'Order confirmed') + row('delivered', 'Delivered') + '</div>';
   }
 
   /* Screens */
@@ -500,14 +538,14 @@
     var html = head + (c.paused ? '<p class="card empty-note" style="color:var(--warn-fg)">The Demo Shop is paused. Orders already paid are refunded in full by the store if they cannot finish.</p>' : '');
     html += '<div class="stat-row">' +
       '<div class="card stat"><div class="stat-top"><span class="eyebrow">Your wallet</span>' + U.netBadge('arc') + '</div>' +
-      (connected ? '<span class="stat-big" style="font-size:24px">' + (U.wallet.balance == null ? '...' : U.wallet.balance.toFixed(2)) + ' <span style="font-size:14px">USDC</span></span>' +
+      (connected ? '<span class="stat-big" style="font-size:24px">' + (U.wallet.balance != null ? U.wallet.balance.toFixed(2) : U.wallet.balanceErr ? '--' : '...') + ' <span style="font-size:14px">USDC</span></span>' +
         '<span class="stat-sub">' + esc(me().slice(0, 6) + '...' + me().slice(-4)) + (q ? ', ' + q.address + ' of ' + q.per_address + ' orders today' : '') + '</span>'
         : '<span class="stat-sub">Connect a wallet on Arc testnet to shop.</span><div><button type="button" class="btn btn-primary btn-sm" data-try="connect">Connect wallet</button></div>') + '</div>' +
       '<div class="card stat"><div class="stat-top"><span class="eyebrow">Held in the escrow</span></div><span class="stat-big" style="font-size:24px">' + held.toFixed(2) + ' <span style="font-size:14px">USDC</span></span>' +
         '<span class="stat-sub">Your paid orders waiting for a verdict.</span></div>' +
       '<div class="card stat' + (credit > 0 ? ' try-credit' : '') + (flash ? ' try-flash' : '') + '" id="try-credited"><div class="stat-top"><span class="eyebrow">Credited to you</span></div>' +
-        '<span class="stat-big" style="font-size:24px">' + credit.toFixed(2) + ' <span style="font-size:14px">USDC</span></span>' +
-        '<div class="row" style="gap:10px"><span class="stat-sub">Refunds ready to withdraw.</span><span class="ml-auto">' + withdrawBtn + '</span></div>' + note('withdraw') + '</div>' +
+        '<span class="stat-big" style="font-size:24px">' + (connected && t.claimable == null ? '--' : credit.toFixed(2)) + ' <span style="font-size:14px">USDC</span></span>' +
+        '<div class="row" style="gap:10px"><span class="stat-sub">' + (connected && t.claimable == null ? 'Could not read the escrow on Arc; retrying.' : 'Refunds ready to withdraw.') + '</span><span class="ml-auto">' + withdrawBtn + '</span></div>' + note('withdraw') + '</div>' +
       '</div>';
     if (connected && q && (left === 0 || dayFull)) html += '<p class="muted" style="font-size:12.5px;margin:0">' + (dayFull ? 'The Demo Shop reached its orders for today.' : 'You used your ' + q.per_address + ' orders for today.') + ' Come back tomorrow (UTC).</p>';
     if (list.length) {
@@ -597,6 +635,6 @@
       t.quota = null;
       if (ui().wallet.status === 'connected') { if (t.config) refresh(); else load(); } else render();
     },
-    _state: t, _act: act
+    _state: t, _act: act, _card: orderCard
   };
 })();

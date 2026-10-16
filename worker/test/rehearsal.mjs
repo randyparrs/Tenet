@@ -200,12 +200,14 @@ async function run(url, stubPort, data, pem) {
   await pay(B3, l1);
   for (let i = 0; i < 10; i++) { await tick(); await warp(60); }
   let v = await core.view(l1.order, await now());
+  const l1Views = [structuredClone(v)];
   check(v.next?.action === "wait" && /tomorrow/.test(v.next.text), "DEMO2 L1 day 0: the page says the delivery notice comes tomorrow");
   const t = await now();
   await warp(86400 - (t % 86400) + 7 * 3600); // 07:00 UTC of day 1: more than 6 hours after the payment
   // DEMO11: L1 waits more than 6 hours since payment without a claim and is not refunded
   for (let i = 0; i < 160; i++) {
     await tick();
+    l1Views.push(structuredClone(await core.view(l1.order, await now())));
     await visitor(B3, l1);
     if (await settledOf(l1)) break;
     await warp(60);
@@ -278,17 +280,19 @@ async function run(url, stubPort, data, pem) {
   check(refused === 2, "DEMO8 the Worker refuses to sign anything outside its list (relayer withdraw, store proposeVerdict)");
   // ---- The page: N1 driven through site/app.js and site/demo-shop.js, the visitor's wallet on anvil --------
   say("-- the page's Demo Shop, end to end (N1)");
-  await pageRun({ core, pub, wallet, now, warp, tick: () => tick(), data, escrow, art, stable, split: () => stubCall("/control", { split_next: true }) });
+  await pageRun({ core, pub, wallet, now, warp, tick: () => tick(), data, escrow, art, stable, split: () => stubCall("/control", { split_next: true }),
+    l1: { order: l1.order, views: l1Views } });
 
   const meta = await core.meta();
   check(!meta.paused, "no stop raised during the rehearsal" + (meta.stop ? ": " + meta.stop : ""));
   const counts = await stubCall("/count", {});
+  check(counts.early_final_reads === 0, `DEMO4 every verdict and Lacre record the Worker used was read with its transaction FINALIZED (early final reads: ${counts.early_final_reads})`);
   say(`judge sends ${counts.judge_sends}, Lacre attestations ${counts.attests}`);
 }
 
 // The page's own code (site/app.js and site/demo-shop.js) in a small DOM stand-in. Its API calls go to the
 // same routes as worker/src/index.js, served by the rehearsal's core; its wallet is B1 on anvil.
-async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, stable, split }) {
+async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, stable, split, l1 }) {
   const vm = await import("node:vm");
   const els = {};
   const el = (id) => els[id] || (els[id] = { id, innerHTML: "", textContent: "", hidden: false, disabled: false, href: "", title: "", style: {},
@@ -305,13 +309,17 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
       body = { chain_id: 5042002, amount_cents: data.amount_cents, windows_seconds: data.windows_seconds, limits: data.limits,
         addresses: data.addresses, refund_texts: REFUND_TEXT, paused: null, scenarios: data.scenarios };
     } else if (u.pathname === "/api/quota") body = await core.quota(u.searchParams.get("address"), t);
+    else if (u.pathname === "/api/account") body = net.workerDown ? { error: "unreachable" } : await core.arc.account(u.searchParams.get("address"), data.addresses.usdc);
     else if (u.pathname === "/api/orders" && init.method === "POST") body = await core.createOrder(JSON.parse(init.body).scenario, t);
     else body = (await core.view(u.pathname.split("/").pop(), t)) || { error: "no such order" };
     return { ok: true, json: async () => structuredClone(body), text: async () => JSON.stringify(body) };
   };
+  const READS = ["eth_getBalance", "eth_call", "eth_getTransactionReceipt"];
+  const net = { walletReadsDown: false, publicRpcDown: false, workerDown: false }; // a broken wallet RPC, Arc's public RPC down, the Worker's read down
   const ethereum = {
     on() {},
     request: async ({ method, params }) => {
+      if (net.walletReadsDown && READS.includes(method)) throw new Error("wallet RPC unreachable");
       if (method === "eth_requestAccounts" || method === "eth_accounts") return [B1.address];
       if (method === "eth_chainId") return "0x4cef52";
       if (method === "eth_sendTransaction") return wallet(B1).sendTransaction({ to: params[0].to, data: params[0].data });
@@ -329,8 +337,16 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
     isFinite, encodeURIComponent, decodeURIComponent, TextEncoder, URL, performance: { now: () => 0 }, requestAnimationFrame: () => 0,
     cancelAnimationFrame() {}, setTimeout, clearTimeout, setInterval: () => 0, clearInterval() {},
     localStorage: { getItem: (k) => (ls.has(k) ? ls.get(k) : null), setItem: (k, v) => ls.set(k, String(v)), removeItem: (k) => ls.delete(k) },
-    fetch: async (u, init) => (String(u).startsWith("http://demo") ? api(String(u).slice("http://demo".length), init)
-      : { ok: true, text: async () => readFileSync(P("site/data/tenet.json"), "utf8") }) };
+    fetch: async (u, init) => {
+      if (String(u).startsWith("http://demo")) return api(String(u).slice("http://demo".length), init);
+      if (String(u) === "https://rpc.testnet.arc.io") { // the page's reads of Arc, served by anvil
+        if (net.publicRpcDown) throw new TypeError("Failed to fetch");
+        const b = JSON.parse(init.body);
+        const result = await pub.request({ method: b.method, params: b.params });
+        return { ok: true, json: async () => ({ jsonrpc: "2.0", id: b.id, result }) };
+      }
+      return { ok: true, text: async () => readFileSync(P("site/data/tenet.json"), "utf8") };
+    } };
   ctx.window.document = document;
   vm.createContext(ctx);
   for (const f of ["site/demo-shop.js", "site/app.js"]) vm.runInContext(readFileSync(P(f), "utf8"), ctx, { filename: f });
@@ -343,6 +359,24 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   await settle();
   const T = ctx.window.TenetShop;
   const act = async (kind, arg) => { T._act(kind, arg); for (let i = 0; i < 60 && T._state.busy; i++) await settle(); await settle(); };
+  // Reads: Arc's public RPC first, the wallet as fallback; when both fail the page says so instead of showing 0
+  const W = ctx.window.TenetUI.wallet, shop = () => el("screen-demo-shop").innerHTML;
+  const onChain = Number(BigInt(await pub.getBalance({ address: B1.address })) / 10n ** 16n) / 100;
+  const owed = Number(await pub.readContract({ address: escrow, abi: art.abi, functionName: "claimable",
+    args: [B1.address, "0x3600000000000000000000000000000000000000"] })) / 1e6;
+  net.walletReadsDown = true; W.balance = null; T._state.claimable = null; await act("refresh");
+  check(W.balance === onChain && T._state.claimable === owed && !W.balanceErr,
+    `PAGE with the wallet's Arc RPC down, balance (${W.balance}) and credit (${T._state.claimable}) read through Arc's public RPC`);
+  net.walletReadsDown = false; net.publicRpcDown = true; W.balance = null; T._state.claimable = null; await act("refresh");
+  check(W.balance === onChain && T._state.claimable === owed, "PAGE with Arc's public RPC down, the reads fall back to the wallet");
+  net.walletReadsDown = true; W.balance = null; T._state.claimable = null; await act("refresh");
+  check(W.balance === onChain && !W.balanceErr && T._state.claimable === owed && el("wallet-bal").textContent === onChain.toFixed(2) + " USDC",
+    "PAGE with the public RPC and the wallet both down, balance and credit come through the Worker's read");
+  net.workerDown = true; W.balance = null; T._state.claimable = null; await act("refresh");
+  check(W.balance === null && W.balanceErr && T._state.claimable === null && /Could not read the escrow on Arc; retrying\./.test(shop())
+    && el("wallet-bal").textContent === "balance unavailable", "PAGE with every read down, the page says the reads failed instead of showing 0");
+  net.walletReadsDown = false; net.publicRpcDown = false; net.workerDown = false; await act("refresh");
+  check(W.balance === onChain && !W.balanceErr && T._state.claimable === owed, "PAGE the reads recover on the next refresh");
   const html = () => el("screen-demo-shop").innerHTML;
   check((html().match(/data-try="start"/g) || []).length === 6 && /Demo Shop/.test(html()) && (html().match(/<svg class="try-art-svg"/g) || []).length === 6
     && !/undefined|NaN/.test(html()), "PAGE the Demo Shop lists six products, each with its illustration and a Buy button");
@@ -362,7 +396,7 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   const mo = () => el("screen-my-orders").innerHTML;
   const cnt = el("nav-orders-count");
   const cur = () => (mo().match(/<li class="cur" aria-current="step">.*?<span class="t">([^<]+)<\/span>/) || [])[1];
-  let claimed = false, sawCounter = false, sawNoConsensus = false, sawFinalizing = false;
+  let claimed = false, sawCounter = false, sawNoConsensus = false, sawFinalizing = false, sawClaimNote = false, staleNote = false;
   await split(); // the order's first judge attempt gets no consensus, as DS-984327's did on Bradbury
   const phases = new Set();
   for (let i = 0; i < 40; i++) {
@@ -370,6 +404,7 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
     await act("refresh");
     const v = T._state.views[order] || {};
     if (cur()) phases.add(cur());
+    if (/claim registered on Arc\. The demo store answers next\./.test(mo())) { if (cur() === "Judge" || cur() === "Settled") staleNote = true; else sawClaimNote = true; }
     if (/No consensus on the first attempt\. Bradbury closes it after about 30 min, then the step is sent again\./.test(mo())
       && /Until Bradbury closes the attempt/.test(mo()) && /data-bar-after="Closing, then sent again"/.test(mo())) sawNoConsensus = true;
     if (/Decided, finalizing: REFUND 1\.00 USDC\. The payment waits for the final verdict: GenLayer makes it final in about 30 min, then the escrow pays\./.test(mo())
@@ -378,6 +413,7 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
     if (!claimed && v.next?.action === "claim") {
       check(/data-try="claim"/.test(mo()) && /View exact text/.test(mo()), "PAGE the order offers one button, Open a claim, with the exact text folded");
       await act("claim", order); claimed = true;
+      if (/claim registered on Arc\. The demo store answers next\./.test(mo())) sawClaimNote = true;
     }
     if (v.settled) break;
     await warp(60);
@@ -388,6 +424,24 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   check(sawCounter, "PAGE while the order runs, the sidebar counter shows 1 with the order number on hover");
   check(sawNoConsensus && v.steps[0]?.attempts.length === 2, "PAGE a first attempt without consensus shows its line and time bar until Bradbury closes it; then the step is sent again");
   check(sawFinalizing, "PAGE a decided verdict shows that the payment waits for the final verdict (about 30 min), with its time bar");
+  check(sawClaimNote && !staleNote, `PAGE the note left by the claim shows next to the button and goes once the order moves on to the judge (shown ${sawClaimNote}, stale ${staleNote})`);
+  // L1 in My orders, rendered from the Worker's view at each moment of the run above
+  const labels = (h) => [...h.matchAll(/<span class="t">([^<]+)<\/span><\/li>/g)].map((m) => m[1]);
+  const curOf = (h) => (h.match(/<li class="cur" aria-current="step">.*?<span class="t">([^<]+)<\/span>/) || [])[1] || "";
+  const card = (view) => { T._state.views[l1.order] = view; return T._card({ order: l1.order, scenario: "L1" }, Date.now() / 1000); };
+  const l1Cards = l1.views.map(card);
+  const n1Labels = labels(mo());
+  check(l1Cards.every((h) => labels(h).join(",") === "Paid,Store emails,Claim,Judge,Settled") && n1Labels.join(",") === "Paid,Claim,Store answer,Judge,Settled",
+    `PAGE L1's track is Paid, Store emails, Claim, Judge, Settled; the other paths keep their five steps (${n1Labels.join(", ")})`);
+  const l1Cur = l1Cards.map(curOf);
+  check(l1Cur[0] === "Store emails" && /Order confirmed/.test(l1Cards[0]) && /signed by the store/.test(l1Cards[0]) && /sent the day after the payment/.test(l1Cards[0])
+    && /badge-lacre/.test(l1Cards[0]), `PAGE L1 day 0: Store emails is the current step, the confirmation is signed by the store and the delivery notice comes the next day (${l1Cur[0]})`);
+  const both = l1Cards.find((h) => (h.match(/verified by Lacre \(record \d+\)/g) || []).length === 2);
+  check(!!both && (both.match(/explorer-bradbury\.genlayer\.com\/tx\/0x[0-9a-f]+/g) || []).length >= 2,
+    "PAGE L1: each store email shows signed by the store, verified by Lacre and a link to its attestation on Bradbury");
+  check(l1Cur.includes("Claim") && l1Cur.includes("Judge") && !l1Cur.includes("Store answer")
+    && (l1Cards[l1Cards.length - 1].match(/<li class="done">/g) || []).length === 5,
+    `PAGE L1 moves through Claim and Judge to Settled, never through a store answer (${[...new Set(l1Cur)].join(", ")})`);
   check(["Claim", "Judge"].every((p) => phases.has(p)), `PAGE the order's track moved through its phases (${[...phases].join(", ")})`);
   check(mo().includes("Order <b>" + order + "</b>") && (mo().match(/<li class="done">/g) || []).length === 5
     && /REFUND 1\.00 USDC refunded to you/.test(mo()) && /Go to withdraw/.test(mo()) && !/undefined|NaN/.test(mo())

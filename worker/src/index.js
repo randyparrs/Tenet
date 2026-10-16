@@ -77,6 +77,11 @@ export class DemoState extends DurableObject {
         if (!/^0x[0-9a-fA-F]{40}$/.test(address)) return json({ error: "address" }, 400);
         return json(await core.quota(address, await now()));
       }
+      if (url.pathname === "/api/account") {
+        const address = url.searchParams.get("address") || "";
+        if (!/^0x[0-9a-fA-F]{40}$/.test(address)) return json({ error: "address" }, 400);
+        return json(await core.arc.account(address, data.addresses.usdc));
+      }
       if (url.pathname === "/api/orders" && req.method === "POST") {
         const body = await req.json().catch(() => ({}));
         const meta = await core.meta();

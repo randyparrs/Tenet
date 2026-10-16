@@ -9,6 +9,7 @@ import { cj, shaText, chain0, fold, orderRef, isoDay, b64, latin1, lower, signMa
 
 const OUTCOME = { REFUND: 1, DENY: 2, INVALID_CLAIM: 3 };
 const MAX_ATTEMPTS = 3;
+const MAIL_LABEL = { confirmed: "order confirmed", delivered: "delivered" };
 // An attempt in one of these has no consensus; Bradbury closes it (FINALIZED) after about 30 minutes, and only then is it resent.
 const NO_CONSENSUS_STATUS = new Set(["UNDETERMINED", "LEADER_TIMEOUT", "VALIDATORS_TIMEOUT"]);
 const NO_CONSENSUS_RESULT = new Set(["NO_MAJORITY", "MAJORITY_DISAGREE"]);
@@ -377,7 +378,9 @@ export class DemoCore {
     if (!at) return;
     // Status first, then the verdict: a transaction that ends between the two reads is not lost.
     const status = at.tx ? await this.gl.status(at.tx) : null;
-    const final = await this.gl.verdict(sc.judge, st.to, true);
+    // A verdict counts as final only once its transaction is FINALIZED: Bradbury answers a "latest-final"
+    // read with the accepted state (measured on 2026-10-16), so the read alone proves nothing.
+    const final = status && status.status === "FINALIZED" ? await this.gl.verdict(sc.judge, st.to, true) : null;
     if (final && final.outcome && final.outcome !== "NO_CONSENSUS") {
       const want = sc.steps[st.n - 1] || {};
       const seen = { outcome: final.outcome, refund_cents: final.refund_cents, reason: final.reason, action: final.action };
@@ -468,11 +471,12 @@ export class DemoCore {
       const a = m.attempts[m.attempts.length - 1];
       if (a && !a.done) {
         const st = a.tx ? await this.gl.status(a.tx) : null;
-        const rid = await this.gl.findRecord(m.bh, true);
+        // The record counts once the attestation is FINALIZED (same rule as the judge's verdicts)
+        const rid = st && st.status === "FINALIZED" ? await this.gl.findRecord(m.bh, true) : null;
         if (rid != null) {
           m.record = String(rid);
           a.done = true;
-          this.event(o, now, `Store email attested on Lacre: record ${rid}`, { tx: a.tx, net: "lacre" });
+          this.event(o, now, `Store email attested on Lacre (${MAIL_LABEL[k]}): record ${rid}`, { tx: a.tx, net: "lacre" });
           continue;
         }
         if (!(a.tx ? st && st.done : now - a.startedAt >= 900)) continue;
@@ -485,7 +489,7 @@ export class DemoCore {
       budget.gl--;
       try {
         at.tx = await this.gl.attest(m.blob, this.d.terms.domain, this.d.terms.selector, m.raw);
-        this.event(o, now, "Store email sent to Lacre", { tx: at.tx, net: "lacre" });
+        this.event(o, now, `Store email sent to Lacre (${MAIL_LABEL[k]})`, { tx: at.tx, net: "lacre" });
       } catch (e) {
         at.error = String(e.message || e).slice(0, 200);
       }
@@ -503,6 +507,11 @@ export class DemoCore {
                     final: s.final ? { outcome: s.final.outcome, refund_cents: s.final.refund_cents, reason: s.final.reason,
                       action: s.final.action } : null, attempts: s.attempts.map((a) => ({ tx: a.tx, result: a.result || "pending",
                       no_consensus_at: a.noConsensusAt || null })) })),
+                  // The late path's store emails: signed by the store, then a Lacre record once its attestation is FINALIZED
+                  mails: ["confirmed", "delivered"].filter((k) => o.mails[k]).map((k) => {
+                    const m = o.mails[k], a = m.attempts[m.attempts.length - 1];
+                    return { kind: k, label: MAIL_LABEL[k], signed_at: m.signedAt, tx: (a && a.tx) || null, record: m.record || null };
+                  }),
                   settled: o.settled || null, refund: o.refund ? { reason: o.refund.reason, text: REFUND_TEXT[o.refund.reason] } : null,
                   next: null, max_attempts: MAX_ATTEMPTS };
     if (!sc || !o.paidAt || o.settled || o.refundDue) return out;

@@ -5,6 +5,8 @@ import { createPublicClient, http, encodeFunctionData, parseEventLogs, defineCha
 import { privateKeyToAccount } from "viem/accounts";
 
 const MIN_FEE = 20_000_000_000n; // Arc: maxFeePerGas >= 20 gwei
+const ERC20 = [{ type: "function", name: "allowance", stateMutability: "view", inputs: [{ name: "owner", type: "address" },
+  { name: "spender", type: "address" }], outputs: [{ name: "", type: "uint256" }] }];
 const EVENTS = ["OrderPaid", "ClaimOpened", "Submitted", "ProofRequested", "VerdictProposed", "OrderSettled", "ClaimCleared"];
 const ACTIONS = { relayer: ["markNoResponse", "markClosingTimeout", "openClosingRound", "requestProof", "proposeVerdict",
                             "executeVerdict", "releaseUnproven"],
@@ -39,6 +41,15 @@ export function makeArc({ rpc, chainId, escrow, abi, keys }) {
   return {
     addresses: { relayer: accounts.relayer.address, store: accounts.store.address },
     async now() { return Number((await client.getBlock({ blockTag: "latest" })).timestamp); },
+    /** What the page shows of a wallet, for browsers that cannot reach Arc themselves (an ad blocker, a dead
+        wallet RPC): native balance, credit in the demo escrow and the token allowance to it. Reads only. */
+    async account(address, token) {
+      const [balance, claimable, allowance] = await Promise.all([
+        client.getBalance({ address }),
+        client.readContract({ address: escrow, abi, functionName: "claimable", args: [address, token] }),
+        client.readContract({ address: token, abi: ERC20, functionName: "allowance", args: [address, escrow] })]);
+      return { balance_wei: balance.toString(), claimable: claimable.toString(), allowance: allowance.toString() };
+    },
     async latestBlock() { return Number(await client.getBlockNumber({ cacheTime: 0 })); },
 
     async logs(from, to) {

@@ -38,6 +38,13 @@ export class DemoCore {
   async order(n) { return this.s.get("o:" + n); }
   async saveOrder(o) { await this.s.put("o:" + o.n, o); }
   async orders() { return (await this.s.list("o:")).sort((a, b) => a.createdAt - b.createdAt); }
+  // The orders an address paid (the buyer of each OrderPaid event, public on Arc): My orders finds them
+  // from any browser, not only from the one that started them.
+  async ordersOf(address) {
+    const a = lower(address);
+    return (await this.orders()).filter((o) => o.buyer && lower(o.buyer) === a).slice(-50)
+      .map((o) => ({ order: o.n, scenario: o.scenario, paid_at: o.paidAt || null }));
+  }
   async byRef(ref) {
     const n = await this.s.get("r:" + lower(ref));
     return n ? this.order(n) : null;

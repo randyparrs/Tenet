@@ -74,12 +74,18 @@
   function call(to, data) { return ui().wallet.read('eth_call', [{ to: to, data: data }, 'latest']); }
   function readBalance() { try { ui().wallet.readBalance().catch(function () {}); } catch (e) { /* no wallet */ } }
 
-  /* Orders this browser started: a convenience only, the Worker holds the real state */
+  /* Orders this browser started (with their payment details), plus every order the Worker saw this wallet
+     pay: a visitor finds them again from another browser or device. The Worker holds the real state. */
   function saved() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); } catch (e) { return []; } }
   function save(list) { try { localStorage.setItem(STORE_KEY, JSON.stringify(list.slice(-30))); } catch (e) { /* storage off */ } }
   function mine() {
     var a = (me() || '').toLowerCase();
-    return a ? saved().filter(function (o) { return o.address === a; }) : [];
+    if (!a) return [];
+    var local = saved().filter(function (o) { return o.address === a; }), have = {};
+    local.forEach(function (o) { have[o.order] = true; });
+    var paid = (t.remote && t.remote.address === a ? t.remote.list : []).filter(function (o) { return !have[o.order]; })
+      .map(function (o) { return { order: o.order, scenario: o.scenario, address: a, at: (o.paid_at || 0) * 1000 }; });
+    return local.concat(paid).sort(function (x, y) { return x.at - y.at; });
   }
   function remember(order, scenario, pay) {
     var list = saved();
@@ -112,6 +118,13 @@
     get('/api/config').then(function (c) { t.config = c; t.error = ''; refresh(); }, function () { t.error = 'unreachable'; render(); });
   }
   function refresh() {
+    var addr = me();
+    var paid = addr ? get('/api/orders?buyer=' + addr).then(function (r) {
+      if (r && r.orders) t.remote = { address: addr.toLowerCase(), list: r.orders };
+    }, function () { /* this browser's own list still shows */ }) : Promise.resolve();
+    return paid.then(refreshViews);
+  }
+  function refreshViews() {
     var jobs = [];
     if (me()) jobs.push(get('/api/quota?address=' + me()).then(function (q) { t.quota = q.error ? null : q; }));
     mine().forEach(function (o) {
@@ -591,7 +604,7 @@
       return;
     }
     el.innerHTML = html + '<div class="col" style="gap:14px">' + list.map(function (o) { return orderCard(o, now); }).join('') + '</div>' +
-      '<p class="faint pretty" style="font-size:12px;margin:0">Orders started in this browser with this wallet. If the judge cannot finish within ' +
+      '<p class="faint pretty" style="font-size:12px;margin:0">Every order this wallet paid, from any browser, and the unpaid ones started here. If the judge cannot finish within ' +
       Math.round(c.limits.stall_seconds / 3600) + ' hours, the store refunds you in full.</p>';
   }
 

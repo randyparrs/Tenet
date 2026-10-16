@@ -366,11 +366,13 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
     } else if (u.pathname === "/api/quota") body = await core.quota(u.searchParams.get("address"), t);
     else if (u.pathname === "/api/account") body = net.workerDown ? { error: "unreachable" } : await core.arc.account(u.searchParams.get("address"), data.addresses.usdc);
     else if (u.pathname === "/api/orders" && init.method === "POST") body = await core.createOrder(JSON.parse(init.body).scenario, t);
+    // Orders by buyer: served only for the check below, so the earlier checks see the page's own list
+    else if (u.pathname === "/api/orders") body = net.ordersByBuyer ? { orders: await core.ordersOf(u.searchParams.get("buyer")) } : { error: "off" };
     else body = (await core.view(u.pathname.split("/").pop(), t)) || { error: "no such order" };
     return { ok: true, json: async () => structuredClone(body), text: async () => JSON.stringify(body) };
   };
   const READS = ["eth_getBalance", "eth_call", "eth_getTransactionReceipt"];
-  const net = { walletReadsDown: false, publicRpcDown: false, workerDown: false, circleOn: false }; // a broken wallet RPC, Arc's public RPC down, the Worker's read down; Circle set up
+  const net = { walletReadsDown: false, publicRpcDown: false, workerDown: false, circleOn: false, ordersByBuyer: false }; // a broken wallet RPC, Arc's public RPC down, the Worker's read down; Circle set up
   const ethereum = {
     on() {},
     request: async ({ method, params }) => {
@@ -524,6 +526,17 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   const after = await usdcOf();
   check(after - before === creditedNow - 1_000_000n && (await credited()) === 0n && /is-done" disabled>.*Withdrawn/.test(html()),
     `PAGE Withdraw from the page: the wallet receives everything credited, nothing left in the escrow, the button says Withdrawn`);
+  // Another browser: nothing saved locally, the wallet's paid orders come from the Worker
+  const byBuyer = await core.ordersOf(B1.address.toLowerCase());
+  ctx.localStorage.removeItem("tenet-demo-orders");
+  T._state.views = {}; T._state.remote = null;
+  net.ordersByBuyer = true;
+  ctx.location.hash = "#my-orders"; listeners.hashchange();
+  await act("refresh");
+  check(byBuyer.some((o) => o.order === order && o.scenario === "N1" && o.paid_at > 0) && mo().includes("Order <b>" + order + "</b>")
+    && /REFUND 1\.00 USDC refunded to you/.test(mo()) && /Every order this wallet paid, from any browser/.test(mo()),
+    `PAGE from another browser (empty local list) My orders still shows ${order}, from the Worker's orders of this wallet (${byBuyer.length} paid by it)`);
+  net.ordersByBuyer = false; T._state.remote = null;
 
   // ---- Circle wallet: sign in with Google, then a D1 order of the Demo Shop end to end ------------------
   net.circleOn = true;

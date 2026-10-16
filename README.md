@@ -188,7 +188,8 @@ The page at [tenet.rpmdev.app](https://tenet.rpmdev.app) is static HTML, CSS and
   admitting, disputing, or the claim lacking proof; not delivered with the store answering or silent).
   Buy creates the order and pays it in one click; a panel shows the wallet, what the escrow holds and
   what is credited, with Withdraw.
-- **My orders**: each order with its number, a five step track (Paid, Claim, Store answer, Judge,
+- **My orders**: every order the connected wallet paid, read from the Worker by address, so it shows from
+  any browser; each order with its number, a five step track (Paid, Claim, Store answer, Judge,
   Settled; late orders show the store's emails with their Lacre attestations), one status line with a
   time bar, and the one next action ("Open a claim", "Send your answer", "Go to withdraw").
 

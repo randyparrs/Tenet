@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-15T23:49:14+00:00",
+ "generated_at": "2026-10-17T16:52:33+00:00",
  "project": {
   "name": "Tenet",
   "tagline": "Buyer protection for stablecoin payments."
@@ -146,14 +146,9 @@
    "order_number": "DS-310001",
    "order_ref": "0xd3fa7100357441c5362b703f568aaed6dd3fc5345781b776cc60a798e6c1f592",
    "amount_usdc": 4.0,
-   "status": "in_progress",
-   "stage": "Paid; order confirmation email attested; waiting for the delivery date",
-   "next_steps": [
-    {
-     "date": "2026-10-17",
-     "what": "Delivery email signed and attested, claim, judgment, settlement"
-    }
-   ],
+   "status": "settled",
+   "stage": "Settled on Arc",
+   "next_steps": [],
    "expected": {
     "steps": [
      {
@@ -168,10 +163,63 @@
      "merchant": 2.0
     }
    },
-   "claim": null,
-   "verdicts": [],
-   "attempts": [],
-   "settlement": null,
+   "claim": {
+    "text": "{\"amount_cents\":400,\"buyer\":\"0x3c3f857c9d193ca1fed87d0f72fc43aca6028b25\",\"claimed_at\":1792252890,\"event\":\"late\",\"merchant\":\"0x13e2ddb489ee77d87846e7ba36bf5f89e8abff32\",\"order_number\":\"DS-310001\",\"order_ref\":\"0xd3fa7100357441c5362b703f568aaed6dd3fc5345781b776cc60a798e6c1f592\",\"paid_at\":1791896980,\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
+    "hash": "0x7e6d5667f4da212975dee749215f7f40988e9f49ec1f8ed4fc817f96d9b28bab"
+   },
+   "verdicts": [
+    {
+     "step": 1,
+     "verdict": {
+      "outcome": "REFUND",
+      "refund_cents": 200,
+      "reason": "per policy",
+      "action": "decide",
+      "final": true,
+      "judged_at": "2026-10-17T16:05:33+00:00",
+      "chain": "0x2ecc7a45a2e44b0def2bd828a63b6c5f9c65601ea57696be2313f81cd577bc55",
+      "claim_hash": "0x7e6d5667f4da212975dee749215f7f40988e9f49ec1f8ed4fc817f96d9b28bab",
+      "ignored": []
+     },
+     "expected": {
+      "outcome": "REFUND",
+      "refund_cents": 200,
+      "reason": "per policy",
+      "action": "decide"
+     },
+     "matches_expected": true,
+     "votes": {
+      "1:FINISHED_WITH_RETURN": 4,
+      "3:TIMEOUT": 1
+     },
+     "tx": "0x0d614e404d1cbf7e1d4fb951d4d58b726c8743c95e951f57dbcb873f2268d329",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x0d614e404d1cbf7e1d4fb951d4d58b726c8743c95e951f57dbcb873f2268d329"
+    }
+   ],
+   "attempts": [
+    {
+     "step": 1,
+     "attempts": [
+      {
+       "tx": "0x0d614e404d1cbf7e1d4fb951d4d58b726c8743c95e951f57dbcb873f2268d329",
+       "url": "https://explorer-bradbury.genlayer.com/tx/0x0d614e404d1cbf7e1d4fb951d4d58b726c8743c95e951f57dbcb873f2268d329",
+       "gen": 0.003096499,
+       "result": "accepted",
+       "votes": {
+        "1:FINISHED_WITH_RETURN": 4,
+        "3:TIMEOUT": 1
+       }
+      }
+     ]
+    }
+   ],
+   "settlement": {
+    "refund_usdc": 2.0,
+    "released_usdc": 2.0,
+    "tx": "0x3ae4a91d908be2edaffbed4498aaee22f872bab5f950d1797218b208bb45500e",
+    "url": "https://explorer.testnet.arc.io/tx/0x3ae4a91d908be2edaffbed4498aaee22f872bab5f950d1797218b208bb45500e",
+    "note": "Credited in the escrow; withdrawals at the end of the test."
+   },
    "checks": [],
    "timeline": [
     {
@@ -208,6 +256,80 @@
      "tx": "0x7e9e4353e17e3784eeffb4505d62fc96129e5eefce1d1ab7d8198de40b3e556c",
      "url": "https://explorer-bradbury.genlayer.com/tx/0x7e9e4353e17e3784eeffb4505d62fc96129e5eefce1d1ab7d8198de40b3e556c",
      "gen": 0.002826809
+    },
+    {
+     "at": "2026-10-17T15:24:37+00:00",
+     "chain": null,
+     "actor": "store",
+     "action": "Store email X02 signed (DKIM, shop.rpmdev.app)"
+    },
+    {
+     "at": "2026-10-17T15:57:58+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Email X02 attested on Lacre: record 32, signature valid, domain aligned",
+     "tx": "0x41d012f722f802cde9b0e1ca4eb88862f6cf304548b1ba4460d9ac020657d5a0",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x41d012f722f802cde9b0e1ca4eb88862f6cf304548b1ba4460d9ac020657d5a0",
+     "gen": 0.00283692
+    },
+    {
+     "at": "2026-10-17T16:01:33+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Open claim",
+     "tx": "0x81daaf9b13e34b81c1da3cb204d7f85bc139b85ef30fead20680eb0b5f8a155a",
+     "url": "https://explorer.testnet.arc.io/tx/0x81daaf9b13e34b81c1da3cb204d7f85bc139b85ef30fead20680eb0b5f8a155a",
+     "gas_used": 643308,
+     "gas_usdc": 0.016083
+    },
+    {
+     "at": "2026-10-17T16:02:13+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Submit: X01",
+     "tx": "0x99885dd2c261c9989fca386331eb07b690fe52511f411997a5ebcfa548f4a353",
+     "url": "https://explorer.testnet.arc.io/tx/0x99885dd2c261c9989fca386331eb07b690fe52511f411997a5ebcfa548f4a353",
+     "gas_used": 56190,
+     "gas_usdc": 0.001405
+    },
+    {
+     "at": "2026-10-17T16:04:20+00:00",
+     "chain": "arc",
+     "actor": "buyer",
+     "action": "Submit: X02",
+     "tx": "0xeff772f0a8b423832c6bed6acaee42812e758a9bffb93521dff0ddddfe6f9e86",
+     "url": "https://explorer.testnet.arc.io/tx/0xeff772f0a8b423832c6bed6acaee42812e758a9bffb93521dff0ddddfe6f9e86",
+     "gas_used": 55107,
+     "gas_usdc": 0.001378
+    },
+    {
+     "at": "2026-10-17T16:06:34+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 1 sent to the judge, attempt 1: REFUND 2.00 USDC (per policy)",
+     "tx": "0x0d614e404d1cbf7e1d4fb951d4d58b726c8743c95e951f57dbcb873f2268d329",
+     "url": "https://explorer-bradbury.genlayer.com/tx/0x0d614e404d1cbf7e1d4fb951d4d58b726c8743c95e951f57dbcb873f2268d329",
+     "gen": 0.003096499
+    },
+    {
+     "at": "2026-10-17T16:38:21+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Propose verdict on Arc",
+     "tx": "0xf5ad17c8e33e7f9459c51b9b21cea4081b4a736ac1aa0dfa38e06984febf2c39",
+     "url": "https://explorer.testnet.arc.io/tx/0xf5ad17c8e33e7f9459c51b9b21cea4081b4a736ac1aa0dfa38e06984febf2c39",
+     "gas_used": 87219,
+     "gas_usdc": 0.00218
+    },
+    {
+     "at": "2026-10-17T16:50:50+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Execute verdict",
+     "tx": "0x3ae4a91d908be2edaffbed4498aaee22f872bab5f950d1797218b208bb45500e",
+     "url": "https://explorer.testnet.arc.io/tx/0x3ae4a91d908be2edaffbed4498aaee22f872bab5f950d1797218b208bb45500e",
+     "gas_used": 52195,
+     "gas_usdc": 0.001305
     }
    ]
   },

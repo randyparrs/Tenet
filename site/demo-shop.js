@@ -340,8 +340,11 @@
       if (v.next && v.next.action === 'claim') {
         if (wasSent(o.order, 'claim')) return { i: CL, line: 'Claim sent on Arc. The demo store registers it within a minute.', action: wait('Waiting for the store') };
         var then = v.next.then || [];
-        return { i: CL, line: (sc.product ? sc.product.goes_wrong + ' ' : '') + 'Open a claim: the judge reads it with the store\'s answer.' +
-          (then.length ? ' The store\'s ' + then.length + ' signed emails go with it as evidence, one transaction each.' : ''),
+        // late: the judge reads the store's signed emails; the other paths: the claim with the store's answer
+        return { i: CL, line: (sc.product ? sc.product.goes_wrong + ' ' : '') + (late && then.length
+          ? 'Open a claim: the judge reads the store\'s ' + then.length + ' signed emails, sent with it as evidence, one transaction each.'
+          : 'Open a claim: the judge reads it with the store\'s answer.' +
+            (then.length ? ' The store\'s ' + then.length + ' signed emails go with it as evidence, one transaction each.' : '')),
           action: { kind: 'claim', label: 'Open a claim' }, exact: [v.next.claim].concat(then) };
       }
       return { i: 1, line: (v.next && v.next.text) || 'Paid. The demo store is preparing the order.', action: wait('Open a claim') };
@@ -522,7 +525,7 @@
           timeBar(bar('Until the attestation is final', sent.at, sent.at + FINAL_USUAL_S, now, 'Finalizing, almost there')) : '') + '</div>';
     };
     return '<div class="col well" style="gap:8px;padding:12px 14px"><div class="row" style="gap:8px;align-items:center"><span class="eyebrow">Store emails</span>' +
-      U.netBadge('lacre', { short: true }) + '</div>' + row('confirmed', 'Order confirmed') + row('delivered', 'Delivered') + '</div>';
+      U.netBadge('lacre') + '</div>' + row('confirmed', 'Order confirmed') + row('delivered', 'Delivered') + '</div>';
   }
 
   /* Screens */

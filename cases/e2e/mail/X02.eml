@@ -1,0 +1,10 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shop.rpmdev.app; s=shop1; t=1792250677; h=from:to:subject:date:message-id; bh=t+j328sVMs//CM5EeHb69pLjC7/YyvHZjzfQjGC5y78=; b=l625zZ3wMY4s9FYCA+t3POmLSIDefl4iMJKfCopzn/urK5HCUj9i3SSmDUO3V8/d6Nso0jfiXoa/5WLANHFWvxI10JrO+eu2HGHCb3C92m+8rXlz0DPlzM/L49K9tUUB769DA4wEQ3by+/TuipnllejQh0wdUGf6JXx3KSBXqIKdIkZinAQTLa46cefAHFdyOEDsSQvBawQ/pTCuPfk94pUWNCket8UcQsqexslQveOcTrNw41tVH40BXd6+XuxPh33GQSQGXcDLGbQ8fsowLz59XUnyp58aPJmBJyIezvz21SpmR83XAfnQZCAdRMbxTAebT8zuvCFxQFhJM8I6WA==
+From: Demo Shop Orders <orders@shop.rpmdev.app>
+To: buyer@example.com
+Subject: Order DS-310001 delivered
+Date: Sat, 17 Oct 2026 15:24:37 +0000
+Message-ID: <x02.1792250677@shop.rpmdev.app>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+
+Your package for order DS-310001 was delivered on 2026-10-17.

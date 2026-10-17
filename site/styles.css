@@ -658,3 +658,9 @@ button.tbl-row:hover, .tbl-row.clickable:hover { background: color-mix(in srgb, 
 .connect-opt:hover { border-color: var(--color-accent); background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
 .connect-opt .t { font-size: 15px; }
 .connect-opt .s { font-size: 12.5px; color: var(--color-neutral-300); text-wrap: pretty; }
+
+/* Arc's official icon keeps its own white fill; small badges may wrap inside the narrow diagram boxes */
+.ic.arc-logo { fill: #fff; stroke: none; }
+.dg-box .badge { white-space: normal; height: auto; min-height: 20px; padding: 2px 7px; line-height: 1.3; }
+.side-net { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.side-role { font-size: 11px; line-height: 1.3; color: var(--color-neutral-500); padding-left: 2px; }

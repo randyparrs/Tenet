@@ -60,7 +60,10 @@
     /* Lacre's symbol, redrawn from its logo: outer ring, inner ring, light blue core */
     lacre: '<circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="12" r="5.6" class="lacre-ring"/><circle cx="12" cy="12" r="2.8" class="lacre-core"/>'
   };
+  /* Arc's official icon (Arc brand kit, white version), unaltered: no recoloring, stroke or effects */
+  var ARC_ICON = '<path fill="#fff" stroke="none" d="M0 171C1.39327 129.136 8.52567 90.067 20.4481 59.6871C35.5477 21.1972 57.4057 0 81.9919 0C106.578 0 128.433 21.1972 143.536 59.6871C151.391 79.7058 157.17 103.491 160.594 129.366C160.9 131.677 161.161 134.026 161.428 136.369C161.515 136.514 161.568 136.649 161.55 136.758C161.55 136.758 163.562 149.265 163.99 171H163.763C160.778 168.562 125.578 141.038 67.2282 149.007C68.1086 139.181 69.3194 129.62 70.8835 120.456C70.9634 119.987 71.0558 119.535 71.1373 119.07C94.0233 118.383 114.055 121.028 129.416 124.494C129.359 124.131 129.311 123.758 129.253 123.397C126.095 103.83 121.437 85.9161 115.43 70.6073C105.61 45.576 92.7953 30.0239 81.9919 30.0239C71.189 30.0239 58.3744 45.576 48.554 70.6073C46.1769 76.6621 44.0128 83.1192 42.0721 89.9301C39.3438 99.4735 37.0517 109.704 35.2212 120.455C32.5117 136.331 30.8189 153.358 30.1954 171H0Z"/>';
   function icon(name, cls, style) {
+    if (name === 'arc') return '<svg class="ic arc-logo' + (cls ? ' ' + cls : '') + '" viewBox="0 0 164 171" aria-hidden="true"' + (style ? ' style="' + style + '"' : '') + '>' + ARC_ICON + '</svg>';
     return '<svg class="ic' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true"' + (style ? ' style="' + style + '"' : '') + '>' + (ICONS[name] || '') + '</svg>';
   }
   function hydrateIcons(root) {
@@ -145,21 +148,18 @@
 
   /* Small components */
   var NETS = {
-    arc: { cls: 'badge-arc', icon: 'coins', name: 'Arc', role: 'money', title: 'Arc testnet: holds the money' },
-    bradbury: { cls: 'badge-bradbury', icon: 'scales', name: 'GenLayer Bradbury', short: 'Bradbury', role: 'judgment', title: 'GenLayer Bradbury testnet: judgment' },
-    lacre: { cls: 'badge-lacre', icon: 'lacre', name: 'Lacre', role: 'email attestations', title: 'Lacre on GenLayer: email attestations' },
+    arc: { cls: 'badge-arc', icon: 'arc', name: 'Arc Network', role: 'holds the money', title: 'Arc Network testnet: holds the money' },
+    bradbury: { cls: 'badge-bradbury', icon: 'scales', name: 'GenLayer Bradbury', role: 'judges the dispute', title: 'GenLayer Bradbury testnet: judges the dispute' },
+    lacre: { cls: 'badge-lacre', icon: 'lacre', name: 'Lacre', role: 'verifies store emails', title: 'Lacre on GenLayer: verifies store emails' },
     offchain: { cls: 'badge-offchain', icon: 'penNib', name: 'Off-chain', title: 'Off-chain step' }
   };
   /* Lacre's symbol with its name in spaced capitals, as in its logo */
   function lacreMark(size) {
     return '<span class="lacre-mark' + (size ? ' lacre-mark-' + size : '') + '" aria-label="Lacre">' + icon('lacre') + '<span>LACRE</span></span>';
   }
-  function netBadge(net, o) {
-    o = o || {};
+  function netBadge(net) {
     var n = NETS[net] || NETS.offchain;
-    var name = o.short && n.short ? n.short : n.name;
-    return '<span class="badge ' + n.cls + '" title="' + esc(n.title) + '">' + icon(n.icon) + '<span>' + esc(name) + '</span>' +
-      (o.role && n.role ? '<span class="role">' + esc(n.role) + '</span>' : '') + '</span>';
+    return '<span class="badge ' + n.cls + '" title="' + esc(n.title) + '">' + icon(n.icon) + '<span>' + esc(n.name) + '</span></span>';
   }
   function hashChip(value, url, net) {
     if (!value) return '';
@@ -473,13 +473,13 @@
       '<a class="btn btn-ghost" href="#order-flow">Step by step in Order flow' + icon('arrowRight') + '</a></div>' +
       '<section class="card diagram" aria-label="System diagram"><div class="dg-row">' +
       box('', 'user', 'Buyer', 'pays, claims, withdraws') + conn('USDC', false) +
-      box('dg-arc', 'vault', 'Escrow', 'holds the money', netBadge('arc', { short: true })) + conn('submissions', true) +
+      box('dg-arc', 'arc', 'Escrow', 'holds the money', netBadge('arc')) + conn('submissions', true) +
       box('', 'arrowsClockwise', 'Relayer', 'only carries data') + conn('verdict', true) +
-      box('dg-brad', 'scales', 'Judge', 'decides by policy', netBadge('bradbury', { short: true })) + conn('signed emails', false, true, true) +
-      box('dg-lacre', 'lacre', 'Lacre', 'attests DKIM signatures', netBadge('lacre', { short: true })) +
+      box('dg-brad', 'scales', 'Judge', 'decides by policy', netBadge('bradbury')) + conn('signed emails', false, true, true) +
+      box('dg-lacre', 'lacre', 'Lacre', 'attests DKIM signatures', netBadge('lacre')) +
       '</div></section>' +
       '<div class="auto-grid ag-400">' +
-      '<article class="card card-pad"><div class="row" style="justify-content:space-between"><h4>Arc holds the money.</h4>' + netBadge('arc', { role: true }) + '</div>' +
+      '<article class="card card-pad"><div class="row" style="justify-content:space-between"><h4>Arc holds the money.</h4>' + netBadge('arc') + '</div>' +
       '<p class="muted pretty" style="font-size:13.5px">USDC goes into the escrow. It only refunds the buyer or releases the payment to the store, and the two always add up to the order amount.</p>' +
       '<div class="col" style="gap:10px"><div>' + hashChip(escrow.address, escrow.url) + '</div>' +
       '<div class="grid-cells grid-2">' + cell('Token', p.token || '') + cell('Cap per order', p.cap_per_order_usdc != null ? usdc(p.cap_per_order_usdc) : '') +
@@ -491,7 +491,7 @@
         '<div><span class="cell-k">Released to the store</span><span class="cell-v">' + usdc(released) + '</span></div></div>'
         : '<span class="dim" style="font-size:12.5px">The live test has not started.</span>') +
       '</div></div></article>' +
-      '<article class="card card-pad"><div class="row" style="justify-content:space-between"><h4>GenLayer judges.</h4>' + netBadge('bradbury', { role: true }) + '</div>' +
+      '<article class="card card-pad"><div class="row" style="justify-content:space-between"><h4>GenLayer judges.</h4>' + netBadge('bradbury') + '</div>' +
       '<p class="muted pretty" style="font-size:13.5px">' + esc(cap(word(judges.length))) + ' judge ' + (judges.length === 1 ? 'contract asks' : 'contracts ask') + ' the validator committee closed questions, then apply the store\'s published policy in code.</p>' +
       '<div class="col" style="gap:8px">' + judges.map(function (j) { return '<div class="col" style="gap:5px"><span style="font-size:12.5px;color:var(--color-neutral-100)">' + esc(j.name) + '</span><div>' + hashChip(j.address, j.url, 'bradbury') + '</div></div>'; }).join('') + '</div>' +
       '<div class="col inset outcome-table">' +
@@ -499,7 +499,7 @@
       outRow('DENY', 'var(--color-neutral-200)', 'The payment is released to the store.') +
       outRow('NOT_YET', 'var(--out-notyet)', 'Another round or a deadline is needed.') +
       outRow('INVALID_CLAIM', 'var(--out-invalid)', 'The claim does not name this order correctly.') + '</div></article>' +
-      '<article class="card card-pad">' + lacreMark() + '<div class="row" style="justify-content:space-between"><h4>Lacre verifies the emails.</h4>' + netBadge('lacre', { role: true }) + '</div>' +
+      '<article class="card card-pad">' + lacreMark() + '<div class="row" style="justify-content:space-between"><h4>Lacre verifies the emails.</h4>' + netBadge('lacre') + '</div>' +
       '<p class="muted pretty" style="font-size:13.5px">A store email counts only if its DKIM signature was attested on Lacre, it names this order and it was signed after the payment.</p>' +
       (lacreSite ? '<a class="row" style="gap:4px;font-size:12.5px" href="' + esc(lacreSite) + '" target="_blank" rel="noopener noreferrer">' + esc(lacreSite.replace(/^https?:\/\//, '')) + icon('arrowUpRight', '', 'font-size:11px') + '</a>' : '') +
       (lacreEx ? '<div class="col well-dark" style="gap:8px;padding:12px 14px"><span class="eyebrow faint" style="font-size:10px">Case ' + esc(lacreCase) + '</span><span style="font-size:13px">' + esc(lacreEx.action) + '</span><div>' + hashChip(lacreEx.tx, lacreEx.url, 'lacre') + '</div></div>' : '') +
@@ -769,7 +769,7 @@
     return screenHead('06 / Judges on GenLayer', 'The Bradbury run', cap(word(bc.length)) + ' cases sent directly to the ' + word(judgeC.length) + ' judge contracts on the real network, one or more per path. ' +
       (passedN === bc.length ? 'All ' + word(bc.length) + ' are closed.' : word(passedN) + ' of ' + word(bc.length) + ' are closed.')) +
       '<div class="card row" style="gap:16px 28px;padding:20px 24px"><div class="col" style="gap:4px"><span style="font-size:40px;line-height:1;letter-spacing:-0.02em">' + passedN + ' of ' + bc.length + '</span><span class="dim" style="font-size:12px">cases passed</span></div>' +
-      '<div class="col" style="flex:1 1 320px;min-width:0;gap:10px"><span class="pretty" style="font-size:14px;color:var(--color-neutral-100)">' + esc(run.summary || '') + '</span>' + fill(pct(bc.length ? passedN / bc.length : 0)) + '</div>' + netBadge('bradbury', { role: true }) + '</div>' +
+      '<div class="col" style="flex:1 1 320px;min-width:0;gap:10px"><span class="pretty" style="font-size:14px;color:var(--color-neutral-100)">' + esc(run.summary || '') + '</span>' + fill(pct(bc.length ? passedN / bc.length : 0)) + '</div>' + netBadge('bradbury') + '</div>' +
       (bc.length ? group('mail', 'Email judge', function (x) { return /email/i.test(x.name); }) + group('subjective', 'Subjective judge', function (x) { return !/email/i.test(x.name); })
         : '<p class="card empty-note">The Bradbury run has no cases yet.</p>');
   }
@@ -831,7 +831,7 @@
       var cost = x.deploy_cost_usdc != null ? x.deploy_cost_usdc + ' USDC' : x.deploy_cost_gen != null ? x.deploy_cost_gen + ' GEN' : '';
       return '<div class="tbl-group" role="rowgroup"><div class="tbl-row' + (can ? ' clickable" tabindex="0" data-toggle="' + did + '" aria-expanded="false" aria-controls="' + did : '') + '" role="row">' +
         '<span class="ellip" title="' + esc(x.name) + '" style="font-size:13.5px">' + esc(x.name) + '</span>' +
-        '<span>' + netBadge(/Lacre/i.test(x.name) ? 'lacre' : x.chain, { short: true }) + '</span>' +
+        '<span>' + netBadge(/Lacre/i.test(x.name) ? 'lacre' : x.chain) + '</span>' +
         '<span>' + hashChip(x.address, x.url) + '</span>' +
         (ext ? '<span class="row nowrap" style="grid-column:span 2;min-width:0;flex-wrap:nowrap"><span class="muted" style="font-size:12.5px">External service, MIT, Insidr Labs</span>' + (x.project_url ? '<a class="mono row" style="gap:4px;font-size:11.5px" href="' + esc(x.project_url) + '" target="_blank" rel="noopener noreferrer">' + esc(x.project_url.replace(/^https?:\/\//, '')) + icon('arrowUpRight') + '</a>' : '') + '</span>'
           : '<span>' + hashChip(x.deploy_tx, x.deploy_url) + '</span><span class="mono nowrap" style="font-size:12px;color:var(--color-neutral-200)">' + esc(cost) + '</span>') +
@@ -940,7 +940,9 @@
 
   /* Rendering and routing */
   function renderSidebar(d) {
-    $('side-networks').innerHTML = netBadge('arc', { role: true }) + netBadge('bradbury', { role: true }) + netBadge('lacre', { role: true });
+    $('side-networks').innerHTML = ['arc', 'bradbury', 'lacre'].map(function (k) {
+      return '<div class="side-net">' + netBadge(k) + '<span class="side-role">' + esc(NETS[k].role) + '</span></div>';
+    }).join('');
     var pills = $('case-pills');
     pills.innerHTML = state.cases.map(function (c) { return '<a class="case-pill" href="#case/' + encodeURIComponent(c.id) + '" data-case="' + esc(c.id) + '" title="' + esc(c.title) + '">' + esc(c.id) + '</a>'; }).join('');
     pills.hidden = !state.cases.length;

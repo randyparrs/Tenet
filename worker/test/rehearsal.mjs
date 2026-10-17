@@ -505,6 +505,12 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   check(!!verifying && /Until the attestation is final/.test(verifying) && /about 30 min after it is sent/.test(verifying)
     && !l1Cards.some((h) => /Until the attestation is final/.test(h) && !/verifying on Lacre/.test(h)),
     "PAGE L1: an email still verifying on Lacre says what is happening, with a time bar until the attestation is final");
+  check(l1Cards.some((h) => /Open a claim: the judge reads the store&#39;s 2 signed emails, sent with it as evidence, one transaction each\./.test(h)
+    || /Open a claim: the judge reads the store's 2 signed emails, sent with it as evidence, one transaction each\./.test(h))
+    && !l1Cards.some((h) => /with the store(&#39;|')s answer/.test(h)),
+    "PAGE L1: Open a claim says the judge reads the store's signed emails, never a store answer");
+  check(/class="badge badge-arc"[^>]*><svg class="ic arc-logo"[^>]*viewBox="0 0 164 171"[\s\S]*?<span>Arc Network<\/span><\/span>/.test(html()),
+    "PAGE the Arc badge reads Arc Network, with Arc's official icon");
   check(l1Cur.includes("Claim") && l1Cur.includes("Judge") && !l1Cur.includes("Store answer")
     && (l1Cards[l1Cards.length - 1].match(/<li class="done">/g) || []).length === 5,
     `PAGE L1 moves through Claim and Judge to Settled, never through a store answer (${[...new Set(l1Cur)].join(", ")})`);

@@ -153,8 +153,12 @@
   }
 
   /* Actions */
+  var RPC_DOWN = /RPC endpoint returned too many errors|rpc\.testnet\.arc\.network|Failed to fetch|ECONNREFUSED|could not connect|net::ERR_/i;
   function reason(e) {
     if (e && (e.code === 4001 || /reject|denied|cancel/i.test(e.message || ''))) return 'Cancelled in the wallet.';
+    if (e && RPC_DOWN.test(String(e.message || '') + ' ' + String((e.data && e.data.message) || ''))) {
+      return 'Your wallet could not reach Arc. In its Arc Testnet network, set the RPC to https://rpc.testnet.arc.io and try again.';
+    }
     return (e && e.message) || 'Something failed.';
   }
   function payFlow(order) {
@@ -541,7 +545,8 @@
         return '<div role="listitem"><div class="node"><span class="circle">' + U.icon(m[0]) + '</span><span class="line"></span></div><span class="n">0' + (i + 1) + '</span><span class="t">' + esc(m[1]) + '</span></div>';
       }).join('') + '</div>' +
       '<p class="muted pretty" style="font-size:12.5px;margin:0">Demo mode on Arc testnet: separate contracts from the live test, windows of 5 minutes instead of days, and the store is a bot. ' +
-      'You sign only your own transactions; the texts are fixed and were measured with the judge\'s committee.</p>';
+      'You sign only your own transactions; the texts are fixed and were measured with the judge\'s committee.</p>' +
+      '<p class="pretty try-rpc" style="font-size:12.5px;margin:0">' + U.icon('warningCircle') + '<span>Your wallet\'s Arc Testnet network must use the RPC <span class="mono">https://rpc.testnet.arc.io</span>; the older <span class="mono">rpc.testnet.arc.network</span> no longer answers.</span></p>';
     if (!c) {
       var msg = t.error === 'not-published' ? 'The Demo Shop opens when its Worker is published. These are its products.'
         : t.error === 'unreachable' ? 'The Demo Shop could not be reached. Try again in a minute.' : 'Loading the Demo Shop.';
@@ -661,6 +666,6 @@
       t.quota = null;
       if (ui().wallet.status === 'connected') { if (t.config) refresh(); else load(); } else render();
     },
-    _state: t, _act: act, _card: orderCard
+    _state: t, _act: act, _card: orderCard, _reason: reason
   };
 })();

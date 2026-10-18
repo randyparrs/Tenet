@@ -532,6 +532,11 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   const after = await usdcOf();
   check(after - before === creditedNow - 1_000_000n && (await credited()) === 0n && /is-done" disabled>.*Withdrawn/.test(html()),
     `PAGE Withdraw from the page: the wallet receives everything credited, nothing left in the escrow, the button says Withdrawn`);
+  // A wallet with the old Arc RPC: the page says which RPC to set; other errors keep their own text
+  check(/https:\/\/rpc\.testnet\.arc\.io/.test(T._reason({ message: "RPC 0x4cef52 Custom eth_getBlockByNumber: RPC endpoint returned too many errors" }))
+    && T._reason({ message: "The transaction reverted on Arc." }) === "The transaction reverted on Arc."
+    && /rpc\.testnet\.arc\.io/.test(html()) && /older <span class="mono">rpc\.testnet\.arc\.network<\/span> no longer answers/.test(html()),
+    "PAGE the Demo Shop names the RPC a wallet's Arc network needs, and a wallet that cannot reach Arc gets that instruction");
   // Another browser: nothing saved locally, the wallet's paid orders come from the Worker
   const byBuyer = await core.ordersOf(B1.address.toLowerCase());
   ctx.localStorage.removeItem("tenet-demo-orders");

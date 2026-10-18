@@ -10,6 +10,8 @@ carries out the verdict.
 **Live page: [tenet.rpmdev.app](https://tenet.rpmdev.app)**. Its Demo Shop takes 1.00 testnet USDC
 ([Circle faucet](https://faucet.circle.com)) from a browser wallet or from a Circle wallet opened with
 Google, lets the order go wrong, and shows the GenLayer judge's verdict and the escrow's settlement.
+With a browser wallet, its Arc Testnet network must use the RPC `https://rpc.testnet.arc.io`; the older
+`rpc.testnet.arc.network` no longer answers.
 
 - Demo Shop API (the demo store and relayer, a Cloudflare Worker):
   [tenet-demo.randyparra.workers.dev](https://tenet-demo.randyparra.workers.dev/api/config)

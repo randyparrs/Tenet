@@ -49,8 +49,8 @@ ok   PAGE with the public RPC and the wallet both down, balance and credit come 
 ok   PAGE with every read down, the page says the reads failed instead of showing 0
 ok   PAGE the reads recover on the next refresh
 ok   PAGE the Demo Shop lists six products, each with its illustration and a Buy button
-ok   PAGE Buy creates order DS-945741 and pays it from the wallet in one click (Order DS-945741 paid on Arc. The demo store registers it within a minute.)
-ok   PAGE after Buy the page opens the order in My orders (#my-orders/DS-945741)
+ok   PAGE Buy creates order DS-959065 and pays it from the wallet in one click (Order DS-959065 paid on Arc. The demo store registers it within a minute.)
+ok   PAGE after Buy the page opens the order in My orders (#my-orders/DS-959065)
 ok   PAGE the order offers one button, Open a claim, with the exact text folded
 ok   PAGE N1 through the page: claim signed by the visitor, REFUND 1.00 USDC settled
 ok   PAGE while the order runs, the sidebar counter shows 1 with the order number on hover
@@ -71,11 +71,11 @@ ok   PAGE Go to withdraw leads to the Demo Shop
 ok   PAGE the refund is credited in the escrow (+1.00 USDC; 3 USDC in total from this rehearsal), the card is highlighted and Withdraw is lit
 ok   PAGE Withdraw from the page: the wallet receives everything credited, nothing left in the escrow, the button says Withdrawn
 ok   PAGE the Demo Shop names the RPC a wallet's Arc network needs, and a wallet that cannot reach Arc gets that instruction
-ok   PAGE from another browser (empty local list) My orders still shows DS-945741, from the Worker's orders of this wallet (5 paid by it)
+ok   PAGE from another browser (empty local list) My orders still shows DS-959065, from the Worker's orders of this wallet (5 paid by it)
 ok   PAGE CIRCLE Connect opens the window with Continue with Google and Browser wallet
 ok   PAGE CIRCLE Google sign-in with the site's client id, a Circle device token, and the site's root as the way back
 ok   PAGE CIRCLE back from Google: Circle creates an EOA wallet on Arc testnet, the page connects it and returns to the Demo Shop
-ok   PAGE CIRCLE Buy DS-907220: approve and pay, each approved in the Circle window and sent by Circle (2 transactions)
+ok   PAGE CIRCLE Buy DS-986944: approve and pay, each approved in the Circle window and sent by Circle (2 transactions)
 ok   PAGE CIRCLE D1: the claim is signed through Circle and the order settles with REFUND 1.00 USDC
 ok   PAGE CIRCLE Withdraw through Circle: the 1.00 USDC is back in the Circle wallet, nothing left in the escrow
 ok   PAGE CIRCLE a call outside the Demo Shop is refused by the Worker before it reaches Circle

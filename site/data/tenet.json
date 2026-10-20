@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-17T16:52:33+00:00",
+ "generated_at": "2026-10-20T15:17:38+00:00",
  "project": {
   "name": "Tenet",
   "tagline": "Buyer protection for stablecoin payments."
@@ -689,15 +689,9 @@
    "order_number": "DS-310004",
    "order_ref": "0x97e28d4d0a6cdd19ebf1718e281ac10bdcb8a5435c7abd1891bf006f865da57c",
    "amount_usdc": 1.0,
-   "status": "in_progress",
-   "stage": "Claim open; proof requested on 2026-10-13 15:02 UTC; the buyer has 7 days",
-   "next_steps": [
-    {
-     "date": "2026-10-20",
-     "time_utc": "15:02",
-     "what": "releaseUnproven: payment released to the store"
-    }
-   ],
+   "status": "settled",
+   "stage": "Settled on Arc",
+   "next_steps": [],
    "expected": {
     "steps": [
      {
@@ -759,7 +753,13 @@
      ]
     }
    ],
-   "settlement": null,
+   "settlement": {
+    "refund_usdc": 0.0,
+    "released_usdc": 1.0,
+    "tx": "0xae9d39a7b267b17a43ea4b10d3379bcf99fa37ffff38bdef0ff1c141b618629a",
+    "url": "https://explorer.testnet.arc.io/tx/0xae9d39a7b267b17a43ea4b10d3379bcf99fa37ffff38bdef0ff1c141b618629a",
+    "note": "Credited in the escrow; withdrawals at the end of the test."
+   },
    "checks": [
     {
      "what": "openClaim sent by the relayer",
@@ -851,6 +851,16 @@
      "url": "https://explorer.testnet.arc.io/tx/0x012d137d6eddd882a6b0ded1f77fb1705f997a3f1507cc2970c1998afecbcb10",
      "gas_used": 37688,
      "gas_usdc": 0.000942
+    },
+    {
+     "at": "2026-10-20T15:14:57+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Release unproven claim to the store",
+     "tx": "0xae9d39a7b267b17a43ea4b10d3379bcf99fa37ffff38bdef0ff1c141b618629a",
+     "url": "https://explorer.testnet.arc.io/tx/0xae9d39a7b267b17a43ea4b10d3379bcf99fa37ffff38bdef0ff1c141b618629a",
+     "gas_used": 65672,
+     "gas_usdc": 0.001346
     }
    ]
   },

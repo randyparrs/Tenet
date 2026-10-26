@@ -17,6 +17,9 @@ With a browser wallet, its Arc Testnet network must use the RPC `https://rpc.tes
   [tenet-demo.randyparra.workers.dev](https://tenet-demo.randyparra.workers.dev/api/config)
 - Email attestations: [Lacre](https://lacre.in-sidr.xyz) by Insidr Labs
 
+**Update: Tenet Pay.** The payment gateway from the roadmap is live on testnet as Tenet Pay:
+[paytenet.site](https://paytenet.site), code at [randyparrs/tenet-pay](https://github.com/randyparrs/tenet-pay).
+
 ## How it works
 
 A buyer pays in USDC into `RefundEscrow` on Arc testnet. The store answers claims within a deadline;

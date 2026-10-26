@@ -1,9 +1,12 @@
 # Roadmap
 
-What comes after the live test. Nothing here is built yet. The live test judges, the Demo Shop and escrow v3
-stay as they are.
+What comes after the live test. Nothing here is built yet, except the payment gateway (section 1). The live
+test judges, the Demo Shop and escrow v3 stay as they are.
 
 ## 1. Payment gateway for stores
+
+**Update: Tenet Pay.** The gateway is live on testnet as Tenet Pay: [paytenet.site](https://paytenet.site), code at
+[randyparrs/tenet-pay](https://github.com/randyparrs/tenet-pay).
 
 Any store can offer Tenet's buyer protection at checkout, not only the test store. The gateway is a product
 of its own, on its own site, separate from this page.
@@ -29,6 +32,8 @@ of its own, on its own site, separate from this page.
     the email;
   - email bodies up to 12 KB. A larger body is refused with a clear error code, and the page warns before
     sending.
+- **DKIM key size.** The minimum key size is part of each store's terms: 1024 bits for the example store,
+  whose email provider signs with a 1024-bit key. Real stores will be asked for 2048-bit keys.
 - **Example store.** techshopping.site, a separate brand and domain that sends real signed emails.
 
 ## 2. Email body by URL

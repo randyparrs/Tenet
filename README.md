@@ -97,11 +97,11 @@ Cases A to E run on escrow v3 and the deployed judges with the real deadlines, s
 
 | Case | Path | Status | Transactions |
 |---|---|---|---|
-| A | Late delivery, partial refund | Settled: REFUND 2.00 USDC (3 days late, 50% by the store's terms), 2.00 USDC released to the store | [payment](https://explorer.testnet.arc.io/tx/0x1db750230b14f0ddea63d9bb71534a96cf86bc751397d3e6a58b1df7c71c4414), [order email attested on Lacre](https://explorer-bradbury.genlayer.com/tx/0x7e9e4353e17e3784eeffb4505d62fc96129e5eefce1d1ab7d8198de40b3e556c), [delivery email attested on Lacre](https://explorer-bradbury.genlayer.com/tx/0x41d012f722f802cde9b0e1ca4eb88862f6cf304548b1ba4460d9ac020657d5a0), [claim](https://explorer.testnet.arc.io/tx/0x81daaf9b13e34b81c1da3cb204d7f85bc139b85ef30fead20680eb0b5f8a155a), [judge step 1: REFUND 2.00 USDC](https://explorer-bradbury.genlayer.com/tx/0x0d614e404d1cbf7e1d4fb951d4d58b726c8743c95e951f57dbcb873f2268d329), [execution](https://explorer.testnet.arc.io/tx/0x3ae4a91d908be2edaffbed4498aaee22f872bab5f950d1797218b208bb45500e) |
-| B | Not as described, store disputes | Settled: DENY, 3.00 USDC released to the store | [payment](https://explorer.testnet.arc.io/tx/0xc159115662c3d62be8a486f7f86f06d2351a25259ae092fe93921451afad4cc5), [claim](https://explorer.testnet.arc.io/tx/0x98f0d938f239f005e2b8853cc4b9d8d6a7fc3728c1f34907d41ee43becde7b09), [judge step 1: NOT_YET, closing round](https://explorer-bradbury.genlayer.com/tx/0xf6dbc253ac183dc1d7a08e80df36188fbc346aa005e06ad13356b64e43e6a7b9), [judge step 2, attempt 1: no consensus, resent](https://explorer-bradbury.genlayer.com/tx/0x2213963a35305ee5bcaa9073c5ba7e06a54d462a420ba627ab83a7a1d30e00cf), [judge step 2, attempt 2: DENY](https://explorer-bradbury.genlayer.com/tx/0x83b8b3cff278439f44ac25e21c41be941c07c8e1b3c028944fc1797646405e2f), [execution](https://explorer.testnet.arc.io/tx/0x85fbed6fca7bf64b4ac93aabf97d540669459cae6b9b9277114a9c6ffb6de5e7) |
+| A | Late delivery, partial refund | Settled: REFUND 2.00 USDC (3 days late, 50% by the store's terms), 2.00 USDC released to the store | [payment](https://explorer.testnet.arc.io/tx/0x1db750230b14f0ddea63d9bb71534a96cf86bc751397d3e6a58b1df7c71c4414), [order email attested on Lacre, archived](https://github.com/randyparrs/Tenet/blob/main/results/attest-mail.jsonl), [delivery email attested on Lacre, archived](https://github.com/randyparrs/Tenet/blob/main/results/attest-mail.jsonl), [claim](https://explorer.testnet.arc.io/tx/0x81daaf9b13e34b81c1da3cb204d7f85bc139b85ef30fead20680eb0b5f8a155a), [judge step 1: REFUND 2.00 USDC, archived](https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl), [execution](https://explorer.testnet.arc.io/tx/0x3ae4a91d908be2edaffbed4498aaee22f872bab5f950d1797218b208bb45500e) |
+| B | Not as described, store disputes | Settled: DENY, 3.00 USDC released to the store | [payment](https://explorer.testnet.arc.io/tx/0xc159115662c3d62be8a486f7f86f06d2351a25259ae092fe93921451afad4cc5), [claim](https://explorer.testnet.arc.io/tx/0x98f0d938f239f005e2b8853cc4b9d8d6a7fc3728c1f34907d41ee43becde7b09), [judge step 1: NOT_YET, closing round, archived](https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl), [judge step 2, attempt 1: no consensus, resent, archived](https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl), [judge step 2, attempt 2: DENY, archived](https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl), [execution](https://explorer.testnet.arc.io/tx/0x85fbed6fca7bf64b4ac93aabf97d540669459cae6b9b9277114a9c6ffb6de5e7) |
 | C | Not delivered, store silent | In progress: claim on 2026-10-24, verdict on 2026-10-27 | [payment](https://explorer.testnet.arc.io/tx/0x7808daf7f813751eec7a0e73ccecba05793877350cb7fbec9cd6ed984c8f6b2d) |
-| D | Proof requested, never sent | Settled: no proof within 7 days, 1.00 USDC released to the store | [payment](https://explorer.testnet.arc.io/tx/0xf05bca43afafeaa3338e831bc0351752e09c11c57e64a05bb43682a179281364), [claim](https://explorer.testnet.arc.io/tx/0x414dd456d3b3cddd36e784ed4b1cc77a83e1ad67ff682d669d0c22a4fba5ac82), [judge step 1: NOT_YET, proof required](https://explorer-bradbury.genlayer.com/tx/0x12d87bcd0f2f22423809d0706e8ba06ecf2b1ff28a544a2c5ac267470173e91b), [release, proof not provided](https://explorer.testnet.arc.io/tx/0xae9d39a7b267b17a43ea4b10d3379bcf99fa37ffff38bdef0ff1c141b618629a) |
-| E | Not as described, store admits | Settled: REFUND 1.00 USDC | [payment](https://explorer.testnet.arc.io/tx/0x2180d8205ea202b76cbc66cfb504966cd26b99c6c9c0f32b97351ea6985185ac), [claim](https://explorer.testnet.arc.io/tx/0x44a566bcee934dcfbd8b50ae704381c6c3cbf2fe5feb1431a489e23e2731fad8), [judge step 1: REFUND 1.00 USDC](https://explorer-bradbury.genlayer.com/tx/0x87f4559fb02114abb656c7f0c283bd9dd093d5e40635d22a6cbc69909c45969c), [execution](https://explorer.testnet.arc.io/tx/0x879943968057c338871b8b6441015b3ca67ab194a6035fd952f302d9baaf6ec2) |
+| D | Proof requested, never sent | Settled: no proof within 7 days, 1.00 USDC released to the store | [payment](https://explorer.testnet.arc.io/tx/0xf05bca43afafeaa3338e831bc0351752e09c11c57e64a05bb43682a179281364), [claim](https://explorer.testnet.arc.io/tx/0x414dd456d3b3cddd36e784ed4b1cc77a83e1ad67ff682d669d0c22a4fba5ac82), [judge step 1: NOT_YET, proof required, archived](https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl), [release, proof not provided](https://explorer.testnet.arc.io/tx/0xae9d39a7b267b17a43ea4b10d3379bcf99fa37ffff38bdef0ff1c141b618629a) |
+| E | Not as described, store admits | Settled: REFUND 1.00 USDC | [payment](https://explorer.testnet.arc.io/tx/0x2180d8205ea202b76cbc66cfb504966cd26b99c6c9c0f32b97351ea6985185ac), [claim](https://explorer.testnet.arc.io/tx/0x44a566bcee934dcfbd8b50ae704381c6c3cbf2fe5feb1431a489e23e2731fad8), [judge step 1: REFUND 1.00 USDC, archived](https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl), [execution](https://explorer.testnet.arc.io/tx/0x879943968057c338871b8b6441015b3ca67ab194a6035fd952f302d9baaf6ec2) |
 
 ### The Demo Shop runs on minutes
 
@@ -153,28 +153,30 @@ Live test (Arc testnet and GenLayer Bradbury):
 | Contract or role | Network | Address |
 |---|---|---|
 | RefundEscrow v3 | Arc testnet | [`0x5Bf18C9B66dF20BF2D30e08b561f65de73fA1E2D`](https://explorer.testnet.arc.io/address/0x5Bf18C9B66dF20BF2D30e08b561f65de73fA1E2D) |
-| Judge: store emails (late) | Bradbury | [`0x7e3251e7A9479280a6b8c93FD2E852291abd105c`](https://explorer-bradbury.genlayer.com/address/0x7e3251e7A9479280a6b8c93FD2E852291abd105c) |
-| Judge: not as described, not delivered | Bradbury | [`0x2a0126530321FF7886A568b9439d3535A27EfA91`](https://explorer-bradbury.genlayer.com/address/0x2a0126530321FF7886A568b9439d3535A27EfA91) |
-| Lacre Router (email attestations) | Bradbury | [`0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9`](https://explorer-bradbury.genlayer.com/address/0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9) |
+| Judge: store emails (late) | Bradbury | `0x7e3251e7A9479280a6b8c93FD2E852291abd105c`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/br-log.jsonl) |
+| Judge: not as described, not delivered | Bradbury | `0x2a0126530321FF7886A568b9439d3535A27EfA91`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/br-log.jsonl) |
+| Judge: not as described, not delivered (redeployed on Bradbury Phase 2 with the v0.6 syntax, same prompts and same terms; `contracts/judge_subjective_p2.py`) | Bradbury Phase 2 | [`0x1Bbd6Bdb4B8aB4b0cB53faA754468c825783557F`](https://scan.bradbury.genlayer.com/address/0x1Bbd6Bdb4B8aB4b0cB53faA754468c825783557F) |
+| Lacre Router (email attestations) | Bradbury | `0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/attest-mail.jsonl) |
 | Buyer | Arc testnet | [`0x3c3f857c9d193cA1FED87d0f72Fc43ACA6028B25`](https://explorer.testnet.arc.io/address/0x3c3f857c9d193cA1FED87d0f72Fc43ACA6028B25) |
 | Store (Demo Shop, `shop.rpmdev.app`) | Arc testnet | [`0x13E2ddb489EE77d87846e7ba36bf5F89e8ABff32`](https://explorer.testnet.arc.io/address/0x13E2ddb489EE77d87846e7ba36bf5F89e8ABff32) |
-| Signer (owner and relayer) | Arc testnet and Bradbury | [`0x0F0c950043c4D0B570fb6A7eDE0874Df96966808`](https://explorer.testnet.arc.io/address/0x0F0c950043c4D0B570fb6A7eDE0874Df96966808), [on Bradbury](https://explorer-bradbury.genlayer.com/address/0x0F0c950043c4D0B570fb6A7eDE0874Df96966808) |
+| Signer (owner and relayer) | Arc testnet and Bradbury | [`0x0F0c950043c4D0B570fb6A7eDE0874Df96966808`](https://explorer.testnet.arc.io/address/0x0F0c950043c4D0B570fb6A7eDE0874Df96966808), [on Bradbury](https://scan.bradbury.genlayer.com/address/0x0F0c950043c4D0B570fb6A7eDE0874Df96966808) |
 
 Demo Shop section (Arc testnet and GenLayer Bradbury):
 
 | Contract or role | Network | Address |
 |---|---|---|
 | RefundEscrow v3, demo build | Arc testnet | [`0x185D7aaFE85823a2B91D00735CF9f312E1dAc709`](https://explorer.testnet.arc.io/address/0x185D7aaFE85823a2B91D00735CF9f312E1dAc709) |
-| Judge: store emails (late) | Bradbury | [`0x503E73e0Fb2B85C2027Eef457417796D499511E4`](https://explorer-bradbury.genlayer.com/address/0x503E73e0Fb2B85C2027Eef457417796D499511E4) |
-| Judge: not as described, not delivered | Bradbury | [`0x68e180057AE598301b94a0737309fE00a1ca7D3f`](https://explorer-bradbury.genlayer.com/address/0x68e180057AE598301b94a0737309fE00a1ca7D3f) |
-| Lacre Router (email attestations) | Bradbury | [`0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9`](https://explorer-bradbury.genlayer.com/address/0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9), shared |
+| Judge: store emails (late) | Bradbury | `0x503E73e0Fb2B85C2027Eef457417796D499511E4`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/demo-judges-log.jsonl) |
+| Judge: not as described, not delivered | Bradbury | `0x68e180057AE598301b94a0737309fE00a1ca7D3f`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/demo-judges-log.jsonl) |
+| Lacre Router (email attestations) | Bradbury | `0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/attest-mail.jsonl), shared |
 | Demo store (`demo.rpmdev.app`) | Arc testnet | [`0x7bB6c50dC82151226d8253CC0C5a9088Cd4ef1E2`](https://explorer.testnet.arc.io/address/0x7bB6c50dC82151226d8253CC0C5a9088Cd4ef1E2) |
-| Demo relayer | Arc testnet and Bradbury | [`0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63`](https://explorer.testnet.arc.io/address/0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63), [on Bradbury](https://explorer-bradbury.genlayer.com/address/0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63) |
+| Demo relayer | Arc testnet and Bradbury | [`0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63`](https://explorer.testnet.arc.io/address/0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63), [on Bradbury](https://scan.bradbury.genlayer.com/address/0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63) |
 
 Networks: Arc testnet (chain 5042002, RPC `https://rpc.testnet.arc.io`, explorer
 [explorer.testnet.arc.io](https://explorer.testnet.arc.io)) and GenLayer Bradbury (chain 4221, RPC
 `https://rpc-bradbury.genlayer.com`, explorer
-[explorer-bradbury.genlayer.com](https://explorer-bradbury.genlayer.com)).
+[scan.bradbury.genlayer.com](https://scan.bradbury.genlayer.com)). Links marked archived lead to the record of the transaction
+in `results/`.
 
 ## Frontend
 
@@ -290,7 +292,7 @@ The committee measurements (`tests/run_local_*.py`) call 5 models through OpenRo
 - GenLayer: [protocol](https://docs.genlayer.com/understand-genlayer-protocol),
   [Intelligent Contracts](https://docs.genlayer.com/developers/intelligent-contracts/introduction),
   [equivalence principle](https://docs.genlayer.com/developers/intelligent-contracts/equivalence-principle),
-  [Bradbury explorer](https://explorer-bradbury.genlayer.com),
+  [Bradbury explorer](https://scan.bradbury.genlayer.com),
   [genlayer-js](https://github.com/genlayerlabs/genlayer-js),
   [genlayer-py](https://github.com/genlayerlabs/genlayer-py).
 - Lacre: [lacre.in-sidr.xyz](https://lacre.in-sidr.xyz), [source](https://github.com/eudomar500/lacre).

@@ -27,7 +27,17 @@ LOG_RAW, LOG_EN = "results/e2e-log.jsonl", "results/e2e-log-en.jsonl"
 # Official explorer per docs.arc.io (testnet.arcscan.app redirects here).
 ARC_EXPLORER = "https://explorer.testnet.arc.io"
 ARC_TX, ARC_ADDR = ARC_EXPLORER + "/tx/", ARC_EXPLORER + "/address/"
-GL_TX, GL_ADDR = "https://explorer-bradbury.genlayer.com/tx/", "https://explorer-bradbury.genlayer.com/address/"
+# GenLayer reset Bradbury in October 2026: its explorer no longer has the earlier transactions, so they link to
+# their record in results/ of the repository (the page marks those links "archived"). Bradbury Phase 2 has its own.
+REPO = "https://github.com/randyparrs/Tenet/blob/main/"
+P2_EXPLORER = "https://scan.bradbury.genlayer.com"
+P2_TX, P2_ADDR = P2_EXPLORER + "/tx/", P2_EXPLORER + "/address/"
+P2_NOTE = "Redeployed on Bradbury Phase 2 with the v0.6 syntax, same prompts and same terms."
+
+
+def gl_url(r, log):
+    """A judge transaction: on Bradbury Phase 2 its explorer link, before the reset its record in the repository."""
+    return P2_TX + r["tx"] if r.get("network") == "bradbury-phase2" else REPO + log
 ROUTER = "0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9"
 
 # What each live case is and what is still scheduled (UTC dates). Kept here, next to the expected
@@ -44,9 +54,8 @@ LIVE = {
     "C": {"title": "Not delivered, store silent", "path": "not_delivered",
           "story": "The order never arrives and the store does not answer within 72 hours. Policy: full refund from 10 days "
                    "after the promised date.",
-          "stage": "Paid; waiting until 10 days after the promised date to claim",
-          "next": [{"date": "2026-10-24", "what": "Claim (10 days after the promised date)"},
-                   {"date": "2026-10-27", "what": "No-response marker after 72 hours, judgment, settlement"}]},
+          "stage": "Claim opened on 2026-10-26; waiting 72 hours for the store's answer",
+          "next": [{"date": "2026-10-29", "what": "No-response marker after 72 hours, judgment, settlement"}]},
     "D": {"title": "Proof requested, never sent", "path": "not_as_described",
           "story": "A laptop arrives without its charger; the claim has no proof and the store gives a general denial. The "
                    "judge asks for proof; if the buyer sends none in 7 days, anyone releases the payment to the store.",
@@ -143,10 +152,10 @@ def live_cases(rows):
                 # One timeline entry per judge transaction: the send (time, cost, link) and its result.
                 a = attempts.setdefault(r["step"], [])
                 if r["state"] == "sent":
-                    a.append({"tx": r["tx"], "url": GL_TX + r["tx"], "gen": gen(r), "result": "pending"})
+                    a.append({"tx": r["tx"], "url": gl_url(r, LOG_EN), "gen": gen(r), "result": "pending"})
                     sends[r["tx"]] = {"at": r["at"], "chain": "bradbury", "actor": "relayer",
                                       "action": "Step %d sent to the judge, attempt %d: pending" % (r["step"], r["attempt"]),
-                                      "tx": r["tx"], "url": GL_TX + r["tx"], "gen": gen(r)}
+                                      "tx": r["tx"], "url": gl_url(r, LOG_EN), "gen": gen(r)}
                     timeline.append(sends[r["tx"]])
                 else:
                     for x in a:
@@ -157,7 +166,7 @@ def live_cases(rows):
                         v = verdict_view(r["verdict"])
                         verdicts.append({"step": r["step"], "verdict": v, "expected": c["steps"][r["step"] - 1],
                                          "matches_expected": True, "votes": r.get("votes"), "tx": r["tx"],
-                                         "url": GL_TX + r["tx"]})
+                                         "url": gl_url(r, LOG_EN)})
                         result = "%s %s (%s)" % (v["outcome"], usdc_text(v["refund_cents"]), v["reason"])
                     else:
                         result = "no consensus (%s), resent" % r.get("final_result")
@@ -175,7 +184,7 @@ def live_cases(rows):
                                      "action": "Email %s attested on Lacre: record %s, signature %s, domain %s" % (
                                          r["id"], r["record_id"], "valid" if r["valid"] else "not valid",
                                          "aligned" if r["aligned"] else "not aligned"),
-                                     "tx": tx, "url": GL_TX + tx if tx else None, "gen": float(r.get("cost_gen") or 0)})
+                                     "tx": tx, "url": REPO + "results/attest-mail.jsonl" if tx else None, "gen": float(r.get("cost_gen") or 0)})
         timeline.sort(key=lambda t: t["at"])
         settled = [ev for r in mine for ev in r.get("events", []) if ev["name"] == "OrderSettled"]
         settle_row = next((r for r in mine if r.get("op") in ("execute", "unproven") and r.get("state") == "ok"), None)
@@ -212,7 +221,7 @@ def br_cases(rows, cases):
                 "step": n, "expected": c["expected_steps"][n - 1],
                 "verdict": verdict_view(ok["verdict"]) if ok else None,
                 "votes": ok.get("votes", {}).get("counts") if ok else None,
-                "attempts": [{"tx": r["tx"], "url": GL_TX + r["tx"], "gen": gen(r),
+                "attempts": [{"tx": r["tx"], "url": REPO + "results/br-log.jsonl", "gen": gen(r),
                               "result": {"as_expected": "accepted", "resend": "no consensus, resent"}.get(
                                   done.get(r["tx"], {}).get("state"), done.get(r["tx"], {}).get("state"))}
                              for r in sent]})
@@ -281,12 +290,22 @@ def contracts(br, state, e2e_rows):
     for kind, name in (("mail", "Judge: store emails (late)"), ("subjective", "Judge: not as described, not delivered")):
         r = final[kind]
         src = "contracts/judge_%s.py" % kind
-        out.append({"name": name, "chain": "bradbury", "address": r["address"], "url": GL_ADDR + r["address"],
-                    "deploy_tx": r["tx"], "deploy_url": GL_TX + r["tx"], "gas_used": r.get("l2_gas_used"),
+        out.append({"name": name, "chain": "bradbury", "address": r["address"], "url": REPO + "results/br-log.jsonl",
+                    "deploy_tx": r["tx"], "deploy_url": REPO + "results/br-log.jsonl", "gas_used": r.get("l2_gas_used"),
                     "deploy_cost_gen": gen(r), "bytes": build[src]["bytes"], "sha256": build[src]["sha256"],
                     "prompt_hash": r.get("prompt_hash"), "methods": r.get("schema_methods"), "source": src})
+    p2 = jsonl("results/p2-log.jsonl")
+    dep = next((r for r in p2 if r.get("op") == "deploy-decided" and r.get("execution") == "FINISHED_WITH_RETURN"), None)
+    if dep:
+        sent = next(r for r in p2 if r.get("op") == "deploy" and r["tx"] == dep["tx"])
+        src = sent["file"]
+        out.append({"name": "Judge: not as described, not delivered (Bradbury Phase 2)", "chain": "bradbury",
+                    "address": dep["address"], "url": P2_ADDR + dep["address"], "deploy_tx": dep["tx"],
+                    "deploy_url": P2_TX + dep["tx"], "bytes": build[src]["bytes"], "sha256": build[src]["sha256"],
+                    "prompt_hash": final["subjective"].get("prompt_hash"), "methods": final["subjective"].get("schema_methods"),
+                    "source": src, "note": P2_NOTE})
     out.append({"name": "Lacre Router (email attestations)", "chain": "bradbury", "address": ROUTER,
-                "url": GL_ADDR + ROUTER, "project_url": "https://lacre.in-sidr.xyz",
+                "url": REPO + "results/attest-mail.jsonl", "project_url": "https://lacre.in-sidr.xyz",
                 "source": "github.com/eudomar500/lacre (MIT, Insidr Labs)"})
     return out
 
@@ -303,8 +322,8 @@ def main():
         "networks": {
             "arc": {"name": "Arc testnet", "chain_id": E.CHAIN_ID, "explorer": ARC_EXPLORER,
                     "tx_url": ARC_TX, "address_url": ARC_ADDR, "usdc": E.USDC, "faucet": "https://faucet.circle.com"},
-            "bradbury": {"name": "GenLayer Bradbury testnet", "explorer": "https://explorer-bradbury.genlayer.com",
-                         "tx_url": GL_TX, "address_url": GL_ADDR}},
+            "bradbury": {"name": "GenLayer Bradbury testnet", "explorer": P2_EXPLORER,
+                         "tx_url": P2_TX, "address_url": P2_ADDR}},
         "roles": {"buyer": who.get("buyer"), "store": who.get("merchant"), "signer": who.get("signer")},
         "contracts": contracts(br_rows, state, e2e_rows),
         "terms": {"terms_hash": E.TERMS_HASH, "store": "Demo Shop (shop.rpmdev.app)",

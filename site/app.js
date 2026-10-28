@@ -165,8 +165,11 @@
     if (!value) return '';
     var v = String(value);
     var short = v.length > 12 ? v.slice(0, 6) + '...' + v.slice(-4) : v;
+    // GenLayer reset Bradbury in October 2026: earlier transactions link to their record in results/ of the repository.
+    var archived = url && /\/Tenet\/blob\/main\/results\//.test(url);
     var main = url
-      ? '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer" title="Open in explorer: ' + esc(v) + '">' + esc(short) + icon('arrowUpRight') + '</a>'
+      ? '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer" title="' + (archived ? 'Archived: the record of ' + esc(v) + ' in the repository' : 'Open in explorer: ' + esc(v)) + '">' + esc(short) + icon('arrowUpRight') + '</a>' +
+        (archived ? '<span class="archived-tag">archived</span>' : '')
       : '<span class="plain" title="' + esc(v) + '">' + esc(short) + '</span>';
     return '<span class="hash-wrap">' + (net ? netBadge(net) : '') + '<span class="hash">' + main +
       '<button type="button" data-copy="' + esc(v) + '" title="Copy ' + esc(v) + '" aria-label="Copy ' + esc(v) + '">' + icon('copy') + '</button></span></span>';
@@ -820,6 +823,7 @@
       if (x.prompt_hash) det.push(dt('Prompt hash', '<span class="row" style="gap:6px 10px">' + x.prompt_hash.split('|').filter(Boolean).map(function (v) { return hashChip(v); }).join('') + '</span>'));
       if (x.methods && x.methods.length) det.push(dt('Methods', '<span class="row" style="gap:4px">' + x.methods.map(function (m) { return '<span class="chip-method">' + esc(m) + '</span>'; }).join('') + '</span>'));
       if (x.source && !ext) det.push(dt('Source file', txt(x.source)));
+      if (x.note) det.push(dt('Note', txt(x.note)));
       var p = x.params;
       if (p) {
         if (p.token) det.push(dt('Token', txt(p.token)));

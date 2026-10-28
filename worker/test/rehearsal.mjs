@@ -499,7 +499,7 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   check(l1Cur[0] === "Store emails" && /Order confirmed/.test(l1Cards[0]) && /signed by the store/.test(l1Cards[0]) && /sent the day after the payment/.test(l1Cards[0])
     && /badge-lacre/.test(l1Cards[0]), `PAGE L1 day 0: Store emails is the current step, the confirmation is signed by the store and the delivery notice comes the next day (${l1Cur[0]})`);
   const both = l1Cards.find((h) => (h.match(/verified by Lacre \(record \d+\)/g) || []).length === 2);
-  check(!!both && (both.match(/explorer-bradbury\.genlayer\.com\/tx\/0x[0-9a-f]+/g) || []).length >= 2,
+  check(!!both && (both.match(/scan\.bradbury\.genlayer\.com\/tx\/0x[0-9a-f]+/g) || []).length >= 2,
     "PAGE L1: each store email shows signed by the store, verified by Lacre and a link to its attestation on Bradbury");
   const verifying = l1Cards.find((h) => /verifying on Lacre/.test(h));
   check(!!verifying && /Until the attestation is final/.test(verifying) && /about 30 min after it is sent/.test(verifying)

@@ -29,6 +29,7 @@
 /contracts/*
 !/contracts/judge_mail.py
 !/contracts/judge_subjective.py
+!/contracts/judge_subjective_p2.py
 !/contracts/judge_mail_template.py
 !/contracts/judge_subjective_template.py
 !/contracts/judge_common.py
@@ -58,6 +59,7 @@
 !/tools/fund_demo_relayer.py
 !/tools/sign_mail.mjs
 !/tools/tx_votes.mjs
+!/tools/gl2.mjs
 !/tools/dkim_keygen.mjs
 !/tools/keycache.mjs
 !/tools/circle-sdk/
@@ -97,6 +99,7 @@
 /results/*
 !/results/e2e-log-en.jsonl
 !/results/br-log.jsonl
+!/results/p2-log.jsonl
 !/results/demo-log.jsonl
 !/results/demo-judges-log.jsonl
 !/results/attest-mail.jsonl

@@ -65,7 +65,10 @@ DAY = 86400
 BR = json.loads((ROOT / "cases" / "br-cases.json").read_text(encoding="ascii"))
 TERMS_HASH = BR["terms_hash"]
 TERMS = {"domain": BR["domain"], "structure": BR["structure"], "profile": BR["profile"], "terms_hash": TERMS_HASH}
-JUDGES = {"mail": "0x7e3251e7A9479280a6b8c93FD2E852291abd105c", "subjective": "0x2a0126530321FF7886A568b9439d3535A27EfA91"}
+# The judges of the live test on the previous Bradbury; on Bradbury Phase 2 (GenLayer reset Bradbury in October
+# 2026) local.env sets the redeployed ones.
+JUDGES = {"mail": os.environ.get("JUDGE_MAIL", "0x7e3251e7A9479280a6b8c93FD2E852291abd105c"),
+          "subjective": os.environ.get("JUDGE_SUBJECTIVE", "0x2a0126530321FF7886A568b9439d3535A27EfA91")}
 OUTCOME = {"REFUND": 1, "DENY": 2, "INVALID_CLAIM": 3}
 
 C3 = {c["id"]: c for c in json.loads((ROOT / "cases" / "subjective-c3.json").read_text(encoding="utf-8"))["cases"]}
@@ -766,7 +769,44 @@ class LiveJudge:
         return st, js.chain.read(net, client, JUDGES[kind], "get_merchant", [merchant], js.FINAL)
 
 
-JUDGE_BACKEND = LiveJudge()
+class P2Judge:
+    """Bradbury Phase 2 (Consensus v0.6) through tools/gl2.mjs (genlayer-js 2.0.0-rc.2); the signer pays the GEN.
+    Selected with E2E_JUDGE_NET=p2 (local.env); the judge addresses come from JUDGE_SUBJECTIVE / JUDGE_MAIL."""
+    records = None
+
+    def _gl2(self, *args, stdin=None):
+        out = subprocess.run(["node", str(ROOT / "tools" / "gl2.mjs"), *args], input=stdin, capture_output=True, text=True,
+                             cwd=str(ROOT))
+        lines = [ln for ln in out.stdout.splitlines() if ln.startswith("{")]
+        if out.returncode != 0 or not lines:
+            sys.exit("tools/gl2.mjs %s failed: %s" % (args[0], (out.stderr.strip().splitlines() or ["no output"])[-1]))
+        return json.loads(lines[-1])
+
+    def send(self, kind, claim, step, _when):
+        r = self._gl2("send", JUDGES[kind], "judge", stdin=json.dumps([claim, step]))
+        print("judge %s: %s / %s / %s" % (kind, r.get("status"), r.get("result"), r.get("execution")))
+        return r["tx"], {"fee_value": r["fee_value"], "network": "bradbury-phase2"}
+
+    def confirm(self, kind, tx, chain_hex):
+        st = self._gl2("final", tx, "30")
+        if not st.get("final"):
+            return None
+        raw = self._gl2("read", JUDGES[kind], "get_verdict", "final", stdin=json.dumps([chain_hex]))["value"] \
+            if st["execution"] == "FINISHED_WITH_RETURN" else ""
+        info = {"final_result": st["result"], "execution": st["execution"], "votes": st["votes"]}
+        return (json.loads(raw) if isinstance(raw, str) and raw else {}), info
+
+    def merchant(self, kind, merchant, terms):
+        r = self._gl2("send", JUDGES[kind], "set_merchant", stdin=json.dumps([merchant, terms]))
+        return r["tx"], {"fee_value": r["fee_value"], "network": "bradbury-phase2"}
+
+    def merchant_confirm(self, kind, tx, merchant):
+        st = self._gl2("final", tx, "30")
+        got = self._gl2("read", JUDGES[kind], "get_merchant", "final", stdin=json.dumps([merchant]))["value"]
+        return {"status": st["status"]}, got
+
+
+JUDGE_BACKEND = P2Judge() if os.environ.get("E2E_JUDGE_NET") == "p2" else LiveJudge()
 
 
 def cmd_gl_merchant(kind):

@@ -66,6 +66,8 @@ jobs:
           python tests/test_resolve_date.py
       - name: Both judge contracts, as built, in the simulated GenVM SDK
         run: python tools/lacre_boot.py tests/judge_v2_stub_run.py
+      - name: The subjective judge as redeployed on Bradbury Phase 2 (v0.6 names), same harness
+        run: python tools/lacre_boot.py tests/judge_v2_stub_run.py --p2
       - name: Live test rehearsal (cases A to E on anvil)
         run: python tools/lacre_boot.py tests/e2e_rehearsal.py
       - name: Circle routes of the Worker

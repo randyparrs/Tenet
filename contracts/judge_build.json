@@ -20,5 +20,12 @@
   },
   "bytes": 17668,
   "sha256": "6de718a730489ec528ea76fe7aede81dd7789e1dfb1705526b4641d7ad83b46f"
+ },
+ "contracts/judge_subjective_p2.py": {
+  "built_from": {
+   "contracts/judge_subjective.py": "6de718a730489ec528ea76fe7aede81dd7789e1dfb1705526b4641d7ad83b46f"
+  },
+  "bytes": 17757,
+  "sha256": "aa3ca531588c78ec41ffb8e43e01ced7bb51fe36abbfdfd2276a74b600bf5d87"
  }
 }

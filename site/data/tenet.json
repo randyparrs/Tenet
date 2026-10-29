@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-28T19:41:55+00:00",
+ "generated_at": "2026-10-29T16:05:33+00:00",
  "project": {
   "name": "Tenet",
   "tagline": "Buyer protection for stablecoin payments."
@@ -468,7 +468,7 @@
        "tx": "0x2213963a35305ee5bcaa9073c5ba7e06a54d462a420ba627ab83a7a1d30e00cf",
        "url": "https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl",
        "gen": 0.003338102,
-       "result": "no consensus, resent",
+       "result": "leader timeout, resent",
        "votes": {
         "0:NOT_VOTED": 5
        }
@@ -603,7 +603,7 @@
      "at": "2026-10-13T15:04:37+00:00",
      "chain": "bradbury",
      "actor": "relayer",
-     "action": "Step 2 sent to the judge, attempt 1: no consensus (IDLE), resent",
+     "action": "Step 2 sent to the judge, attempt 1: leader timeout, resent",
      "tx": "0x2213963a35305ee5bcaa9073c5ba7e06a54d462a420ba627ab83a7a1d30e00cf",
      "url": "https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl",
      "gen": 0.003338102
@@ -648,14 +648,9 @@
    "order_number": "DS-310003",
    "order_ref": "0x653dbe7c9e5a0e7547a8d20c85454fbb63b25fedce634f021e610bbcf0504714",
    "amount_usdc": 2.0,
-   "status": "in_progress",
-   "stage": "Claim opened on 2026-10-26; waiting 72 hours for the store's answer",
-   "next_steps": [
-    {
-     "date": "2026-10-29",
-     "what": "No-response marker after 72 hours, judgment, settlement"
-    }
-   ],
+   "status": "settled",
+   "stage": "Settled on Arc",
+   "next_steps": [],
    "expected": {
     "steps": [
      {
@@ -674,9 +669,65 @@
     "text": "{\"account\":\"My order never arrived. The promised date was 2026-10-14 and nothing came.\",\"amount_cents\":200,\"buyer\":\"0x3c3f857c9d193ca1fed87d0f72fc43aca6028b25\",\"claimed_at\":1793025511,\"event\":\"not_delivered\",\"merchant\":\"0x13e2ddb489ee77d87846e7ba36bf5f89e8abff32\",\"order_number\":\"DS-310003\",\"order_ref\":\"0x653dbe7c9e5a0e7547a8d20c85454fbb63b25fedce634f021e610bbcf0504714\",\"paid_at\":1791897019,\"promised_date\":\"2026-10-14\",\"terms_hash\":\"0x80941ba7c4e031c1479bc2f63e2361067cf5c5841c8b80a2b5e4e04c8f8fcf93\",\"v\":\"claim-v1\"}",
     "hash": "0xb3ae504ec1edb51d7a3fc14902ed3f5b3d7a6438e22ff1754829b4866cd4ec0b"
    },
-   "verdicts": [],
-   "attempts": [],
-   "settlement": null,
+   "verdicts": [
+    {
+     "step": 1,
+     "verdict": {
+      "outcome": "REFUND",
+      "refund_cents": 200,
+      "reason": "per policy",
+      "action": "decide",
+      "final": true,
+      "judged_at": "2026-10-29T15:43:18+00:00",
+      "chain": "0x16cffce7091f9eeb84d775e132c7beeed7a1eb59aab769b48e60acd11638f729",
+      "claim_hash": "0xb3ae504ec1edb51d7a3fc14902ed3f5b3d7a6438e22ff1754829b4866cd4ec0b"
+     },
+     "expected": {
+      "outcome": "REFUND",
+      "refund_cents": 200,
+      "reason": "per policy",
+      "action": "decide"
+     },
+     "matches_expected": true,
+     "votes": {
+      "1:FINISHED_WITH_RETURN": 5
+     },
+     "tx": "0x43189b7947b7180bbb25ba3ce43fbe6a15bf25669a1bdbffa3d986d35e859cb1",
+     "url": "https://github.com/randyparrs/Tenet/blob/main/results/e2e-log-en.jsonl"
+    }
+   ],
+   "attempts": [
+    {
+     "step": 1,
+     "attempts": [
+      {
+       "tx": "0x449e793e4ffcd8102079854f75f480a7f8b0cddc52042d4bddc669629da1bd99",
+       "url": "https://scan.bradbury.genlayer.com/tx/0x449e793e4ffcd8102079854f75f480a7f8b0cddc52042d4bddc669629da1bd99",
+       "gen": null,
+       "result": "leader timeout, resent",
+       "votes": {
+        "0:NOT_VOTED": 5
+       }
+      },
+      {
+       "tx": "0x43189b7947b7180bbb25ba3ce43fbe6a15bf25669a1bdbffa3d986d35e859cb1",
+       "url": "https://scan.bradbury.genlayer.com/tx/0x43189b7947b7180bbb25ba3ce43fbe6a15bf25669a1bdbffa3d986d35e859cb1",
+       "gen": null,
+       "result": "accepted",
+       "votes": {
+        "1:FINISHED_WITH_RETURN": 5
+       }
+      }
+     ]
+    }
+   ],
+   "settlement": {
+    "refund_usdc": 2.0,
+    "released_usdc": 0.0,
+    "tx": "0xd53e58fc16a27433990bf33a7f95ebfd975e02bc600cee61f0802deb19d6ddf3",
+    "url": "https://explorer.testnet.arc.io/tx/0xd53e58fc16a27433990bf33a7f95ebfd975e02bc600cee61f0802deb19d6ddf3",
+    "note": "Credited in the escrow; withdrawals at the end of the test."
+   },
    "checks": [],
    "timeline": [
     {
@@ -708,6 +759,54 @@
      "url": "https://explorer.testnet.arc.io/tx/0xa37c26a92b1030ccc3c57907243a24d31b47581dc5d537fdca2360656cd6fefd",
      "gas_used": 879254,
      "gas_usdc": 0.021981
+    },
+    {
+     "at": "2026-10-29T15:33:25+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Marker: no_response",
+     "tx": "0x6912e5d8589f87e6d3bb4a25c28524c73f6cf74d1afebc3b285fd7974c0cef16",
+     "url": "https://explorer.testnet.arc.io/tx/0x6912e5d8589f87e6d3bb4a25c28524c73f6cf74d1afebc3b285fd7974c0cef16",
+     "gas_used": 41526,
+     "gas_usdc": 0.001038
+    },
+    {
+     "at": "2026-10-29T15:37:29+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 1 sent to the judge, attempt 1: leader timeout, resent",
+     "tx": "0x449e793e4ffcd8102079854f75f480a7f8b0cddc52042d4bddc669629da1bd99",
+     "url": "https://scan.bradbury.genlayer.com/tx/0x449e793e4ffcd8102079854f75f480a7f8b0cddc52042d4bddc669629da1bd99",
+     "gen": null
+    },
+    {
+     "at": "2026-10-29T15:43:41+00:00",
+     "chain": "bradbury",
+     "actor": "relayer",
+     "action": "Step 1 sent to the judge, attempt 2: REFUND 2.00 USDC (per policy)",
+     "tx": "0x43189b7947b7180bbb25ba3ce43fbe6a15bf25669a1bdbffa3d986d35e859cb1",
+     "url": "https://scan.bradbury.genlayer.com/tx/0x43189b7947b7180bbb25ba3ce43fbe6a15bf25669a1bdbffa3d986d35e859cb1",
+     "gen": null
+    },
+    {
+     "at": "2026-10-29T15:46:05+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Propose verdict on Arc",
+     "tx": "0x9b979e00937f7341b54538f225614a3609668162de43e224e496312ccc52ac2a",
+     "url": "https://explorer.testnet.arc.io/tx/0x9b979e00937f7341b54538f225614a3609668162de43e224e496312ccc52ac2a",
+     "gas_used": 87231,
+     "gas_usdc": 0.002181
+    },
+    {
+     "at": "2026-10-29T16:00:47+00:00",
+     "chain": "arc",
+     "actor": "relayer",
+     "action": "Execute verdict",
+     "tx": "0xd53e58fc16a27433990bf33a7f95ebfd975e02bc600cee61f0802deb19d6ddf3",
+     "url": "https://explorer.testnet.arc.io/tx/0xd53e58fc16a27433990bf33a7f95ebfd975e02bc600cee61f0802deb19d6ddf3",
+     "gas_used": 61798,
+     "gas_usdc": 0.001545
     }
    ]
   },

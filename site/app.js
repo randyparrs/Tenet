@@ -144,7 +144,7 @@
     INVALID_CLAIM: { icon: 'warning', h: 25, c: 0.11 }
   };
   var outColor = function (o) { return OUTC[o] || 'var(--color-text)'; };
-  var isResent = function (r) { return /^no consensus/.test(r || ''); };
+  var isResent = function (r) { return /, resent$/.test(r || ''); };
 
   /* Small components */
   var NETS = {
@@ -368,7 +368,7 @@
     });
     var timeline = tl.map(function (e) {
       var cost = e.gas_usdc != null ? e.gas_usdc + ' USDC gas' : e.gen != null ? e.gen + ' GEN' : '';
-      return { at: fmtAt(e.at), actor: e.actor, action: e.action, net: netOf(e.chain, e.action), tx: e.tx, url: e.url, cost: cost, isResend: /no consensus/i.test(e.action || '') };
+      return { at: fmtAt(e.at), actor: e.actor, action: e.action, net: netOf(e.chain, e.action), tx: e.tx, url: e.url, cost: cost, isResend: /, resent$/i.test(e.action || '') };
     });
     var eb = (c.expected && c.expected.settlement_usdc) || {};
     var claimNext = ns.find(function (x) { return /\bclaim\b/i.test(x.what || ''); });

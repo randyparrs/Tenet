@@ -438,6 +438,20 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
     && el("wallet-bal").textContent === "balance unavailable", "PAGE with every read down, the page says the reads failed instead of showing 0");
   net.walletReadsDown = false; net.publicRpcDown = false; net.workerDown = false; await act("refresh");
   check(W.balance === onChain && !W.balanceErr && T._state.claimable === owed, "PAGE the reads recover on the next refresh");
+  // The live test from site/data/tenet.json: case C settled, its first judge round marked as a leader timeout, resent
+  const live = JSON.parse(readFileSync(P("site/data/tenet.json"), "utf8")).live_cases;
+  const settledN = live.filter((c) => c.status === "settled").length;
+  check(new RegExp(settledN + " settled").test(el("screen-overview").innerHTML), `PAGE the Overview counts ${settledN} of ${live.length} live cases settled`);
+  ctx.location.hash = "#case/C";
+  listeners.hashchange();
+  await settle();
+  const caseC = el("screen-case").innerHTML;
+  const timedOut = live.find((c) => c.id === "C").attempts.flatMap((s) => s.attempts).some((a) => a.result === "leader timeout, resent");
+  check(!timedOut || (/res-resent[^>]*>(?:<[^>]+>)*[^<]*leader timeout, resent/.test(caseC) && !/undefined|NaN/.test(caseC)),
+    "PAGE case C shows a leader timeout attempt as resent");
+  ctx.location.hash = "#demo-shop";
+  listeners.hashchange();
+  await settle();
   const html = () => el("screen-demo-shop").innerHTML;
   check((html().match(/data-try="start"/g) || []).length === 6 && /Demo Shop/.test(html()) && (html().match(/<svg class="try-art-svg"/g) || []).length === 6
     && !/undefined|NaN/.test(html()), "PAGE the Demo Shop lists six products, each with its illustration and a Buy button");

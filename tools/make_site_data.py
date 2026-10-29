@@ -158,9 +158,13 @@ def live_cases(rows):
                                       "tx": r["tx"], "url": gl_url(r, LOG_EN), "gen": gen(r)}
                     timeline.append(sends[r["tx"]])
                 else:
+                    # On Bradbury Phase 2 a round whose leader timed out finalizes IDLE with no votes cast.
+                    timed_out = r.get("final_result") == "IDLE" and r.get("votes") and \
+                        all(k.endswith(":NOT_VOTED") for k in r["votes"])
                     for x in a:
                         if x["tx"] == r["tx"]:
-                            x["result"] = "no consensus, resent" if r["state"] == "resend" else "accepted"
+                            x["result"] = ("leader timeout, resent" if timed_out else "no consensus, resent") \
+                                if r["state"] == "resend" else "accepted"
                             x["votes"] = r.get("votes")
                     if r["state"] == "as_expected":
                         v = verdict_view(r["verdict"])
@@ -168,6 +172,8 @@ def live_cases(rows):
                                          "matches_expected": True, "votes": r.get("votes"), "tx": r["tx"],
                                          "url": gl_url(r, LOG_EN)})
                         result = "%s %s (%s)" % (v["outcome"], usdc_text(v["refund_cents"]), v["reason"])
+                    elif timed_out:
+                        result = "leader timeout, resent"
                     else:
                         result = "no consensus (%s), resent" % r.get("final_result")
                     if r["tx"] in sends:

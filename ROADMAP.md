@@ -3,38 +3,39 @@
 What comes after the live test. Nothing here is built yet, except the payment gateway (section 1). The live
 test judges, the Demo Shop and escrow v3 stay as they are.
 
-## 1. Payment gateway for stores
+## 1. Tenet Pay, the payment gateway for stores
 
-**Update: Tenet Pay.** The gateway is live on testnet as Tenet Pay: [paytenet.site](https://paytenet.site), code at
-[randyparrs/tenet-pay](https://github.com/randyparrs/tenet-pay).
+The gateway is live on testnet as Tenet Pay: [paytenet.site](https://paytenet.site), code at
+[randyparrs/tenet-pay](https://github.com/randyparrs/tenet-pay), with its own
+[ROADMAP.md](https://github.com/randyparrs/tenet-pay/blob/main/ROADMAP.md). Any store can offer Tenet's buyer protection at
+checkout, not only the test store.
 
-Any store can offer Tenet's buyer protection at checkout, not only the test store. The gateway is a product
-of its own, on its own site, separate from this page.
+**Done**
 
-- **Store registration.** The store proves it owns its domain with a DNS TXT record
-  (`_tenet.<domain>` with `tenet-merchant=<wallet>`), read through two DNS over HTTPS resolvers that have
-  to agree. The store pastes its refund policy; a fixed model (Llama 3.3 70B) drafts the structured
-  terms, the form flags preconditions and excluded causes for review, and the store always confirms.
-  Nothing is registered from the draft alone. The relayer then registers the store's terms on the judges
-  and on the escrow.
-- **Checkout page.** A "Pay with Tenet" button on the store's site opens Tenet's checkout page. The buyer
-  pays from a browser wallet or with Google through Circle, and returns to the store. The store confirms
-  the payment by reading the `OrderPaid` event and can also receive a signed webhook.
-- **Store panel.** The store answers claims in free text, with a length limit.
-- **Store emails.** The store sends its order emails to an address of Tenet for each order
-  (`order-<id>@orders.rpmdev.app`). Tenet receives them, picks the DKIM signature aligned with the store's
-  domain and attests it on Lacre. The buyer's own email address is never in the signed headers that Lacre
-  publishes. The buyer sees the emails in My orders.
-- **Email judge for the gateway.** A separate deployment, only for the gateway:
-  - the store declares at registration the label of the promised date in its emails (for example
-    "Estimated delivery:") and, optionally, the label of the delivery date. The judge reads the promised
-    date from that label in any signed and aligned email of the store, whatever type the committee gives
-    the email;
-  - email bodies up to 12 KB. A larger body is refused with a clear error code, and the page warns before
-    sending.
-- **DKIM key size.** The minimum key size is part of each store's terms: 1024 bits for the example store,
-  whose email provider signs with a 1024-bit key. Real stores will be asked for 2048-bit keys.
-- **Example store.** techshopping.site, a separate brand and domain that sends real signed emails.
+- **Checkout with buyer protection.** The buyer pays into an escrow on Arc; the payment goes to the store when the hold ends, or
+  back to the buyer if the judge decides a claim for them.
+- **Store registration** with a DNS proof of the domain and terms drafted by AI from the store's refund policy, always confirmed by
+  the store.
+- **Store panel** for orders, answers to claims, the balance and the terms.
+- **Signed webhooks** to the store.
+- **Circle wallet with Google** for buyers.
+- **Real DKIM signed emails** from the store to a Tenet address for each order.
+- **HTML email reading.**
+- **Versioned terms.**
+- **Judges on Bradbury Phase 2:** the subjective judge is deployed; the email judge waits for Lacre on Phase 2.
+
+**Next** (sections 2 to 4 below go into email bodies by URL, escrow v4 and the store registry)
+
+- **Orvyn:** buyer protection for AI agents that shop. In progress: [orvyn.paytenet.site](https://orvyn.paytenet.site) and
+  [randyparrs/orvyn](https://github.com/randyparrs/orvyn).
+- **Delivery verification** for "not delivered" claims: the GenLayer judge reads the carrier's public tracking. Fallback: the
+  carrier's emails, verified with Lacre.
+- **Appeals:** either side can appeal a verdict with a deposit, and a larger GenLayer committee judges it again.
+- **The "late" path again,** once Lacre is live on Bradbury Phase 2.
+- **Escrow v4:** a fee on what is released to the store, and orders signed by the store.
+- **Email bodies by URL,** for real store emails of any size. Required before the first real store.
+- **Preconditions and exclusions** supported in the judges.
+- **On chain store registry,** and 2048 bit DKIM keys for real stores.
 
 ## 2. Email body by URL
 

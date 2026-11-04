@@ -38,10 +38,11 @@ from make_subjective_cases import facts as flow_facts  # noqa: E402
 from run_local import MODELS  # noqa: E402
 
 CONTRACTS = {"mail": ROOT / "contracts" / "judge_mail.py", "subjective": ROOT / "contracts" / "judge_subjective.py"}
-# --p2: the subjective judge built for Bradbury Phase 2 (contracts/judge_subjective_p2.py, v0.6 std lib names)
+# --p2: the two judges built for Bradbury Phase 2 (contracts/judge_*_p2.py, v0.6 std lib names)
 P2 = "--p2" in sys.argv
 if P2:
     CONTRACTS["subjective"] = ROOT / "contracts" / "judge_subjective_p2.py"
+    CONTRACTS["mail"] = ROOT / "contracts" / "judge_mail_p2.py"
 B3_FILE = ROOT / "results" / "local-b3.jsonl"
 OWNER, ROUTER, KEYCACHE = stub.OWNER, stub.ROUTER, stub.KEYCACHE
 VERIFIER = "0x5555555555555555555555555555555555555555"
@@ -284,11 +285,17 @@ class World:
         public_abi = types.ModuleType("genlayer.py.public_abi")
         public_abi.StorageType = stub.StorageType
         sys.modules["genlayer.py.public_abi"] = public_abi
-        if P2 and kind == "subjective":
+        if P2:
             # The v0.6 names on the same simulated SDK: import genlayer as gl, gl.contract.Contract,
             # gl.message.raw (the same dict write() sets), TreeMap from genlayer.storage, Address from genlayer.types.
+            # The email judge: gl.contract.get_at is the same proxy getter, and StorageView.LATEST_FINALIZED is
+            # the stub's StorageType.LATEST_FINAL (both 1 on chain), so the stub Verifier sees the same state.
             gl = self.sdk.gl
-            gl.contract = types.SimpleNamespace(Contract=gl.Contract)
+            view = types.SimpleNamespace(DEFAULT=stub.StorageType.DEFAULT, LATEST_FINALIZED=stub.StorageType.LATEST_FINAL,
+                                         LATEST_DECIDED=stub.StorageType.LATEST_NON_FINAL)
+            gl.contract = types.ModuleType("genlayer.contract")
+            gl.contract.Contract, gl.contract.get_at, gl.contract.StorageView = gl.Contract, gl.get_contract_at, view
+            sys.modules["genlayer.contract"] = gl.contract
             gl.message.raw = gl.message_raw
             sys.modules["genlayer"] = gl
             storage, gtypes = types.ModuleType("genlayer.storage"), types.ModuleType("genlayer.types")

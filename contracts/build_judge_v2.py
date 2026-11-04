@@ -186,12 +186,19 @@ def build(name):
 
 
 # Bradbury Phase 2 (Consensus v0.6, GenVM v0.3.0): the version comment and runner header read from a
-# contract running there, and the four names that changed in the std lib. strict_eq and exec_prompt
+# contract running there, and the names that changed in the std lib. strict_eq and exec_prompt
 # still return their value; prompts, tables and logic are the same text.
+# The email judge reads Lacre in its final state: StorageType is gone from the Phase 2 runner
+# (py-genlayer babwp9..., read with gen_getContractSchema of a probe contract); genlayer.contract has
+# StorageView, an IntEnum DEFAULT=0, LATEST_FINALIZED=1, LATEST_DECIDED=2, and LATEST_FINALIZED is
+# the old LATEST_FINAL (both 1). gl.get_contract_at is gl.contract.get_at, with the same .view(state=...).
 P2_HEAD = '# v0.3.0\n# { "Depends": "py-genlayer:babwp9t37jw9g4j2bccgn14g6x7x9s1f7dsmh7emvz735pz4zxa0" }'
 P2_SWAPS = (("from genlayer import *", "import genlayer as gl\nfrom genlayer.storage import TreeMap\nfrom genlayer.types import Address"),
             ("(gl.Contract):", "(gl.contract.Contract):"),
             ("gl.message_raw['datetime']", "gl.message.raw['datetime']"))
+P2_SWAPS_MAIL = (("from genlayer.py.public_abi import StorageType", "from genlayer.contract import StorageView"),
+                 ("StorageType.LATEST_FINAL", "StorageView.LATEST_FINALIZED"),
+                 ("gl.get_contract_at(", "gl.contract.get_at("))
 
 
 def build_p2(name, built):
@@ -199,10 +206,11 @@ def build_p2(name, built):
     first, rest = built.split("\n", 1)
     assert first.startswith('# { "Depends":')
     text = P2_HEAD + "\n" + rest
-    for old, new in P2_SWAPS:
+    for old, new in P2_SWAPS + (P2_SWAPS_MAIL if name == "judge_mail" else ()):
         assert text.count(old) == 1, (name, old)
         text = text.replace(old, new)
     assert "message_raw" not in text and "gl.Contract)" not in text
+    assert "StorageType" not in text and "get_contract_at" not in text and "genlayer.py" not in text
     compile(text, name + "_p2", "exec")
     text.encode("ascii")
     out = ROOT / "contracts" / (name + "_p2.py")
@@ -217,8 +225,6 @@ if __name__ == "__main__":
         sha = hashlib.sha256(text.encode()).hexdigest()
         manifest[path.relative_to(ROOT).as_posix()] = {"bytes": len(text.encode()), "sha256": sha, "built_from": prov}
         print(path.relative_to(ROOT).as_posix(), len(text.encode()), "bytes, sha256", sha)
-        if contract != "judge_subjective":
-            continue  # the email judge (Router, gl.get_contract_at) waits for Lacre on Phase 2
         p2_path, p2_text = build_p2(contract, text)
         p2_sha = hashlib.sha256(p2_text.encode()).hexdigest()
         manifest[p2_path.relative_to(ROOT).as_posix()] = {"bytes": len(p2_text.encode()), "sha256": p2_sha,

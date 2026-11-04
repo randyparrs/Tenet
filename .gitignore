@@ -29,6 +29,7 @@
 /contracts/*
 !/contracts/judge_mail.py
 !/contracts/judge_subjective.py
+!/contracts/judge_mail_p2.py
 !/contracts/judge_subjective_p2.py
 !/contracts/judge_mail_template.py
 !/contracts/judge_subjective_template.py

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-29T16:05:33+00:00",
+ "generated_at": "2026-11-04T21:40:37+00:00",
  "project": {
   "name": "Tenet",
   "tagline": "Buyer protection for stablecoin payments."
@@ -123,6 +123,15 @@
    "url": "https://github.com/randyparrs/Tenet/blob/main/results/attest-mail.jsonl",
    "project_url": "https://lacre.in-sidr.xyz",
    "source": "github.com/eudomar500/lacre (MIT, Insidr Labs)"
+  },
+  {
+   "name": "Lacre Router (email attestations, Bradbury Phase 2)",
+   "chain": "bradbury",
+   "address": "0xE7916BaFe7Aa624347Bf19e58AF0623F5182d74C",
+   "url": "https://scan.bradbury.genlayer.com/address/0xE7916BaFe7Aa624347Bf19e58AF0623F5182d74C",
+   "project_url": "https://lacre.in-sidr.xyz",
+   "source": "github.com/randyparrs/lacre (fork of github.com/eudomar500/lacre, MIT, Insidr Labs)",
+   "note": "Redeployed on Bradbury Phase 2 with the v0.6 syntax, same logic; the earlier Router stays on the earlier Bradbury."
   }
  ],
  "terms": {

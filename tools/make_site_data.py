@@ -39,6 +39,9 @@ def gl_url(r, log):
     """A judge transaction: on Bradbury Phase 2 its explorer link, before the reset its record in the repository."""
     return P2_TX + r["tx"] if r.get("network") == "bradbury-phase2" else REPO + log
 ROUTER = "0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9"
+# Lacre's Router on Bradbury Phase 2 (2026-11-04), from the fork's _p2 build: same logic, GenVM v0.3.0 names.
+ROUTER_P2 = "0xE7916BaFe7Aa624347Bf19e58AF0623F5182d74C"
+ROUTER_P2_NOTE = "Redeployed on Bradbury Phase 2 with the v0.6 syntax, same logic; the earlier Router stays on the earlier Bradbury."
 
 # What each live case is and what is still scheduled (UTC dates). Kept here, next to the expected
 # verdicts in relayer/e2e.py, so the page never states a plan the logs do not back.
@@ -313,6 +316,10 @@ def contracts(br, state, e2e_rows):
     out.append({"name": "Lacre Router (email attestations)", "chain": "bradbury", "address": ROUTER,
                 "url": REPO + "results/attest-mail.jsonl", "project_url": "https://lacre.in-sidr.xyz",
                 "source": "github.com/eudomar500/lacre (MIT, Insidr Labs)"})
+    out.append({"name": "Lacre Router (email attestations, Bradbury Phase 2)", "chain": "bradbury", "address": ROUTER_P2,
+                "url": P2_ADDR + ROUTER_P2, "project_url": "https://lacre.in-sidr.xyz",
+                "source": "github.com/randyparrs/lacre (fork of github.com/eudomar500/lacre, MIT, Insidr Labs)",
+                "note": ROUTER_P2_NOTE})
     return out
 
 

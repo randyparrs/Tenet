@@ -453,6 +453,17 @@ async function pageRun({ core, pub, wallet, now, warp, tick, data, escrow, art, 
   listeners.hashchange();
   await settle();
   const html = () => el("screen-demo-shop").innerHTML;
+  // As published until the Demo Shop is on Bradbury Phase 2: the note, every Buy disabled, and Buy does nothing
+  const buys = () => html().match(/<button[^>]*data-try="start"[^>]*>/g) || [];
+  const ordersBefore = T._state.views ? Object.keys(T._state.views).length : 0;
+  await act("start", "N1");
+  check(/The Demo Shop is being moved to GenLayer Bradbury Phase 2\. Try the full flow on <a href="https:\/\/techshopping\.site"[^>]*>Tenet Pay<\/a> meanwhile\./.test(html())
+    && buys().length === 6 && buys().every((b) => / disabled/.test(b)) && !T._state.busy
+    && Object.keys(T._state.views || {}).length === ordersBefore,
+    "PAGE while the Demo Shop moves to Phase 2: the note links Tenet Pay, the six Buy buttons are disabled and Buy does nothing");
+  // The rest of the run checks the shop's own flow, with the note off
+  ctx.window.TENET_DEMO_MOVING = false;
+  await act("refresh");
   check((html().match(/data-try="start"/g) || []).length === 6 && /Demo Shop/.test(html()) && (html().match(/<svg class="try-art-svg"/g) || []).length === 6
     && !/undefined|NaN/.test(html()), "PAGE the Demo Shop lists six products, each with its illustration and a Buy button");
   const usdcOf = async () => pub.readContract({ address: "0x3600000000000000000000000000000000000000", abi: stable.abi, functionName: "balanceOf", args: [B1.address] });

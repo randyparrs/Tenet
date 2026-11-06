@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Demo mode of Tenet: the demo store and the relayer, as a Cloudflare Worker.",
   "dependencies": {
-    "genlayer-js": "1.2.0",
+    "genlayer-js": "2.0.0-rc.2",
     "viem": "2.55.4"
   }
 }

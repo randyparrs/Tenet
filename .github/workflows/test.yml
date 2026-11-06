@@ -72,5 +72,7 @@ jobs:
         run: python tools/lacre_boot.py tests/e2e_rehearsal.py
       - name: Circle routes of the Worker
         run: node worker/test/circle.test.mjs
+      - name: The Worker's GenLayer Phase 2 adapter, without a network
+        run: node worker/test/genlayer.test.mjs
       - name: Demo Shop rehearsal (Worker, page and wallets on anvil)
         run: node worker/test/rehearsal.mjs

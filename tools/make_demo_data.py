@@ -18,6 +18,11 @@ sys.path[:0] = [str(ROOT / "relayer"), str(ROOT / "tools")]
 import demo_setup as S  # noqa: E402  (demo terms; reads no network at import)
 
 OUT = ROOT / "worker" / "src" / "demo-data.json"
+# Bradbury Phase 2 (GenLayer reset Bradbury in October 2026): Lacre's Router (fork randyparrs/lacre, 2026-11-04) and the
+# demo judges redeployed there from contracts/judge_*_p2.py. An empty address keeps the earlier one from the log until
+# that judge is deployed on Phase 2.
+ROUTER_P2 = "0xE7916BaFe7Aa624347Bf19e58AF0623F5182d74C"
+DEMO_JUDGES_P2 = {"mail": "0x21d7B3AE8D5D677813477e0214b3c1e940890302", "subjective": "0x300255843d9EF1b07dd5d27916A8480e433bdA74"}
 C3 = {c["id"]: c for c in json.loads((ROOT / "cases" / "subjective-c3.json").read_text(encoding="utf-8"))["cases"]}
 K17B = json.loads((ROOT / "cases" / "k17b.json").read_text(encoding="utf-8"))["cases"][0]
 ND = {c["id"]: c for c in json.loads((ROOT / "cases" / "nd.json").read_text(encoding="utf-8"))["cases"]}
@@ -112,9 +117,9 @@ def addresses():
             if r.get("op") == "deploy" and r.get("state") == "final":
                 judges[r["kind"]] = r["address"]
     return {"escrow": st.get("escrow"), "deploy_block": st.get("deploy_block"), "usdc": S.E.USDC,
-            "judges": {"mail": judges.get("mail"), "subjective": judges.get("subjective")},
+            "judges": {k: DEMO_JUDGES_P2[k] or judges.get(k) for k in ("mail", "subjective")},
             "store": S.E.address("demo_store"), "relayer": S.E.address("demo_relayer"),
-            "router": S.E.BR["router"]}
+            "router": ROUTER_P2}
 
 
 def main():

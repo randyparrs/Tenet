@@ -167,9 +167,9 @@ Demo Shop section (Arc testnet and GenLayer Bradbury):
 | Contract or role | Network | Address |
 |---|---|---|
 | RefundEscrow v3, demo build | Arc testnet | [`0x185D7aaFE85823a2B91D00735CF9f312E1dAc709`](https://explorer.testnet.arc.io/address/0x185D7aaFE85823a2B91D00735CF9f312E1dAc709) |
-| Judge: store emails (late) | Bradbury | `0x503E73e0Fb2B85C2027Eef457417796D499511E4`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/demo-judges-log.jsonl) |
-| Judge: not as described, not delivered | Bradbury | `0x68e180057AE598301b94a0737309fE00a1ca7D3f`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/demo-judges-log.jsonl) |
-| Lacre Router (email attestations) | Bradbury | `0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/attest-mail.jsonl), shared |
+| Judge: store emails (late; redeployed on Bradbury Phase 2 with the v0.6 syntax, same prompts and same terms; `contracts/judge_mail_p2.py`) | Bradbury Phase 2 | [`0x21d7B3AE8D5D677813477e0214b3c1e940890302`](https://scan.bradbury.genlayer.com/address/0x21d7B3AE8D5D677813477e0214b3c1e940890302); earlier `0x503E73e0Fb2B85C2027Eef457417796D499511E4`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/demo-judges-log.jsonl) |
+| Judge: not as described, not delivered (redeployed on Bradbury Phase 2, same prompts and same terms; `contracts/judge_subjective_p2.py`) | Bradbury Phase 2 | [`0x300255843d9EF1b07dd5d27916A8480e433bdA74`](https://scan.bradbury.genlayer.com/address/0x300255843d9EF1b07dd5d27916A8480e433bdA74); earlier `0x68e180057AE598301b94a0737309fE00a1ca7D3f`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/demo-judges-log.jsonl) |
+| Lacre Router (email attestations) | Bradbury Phase 2 | [`0xE7916BaFe7Aa624347Bf19e58AF0623F5182d74C`](https://scan.bradbury.genlayer.com/address/0xE7916BaFe7Aa624347Bf19e58AF0623F5182d74C), shared; earlier `0xEf37cb72C3A9dD6bCE2f3575B75c94C555F9c8d9`, [archived](https://github.com/randyparrs/Tenet/blob/main/results/attest-mail.jsonl) |
 | Demo store (`demo.rpmdev.app`) | Arc testnet | [`0x7bB6c50dC82151226d8253CC0C5a9088Cd4ef1E2`](https://explorer.testnet.arc.io/address/0x7bB6c50dC82151226d8253CC0C5a9088Cd4ef1E2) |
 | Demo relayer | Arc testnet and Bradbury | [`0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63`](https://explorer.testnet.arc.io/address/0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63), [on Bradbury](https://scan.bradbury.genlayer.com/address/0x09eA4087B9245E1EfB95aCbA437FD1Ff8B4A0D63) |
 

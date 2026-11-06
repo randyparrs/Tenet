@@ -9,10 +9,6 @@
     submit: '3d5376fa', withdraw: '51cff8d9', claimable: 'd4570c1c'
   };
   var STORE_KEY = 'tenet-demo-orders';
-  /* The Demo Shop's judges were on the earlier Bradbury, which GenLayer reset in October 2026: until the shop is moved
-     to Bradbury Phase 2, Buy is off and the page points to Tenet Pay. Orders already open are still shown. */
-  function moving() { return window.TENET_DEMO_MOVING !== false; }
-  var MOVING_NOTE = 'The Demo Shop is being moved to GenLayer Bradbury Phase 2. Try the full flow on ';
   var POLL_MS = 15000, SLOW_MS = 60000, CLOCK_MS = 5000;
   var JUDGE_USUAL_S = 120; // send to ACCEPTED on Bradbury: under 1 minute (measured), plus the Worker's 1 minute tick
   var FINAL_USUAL_S = 1800; // decided to final on Bradbury: about 30 minutes (measured 26 to 30 min from the send)
@@ -190,7 +186,6 @@
     var A = t.config && t.config.addresses;
     var begin = function (k, a, label) { t.busy = k; t.busyArg = a || ''; t.busyLabel = label; t.note = null; render(); };
     var end = function (key, text, tone, link) { t.busy = ''; t.busyArg = ''; t.note = text ? { key: key, text: text, tone: tone || 'ok', link: link } : null; return refresh(); };
-    if (kind === 'start' && moving()) return;
     if (kind === 'start') {
       /* Buy: the Worker opens the order, then the wallet approves and pays in the same click */
       var order = null;
@@ -551,9 +546,7 @@
       }).join('') + '</div>' +
       '<p class="muted pretty" style="font-size:12.5px;margin:0">Demo mode on Arc testnet: separate contracts from the live test, windows of 5 minutes instead of days, and the store is a bot. ' +
       'You sign only your own transactions; the texts are fixed and were measured with the judge\'s committee.</p>' +
-      '<p class="pretty try-rpc" style="font-size:12.5px;margin:0">' + U.icon('warningCircle') + '<span>Your wallet\'s Arc Testnet network must use the RPC <span class="mono">https://rpc.testnet.arc.io</span>; the older <span class="mono">rpc.testnet.arc.network</span> no longer answers.</span></p>' +
-      (moving() ? '<p class="card empty-note try-moving" style="color:var(--warn-fg)">' + esc(MOVING_NOTE) +
-        '<a href="https://techshopping.site" target="_blank" rel="noopener noreferrer">Tenet Pay</a> meanwhile.</p>' : '');
+      '<p class="pretty try-rpc" style="font-size:12.5px;margin:0">' + U.icon('warningCircle') + '<span>Your wallet\'s Arc Testnet network must use the RPC <span class="mono">https://rpc.testnet.arc.io</span>; the older <span class="mono">rpc.testnet.arc.network</span> no longer answers.</span></p>';
     if (!c) {
       var msg = t.error === 'not-published' ? 'The Demo Shop opens when its Worker is published. These are its products.'
         : t.error === 'unreachable' ? 'The Demo Shop could not be reached. Try again in a minute.' : 'Loading the Demo Shop.';
@@ -563,7 +556,7 @@
     }
     var connected = U.wallet.status === 'connected';
     var q = t.quota, left = q ? Math.max(0, q.per_address - q.address) : 0, dayFull = q && q.total >= q.per_day;
-    var can = !moving() && connected && !c.paused && q && left > 0 && !dayFull && !t.busy;
+    var can = connected && !c.paused && q && left > 0 && !dayFull && !t.busy;
     var lowFunds = connected && U.wallet.balance != null && U.wallet.balance < 1;
     var faucet = ((U.getData() || {}).networks || {}).arc ? U.getData().networks.arc.faucet : 'https://faucet.circle.com';
     var list = connected ? mine() : [];
